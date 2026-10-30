@@ -82,7 +82,7 @@ ABAP cheat sheets[^1] ...
 |[Data Types and Data Objects](16_Data_Types_and_Objects.md)| Contains basic information about data types and data objects in ABAP  | [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)   |
 |[Internal Tables](01_Internal_Tables.md)| Creating, filling, reading from, sorting, modifying internal tables  | [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)   |
 |[Structures](02_Structures.md)| Some basics when working with structures  |  [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)  |
-|[ABAP SQL](03_ABAP_SQL.md)| Reading from database tables using `SELECT`, changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`    | [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)   |
+|[ABAP SQL](03_ABAP_SQL.md)| Reading from data sources using `SELECT`, changing data in data sources using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`    | [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)   |
 |[ABAP Object Orientation](04_ABAP_Object_Orientation.md)| Working with objects and components, concepts such as inheritance, interfaces, and more |<ul><li>[zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)</li><li>[zcl_demo_abap_objects_misc](./src/zcl_demo_abap_objects_misc.clas.abap)</li><li>[zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap)</li></ul> |
 |[Constructor Expressions](05_Constructor_Expressions.md)| Covers constructor expressions with operators such as `VALUE`, `CORRESPONDING`, `NEW`, `CONV`, `EXACT`, `REF`, `CAST`, `COND`, `SWITCH`, `FILTER`, `REDUCE`, iteration expressions with `FOR`, `LET` expressions  | [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap) |
 |[Dynamic Programming](06_Dynamic_Programming.md)| Covers field symbols and data references as supporting elements for dynamic programming, dynamic ABAP syntax components, runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC) |  [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)  |
@@ -93,7 +93,7 @@ ABAP cheat sheets[^1] ...
 |[ABAP SQL: Working with Hierarchies](10_ABAP_SQL_Hierarchies.md)|Summarizes the functions ABAP SQL offers together with ABAP CDS for working with hierarchical data that is stored in database tables|-|
 |[Internal Tables: Grouping](11_Internal_Tables_Grouping.md)|Covers the `GROUP BY` clause in statements for internal tables.|[zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)|
 |[ABAP Managed Database Procedures (AMDP)](12_AMDP.md)|Covers ABAP Managed Database Procedures (AMDP): AMDP Procedures and AMDP Functions (including CDS Table Functions)|[zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)|
-|[Program Flow Logic](13_Program_Flow_Logic.md)|Deals with control structures (`IF`, `CASE`), loops (`DO`, `WHILE`)|[zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)|
+|[Program Flow Logic](13_Program_Flow_Logic.md)|Deals with control structures (`IF`, `CASE`), loops (`DO`, `WHILE`), calling and exiting procedures such as function modules|[zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)|
 |[Logical Expressions and Functions](37_Logical_Expressions_and_Functions.md)|Covers logical expressions and functions that are used to process data based on specific conditions and to control program flow.|- (The cheat sheet includes code snippets)|
 |[ABAP Unit Tests](14_ABAP_Unit_Tests.md)|Contains basic information about unit testing in ABAP|[zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap) <br><br> Note the examples in the [unit_tests](https://github.com/SAP-samples/abap-cheat-sheets/tree/unit_tests) branch of the ABAP cheat sheets GitHub repository.|
 |[CDS View Entities](15_CDS_View_Entities.md)|The cheat sheet provides references to information on ABAP CDS. Find a feature table for available language elements in ABAP CDS in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-feature-tables) with links to detailed topics. The focus here is on the example CDS artifacts and the [executable example class](./src/zcl_demo_abap_cds_ve.clas.abap), which include comments.|[zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)|
@@ -138,7 +138,7 @@ For Standard ABAP, you can find examples in the other branches of the repository
 </details>
 
 <details>
-  <summary>🟢 2a) _SAP Business AI Platform, ABAP environment_</summary>
+  <summary>🟢 2a) SAP Business AI Platform, ABAP environment</summary>
   <br>
 
 **Prerequisites**

@@ -8478,41 +8478,30 @@ The following example class illustrates aspects of update behavior and performan
 - In contrast, internal tables with unique sorted keys update the secondary table index immediately when the table content is modified. This update incurs runtime costs, but subsequent reads remain consistently fast.
 
 > [!NOTE] 
-> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information and, particularly, the disclaimer regarding the runtime measurement there.
+> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information regarding the setup and, particularly, the disclaimer regarding the runtime measurement there.
 
-The example includes runtime performance evaluations using these comparisons:
+The example includes various standard tables with secondary table key specifications:
+- Non-unique sorted key
+- Unique sorted key
+- Unique hashed key
+For demonstration purposes, a standard table with non-unique primary table key is included. Here, the access is not optimized by default in standard tables.
+
+The runtime performance evaluations use these comparisons:
 
 1. Multiple reads on internal tables using non-unique keys:
-   - A standard table defined with a non-unique primary table key
-   - A sorted table defined with a non-unique, sorted primary table key
-   - A standard table defined with a non-unique, sorted secondary table key (implemented in two methods: one with a first read after population and one without)
+   - The median runtime for reads on the standard table using the non-unique primary table key should show no optimized access, resulting in slow performance.
+   - In contrast, other read accesses using secondary table keys are significantly faster. 
+   - The example includes reads with the non-unique sorted secondary table key with two flavors: including the first access after population in the measurement and excluding it. The result of the example that includes the first access should indicate the additional effort needed to recreate the secondary index.
+      
+2. Multiple insertions into an internal table
+   - Insert operations into a table with a non-unique sorted secondary key should be faster than into a comparable table with a unique sorted secondary key.
+   - Similarly, insertions into a table with a unique hashed secondary key should be slower due to the uniqueness check and administrational effort.
 
-2. Multiple insertions into an internal table defined with:
-   - A non-unique, sorted secondary table key
-   - A unique, sorted secondary table key
-
-3. Multiple reads on standard tables reflecting secondary table key variants:
-   - A standard table defined with a non-unique, sorted secondary key (implemented in two methods: one with a first read after population and one without)
-   - A standard table defined with a unique, sorted secondary key
-   - A standard table defined with a unique, hashed secondary key
-
-Notes on the example implementation: 
-- As noted, check the information in the example of the section "Exploring Read Access Performance with Internal Tables," as this example is similarly structured. 
-- The comparisons are illustrated in an internal table for each comparison variant. 
-- These tables include the measured average runtimes for multiple reads and insertions performed within a `DO` loop. One entry provides a benchmark score of 100, while the other average runtimes are compared to this score to demonstrate the percentage difference in average runtime.
-
-Notes on the expected outcome:
-- Re-running the example multiple times should reveal patterns in the runtime. 
-- Comparison 1 
-  - The average runtime for reads on the standard table using the primary table key should show no optimized access, resulting in slow performance.
-  - In contrast, other read accesses using secondary table keys and the primary table key in a sorted table are significantly faster. 
-  - The result for reads using the non-unique, sorted secondary key - including the first access after population - should indicate the additional effort needed to recreate the secondary index.
-- Comparison 2
-  - Insert operations into a table with a non-unique, sorted secondary key should be faster than into a comparable table with a unique, sorted secondary key.
-- Comparison 3 
-  - In this example with numerous reads, read access with the hashed secondary table key should demonstrate the fastest performance.
-  - Read accesses using both non-unique and unique, sorted secondary table keys should be fast. 
-  - Read accesses using the non-unique sorted secondary keys - including the first read after table population - should be slower than other accesses.
+3. Multiple reads on internal tables reflecting secondary table key variants
+   - In this example with numerous reads, read access with the hashed secondary table key should demonstrate the fastest performance.
+   - Read accesses using both non-unique and unique sorted secondary table keys should be fast. 
+   - The read accesses example using the non-unique sorted secondary keys and that includes the first read after table population should be slower than the accesses that excludes the first read.
+   - The read access on the standard table using the primary table key should be significantly slower.
 
 Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
@@ -8524,427 +8513,376 @@ Expand the following collapsible section for example code. To try it out, create
 <br>
 
 
+**Class setup**
+
+- Defines a 10-component structure `s` (all `c LENGTH 10`) as the line type for all internal tables
+- Declares 4 standard tables from that type, each with a different key configuration:
+  - `it_std_nu_pr_key`: non-unique primary key (with 5 key components)
+  - `it_std_nu_so_sk`: non-unique sorted secondary key (with 5 key components)
+  - `it_std_uni_so_sk`: unique sorted secondary key (with 5 key components)
+  - `it_std_hash_sk`: unique hashed secondary key (with 5 key components)
+- `itab_content` holds 10000 pre-filled rows used as the data source for all read tables
+- `keys` holds a number of randomized lookup values; `batch_ranges` holds a number of corresponding index ranges of 5 rows each (for the insert batches)
+- `t_table_info` drives the benchmark loop: each entry holds method name, access/key-type enums, operations count, and description; results are written back into it
+- Two enums (`enum_access`, `enum_key_type`) classify each benchmark entry for filtered output sections
+
+**Runtime measurement**
+
+- Individual methods contain READ TABLE statements, intended to show specific read operations
+- Each method loops over the predefined number of keys/ranges internally
+- One loop represents one batch (i.e. one batch includes a predefined number of operations)
+- Timestamps are retrieved before and after the method calls using `utclong_current( )`.
+- `cl_abap_utclong=>diff` converts the delta of the two timestamps to seconds and appends it to `runtime_tab`
+- This is repeated 5 times to have a more balanced result. 
+- After the batch runs, `runtime_tab` is sorted and the median value is retrieved- 
+- The final runtime value is calculated to get the value in microseconds.
+- The baseline, i.e. an empty loop, is measured the same way upfront to show the pure loop overhead for orientation. 
+
+
+<br>
+
+
+
 ```abap
+"! <p class="shorttext"><strong>Update Behavior and Performance</strong><br/>
+"! ABAP cheat sheet example class</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>The example is for exploration, experimentation, and demonstration. It is not intended for accurate
+"! runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature,
+"! results may vary and not be entirely accurate, even across multiple runs.</li>
+"! <li>Note the disclaimer in the ABAP cheat sheet repository.</li></ul>
 CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-  PROTECTED SECTION.
+
   PRIVATE SECTION.
+    TYPES:
+      BEGIN OF ENUM enum_access,
+        primary_nonuni_key_read,
+        primary_nonuni_key_insert,
+        sec_sorted_nu_read_lazy_incl,
+        sec_sorted_nu_read_lazy_excl,
+        sec_sorted_uni_key_read,
+        sec_hashed_uni_key_read,
+        secondary_key_insert,
+      END OF ENUM enum_access.
+
+    TYPES:
+      BEGIN OF ENUM enum_key_type,
+        primary_non_unique,
+        sec_non_unique_sorted,
+        sec_unique_sorted,
+        sec_unique_hashed,
+      END OF ENUM enum_key_type.
+
+    TYPES:
+      BEGIN OF s,
+        comp1  TYPE c LENGTH 10,
+        comp2  TYPE c LENGTH 10,
+        comp3  TYPE c LENGTH 10,
+        comp4  TYPE c LENGTH 10,
+        comp5  TYPE c LENGTH 10,
+        comp6  TYPE c LENGTH 10,
+        comp7  TYPE c LENGTH 10,
+        comp8  TYPE c LENGTH 10,
+        comp9  TYPE c LENGTH 10,
+        comp10 TYPE c LENGTH 10,
+      END OF s.
+
+    TYPES key_char TYPE c LENGTH 10.
+
+    TYPES:
+      BEGIN OF s_batch_range,
+        batch_from TYPE i,
+        batch_to   TYPE i,
+      END OF s_batch_range.
+
+    TYPES:
+      BEGIN OF s_table_info,
+        method_name           TYPE string,
+        median_runtime_per_op TYPE decfloat34,
+        access                TYPE enum_access,
+        key_type              TYPE enum_key_type,
+        ops                   TYPE i,
+        description           TYPE string,
+      END OF s_table_info,
+      tt_table_info TYPE STANDARD TABLE OF s_table_info WITH EMPTY KEY.
+
     METHODS:
-      comparison1_nuk_primary_std,
-      comparison1_nuk_primary_so,
-      comparison1_nuk_sec_key_std_a,
-      comparison1_nuk_sec_key_std_b,
+      baseline_loop_only,
+      read_std_nuk_primary_key,
+      insert_std_nuk_primary_key,
+      read_std_nu_so_sk_lazy_incl,
+      read_std_nu_so_sk_lazy_excl,
+      read_std_uk_sorted_sk,
+      read_std_uk_hashed_sk,
+      insert_std_nuk_sorted_sk,
+      insert_std_uk_sorted_sk,
+      insert_std_uk_hashed_sk,
+      prepare IMPORTING table_info TYPE s_table_info,
+      build_keys,
+      store_runtime IMPORTING high TYPE utclong
+                              low  TYPE utclong,
+      get_median_runtime RETURNING VALUE(median_runtime) TYPE decfloat34,
+      write_section      IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                   text TYPE string.
 
-      comparison2_nuk_sec_insert,
-      comparison2_uk_sec_insert,
+    DATA itab_content     TYPE TABLE OF s WITH EMPTY KEY.
+    DATA it_std_nu_pr_key TYPE        TABLE OF s WITH NON-UNIQUE KEY primary_key COMPONENTS comp1 comp2 comp3 comp4 comp5.
+    DATA it_std_nu_so_sk  TYPE        TABLE OF s WITH EMPTY KEY
+                                                 WITH NON-UNIQUE SORTED KEY nu_so  COMPONENTS comp1 comp2 comp3 comp4 comp5.
+    DATA it_std_uni_so_sk TYPE        TABLE OF s WITH EMPTY KEY
+                                                 WITH UNIQUE SORTED KEY     uni_so COMPONENTS comp1 comp2 comp3 comp4 comp5.
+    DATA it_std_hash_sk   TYPE        TABLE OF s WITH EMPTY KEY
+                                                 WITH UNIQUE HASHED KEY     hak    COMPONENTS comp1 comp2 comp3 comp4 comp5.
+    DATA runtime_tab      TYPE TABLE OF decfloat34     WITH EMPTY KEY.
+    DATA keys             TYPE TABLE OF key_char        WITH EMPTY KEY.
+    DATA batch_ranges     TYPE TABLE OF s_batch_range   WITH EMPTY KEY.
+    DATA t_table_info     TYPE tt_table_info.
 
-      comparison3_nu_so_sec_key_rd_a,
-      comparison3_nu_so_sec_key_rd_b,
-      comparison3_uni_so_sec_key_rd,
-      comparison3_uni_ha_sec_key_rd,
+    CONSTANTS: table_lines TYPE i VALUE 10000,
+               reads       TYPE i VALUE 5000,
+               repetitions TYPE i VALUE 5.
 
-      store_runtime IMPORTING high TYPE utclong low  TYPE utclong,
-      get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34,
-      calculate_score.
-
-    "Demo structured type
-    TYPES: BEGIN OF s,
-             comp1  TYPE c LENGTH 10,
-             comp2  TYPE c LENGTH 10,
-             comp3  TYPE c LENGTH 10,
-             comp4  TYPE c LENGTH 10,
-             comp5  TYPE c LENGTH 10,
-             comp6  TYPE c LENGTH 10,
-             comp7  TYPE c LENGTH 10,
-             comp8  TYPE c LENGTH 10,
-             comp9  TYPE c LENGTH 10,
-             comp10 TYPE c LENGTH 10,
-           END OF s.
-
-    "Internal table declarations to work with in the example
-    DATA itab_content TYPE TABLE OF s WITH EMPTY KEY.
-
-    "Standard table with non-unique primary table key
-    DATA it_std_nu_pr_key TYPE TABLE OF s WITH NON-UNIQUE KEY primary_key COMPONENTS comp1 comp2 comp3 comp4 comp5.
-
-    "Standard table with empty primary table key and non-unique, sorted secondary table key
-    DATA it_std_nu_so_sk TYPE TABLE OF s WITH EMPTY KEY
-                                         WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp1 comp2 comp3 comp4 comp5.
-
-    "Sorted table with non-unique, sorted primary table key
-    DATA it_so_nu_pr_key TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY primary_key COMPONENTS comp1 comp2 comp3 comp4 comp5.
-
-    "Standard table with empty primary table key and unique, sorted secondary table key
-    DATA it_std_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
-                                          WITH UNIQUE SORTED KEY uni_so COMPONENTS comp1 comp2 comp3 comp4 comp5.
-
-    "Standard table with empty primary table key and unique, hashed secondary table key
-    DATA it_std_hash_sk TYPE TABLE OF s WITH EMPTY KEY
-                                        WITH UNIQUE HASHED KEY hak COMPONENTS comp1 comp2 comp3 comp4 comp5.
-
-    DATA: ts1         TYPE utclong,
-          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
-          idx_char    TYPE c LENGTH 10.
-
-    CONSTANTS: table_lines_10k TYPE i VALUE 10000,
-               loop_count_1k   TYPE i VALUE 1000,
-               benchmark100 TYPE decfloat34 VALUE '100'.
-
-    "Internal tables for illustrating comparisons and display purposes
-    TYPES: BEGIN OF comparison_struc,
-             method      TYPE string,
-             avg_runtime TYPE string,
-             score       TYPE string,
-             description TYPE string,
-             count       TYPE i,
-           END OF comparison_struc.
-
-    DATA comparison1 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
-    DATA comparison2 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
-    DATA comparison3 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
 ENDCLASS.
 
 
 CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
 
-    "Populating internal table as the basis for other internal tables
-    DO table_lines_10k TIMES.
-      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index comp5 = sy-index
-                      comp6 = sy-index comp7 = sy-index comp8 = sy-index comp9 = sy-index comp10 = sy-index
-                    ) INTO TABLE itab_content.
+  METHOD if_oo_adt_classrun~main.
+    DATA key TYPE key_char.
+    DO table_lines TIMES.
+      key = sy-index.
+      INSERT VALUE s( comp1 = key comp2 = key comp3 = key comp4 = key comp5 = key
+                      comp6 = key comp7 = key comp8 = key comp9 = key comp10 = key )
+             INTO TABLE itab_content.
     ENDDO.
 
-    "Comparison 1
-    comparison1_nuk_primary_std( ).
-    comparison1_nuk_primary_so( ).
-    comparison1_nuk_sec_key_std_a( ).
-    comparison1_nuk_sec_key_std_b( ).
+    build_keys( ).
 
-    "Comparison 2
-    comparison2_nuk_sec_insert( ).
-    comparison2_uk_sec_insert( ).
+    DO repetitions TIMES.
+      DATA(ts_base) = utclong_current( ).
+      baseline_loop_only( ).
+      store_runtime( high = utclong_current( ) low = ts_base ).
+    ENDDO.
+    DATA(loop_overhead_us) = round( val = get_median_runtime( ) / reads * 1000000 dec = 4 ).
 
-    "Comparison 3
-    comparison3_nu_so_sec_key_rd_a( ).
-    comparison3_nu_so_sec_key_rd_b( ).
-    comparison3_uni_so_sec_key_rd( ).
-    comparison3_uni_ha_sec_key_rd( ).
+    t_table_info = VALUE #(
+      ( method_name = `read_std_nuk_primary_key`
+        access = primary_nonuni_key_read   key_type = primary_non_unique ops = reads
+        description = `Read from standard table using non-unique primary key (5 components)` )
+      ( method_name = `insert_std_nuk_primary_key`
+        access = primary_nonuni_key_insert key_type = primary_non_unique ops = reads
+        description = `Insert 5 lines at a time into standard table with non-unique primary key (5 components)` )
+      ( method_name = `read_std_nu_so_sk_lazy_incl`
+        access = sec_sorted_nu_read_lazy_incl key_type = sec_non_unique_sorted ops = reads
+        description = `Read from standard table using non-unique sorted secondary key (lazy update cost included)` )
+      ( method_name = `read_std_nu_so_sk_lazy_excl`
+        access = sec_sorted_nu_read_lazy_excl key_type = sec_non_unique_sorted ops = reads
+        description = `Read from standard table using non-unique sorted secondary key (lazy update cost excluded)` )
+      ( method_name = `read_std_uk_sorted_sk`
+        access = sec_sorted_uni_key_read   key_type = sec_unique_sorted     ops = reads
+        description = `Read from standard table using unique sorted secondary key` )
+      ( method_name = `read_std_uk_hashed_sk`
+        access = sec_hashed_uni_key_read   key_type = sec_unique_hashed     ops = reads
+        description = `Read from standard table using unique hashed secondary key` )
+      ( method_name = `insert_std_nuk_sorted_sk`
+        access = secondary_key_insert key_type = sec_non_unique_sorted ops = reads
+        description = `Insert 5 lines at a time into standard table with non-unique sorted secondary key` )
+      ( method_name = `insert_std_uk_sorted_sk`
+        access = secondary_key_insert key_type = sec_unique_sorted     ops = reads
+        description = `Insert 5 lines at a time into standard table with unique sorted secondary key` )
+      ( method_name = `insert_std_uk_hashed_sk`
+        access = secondary_key_insert key_type = sec_unique_hashed     ops = reads
+        description = `Insert 5 lines at a time into standard table with unique hashed secondary key` )
+    ).
 
-    "Calculating the score for the comparisons
-    calculate_score( ).
+    LOOP AT t_table_info REFERENCE INTO DATA(info).
+      info->method_name = to_upper( info->method_name ).
+      DO repetitions TIMES.
+        prepare( info->* ).
+        DATA(ts1) = utclong_current( ).
+        CALL METHOD (info->method_name).
+        store_runtime( high = utclong_current( ) low = ts1 ).
+      ENDDO.
+      info->median_runtime_per_op = round( val = get_median_runtime( ) / info->ops * 1000000 dec = 4 ).
+    ENDLOOP.
 
-    "Displaying the internal tables illustrating the comparisons
-    out->write( `----- Comparison 1 -----` ).
-    out->write( comparison1 ).
+    SORT t_table_info BY median_runtime_per_op ASCENDING.
+
+    write_section( out = out text = `Results sorted by runtime (median of 5 batches, microseconds per operation)` ).
+    out->write( |Note: Loop overhead per read without table access (for orientation): { loop_overhead_us } microseconds| ).
     out->write( |\n| ).
     out->write( |\n| ).
-    out->write( `----- Comparison 2 -----` ).
-    out->write( comparison2 ).
-    out->write( |\n| ).
-    out->write( |\n| ).
-    out->write( `----- Comparison 3 -----` ).
-    out->write( comparison3 ).
+    out->write( t_table_info ).
 
+    write_section( out = out text = `Multiple reads on internal tables using non-unique keys` ).
+    out->write( `Note: The lazy_incl variant includes the cost of the first-read secondary key index build (amortized across 1000 reads per batch). The lazy_excl variant pre-builds the index before measurement starts, excluding that cost.` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( VALUE tt_table_info( FOR line IN t_table_info
+                                     WHERE ( access = primary_nonuni_key_read
+                                          OR access = sec_sorted_nu_read_lazy_incl
+                                          OR access = sec_sorted_nu_read_lazy_excl )
+                                     ( line ) ) ).
+
+
+    write_section( out = out text = `Multiple insertions into an internal table` ).
+    out->write( `Note: The table includes the result for the insertion into a standard table using the primary table key, which is explicitly declared as non-unique (5 components).` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( VALUE tt_table_info( FOR line IN t_table_info
+                                     WHERE ( access = primary_nonuni_key_insert
+                                          OR access = secondary_key_insert )
+                                     ( line ) ) ).
+
+    write_section( out = out text = `Multiple reads on internal tables reflecting secondary table key variants` ).
+    out->write( `Note: Primary table key access with a standard table is included to demonstrate optimized vs. non-optimized access to standard tables.` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( VALUE tt_table_info( FOR line IN t_table_info
+                                     WHERE ( access = primary_nonuni_key_read
+                                          OR access = sec_sorted_nu_read_lazy_incl
+                                          OR access = sec_sorted_nu_read_lazy_excl
+                                          OR access = sec_sorted_uni_key_read
+                                          OR access = sec_hashed_uni_key_read )
+                                     ( line ) ) ).
+  ENDMETHOD.
+
+  METHOD build_keys.
+    DATA(gap) = table_lines DIV reads.
+    DATA pool TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DO reads TIMES.
+      APPEND ( sy-index - 1 ) * gap + 1 TO pool.
+    ENDDO.
+
+    DATA(rng) = cl_abap_random_int=>create( seed = 42 min = 1 max = reads ).
+    DATA(swaps) = reads * 2.
+    DO swaps TIMES.
+      DATA(i) = rng->get_next( ).
+      DATA(j) = rng->get_next( ).
+      DATA(tmp) = pool[ i ].
+      pool[ i ] = pool[ j ].
+      pool[ j ] = tmp.
+    ENDDO.
+
+    DATA key TYPE key_char.
+    DO reads TIMES.
+      key = pool[ sy-index ].
+      APPEND key TO keys.
+      APPEND VALUE s_batch_range( batch_from = ( sy-index - 1 ) * 5 + 1
+                                  batch_to   = sy-index * 5 ) TO batch_ranges.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD prepare.
+    FREE: it_std_nu_pr_key, it_std_nu_so_sk, it_std_uni_so_sk, it_std_hash_sk.
+    CASE table_info-access.
+      WHEN primary_nonuni_key_read
+        OR sec_sorted_nu_read_lazy_incl
+        OR sec_sorted_nu_read_lazy_excl
+        OR sec_sorted_uni_key_read
+        OR sec_hashed_uni_key_read.
+        it_std_nu_pr_key = itab_content.
+        it_std_nu_so_sk  = itab_content.
+        it_std_uni_so_sk = itab_content.
+        it_std_hash_sk   = itab_content.
+        IF table_info-access = sec_sorted_nu_read_lazy_excl.
+          READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+            WITH TABLE KEY nu_so COMPONENTS comp1 = keys[ 1 ] comp2 = keys[ 1 ]
+                                            comp3 = keys[ 1 ] comp4 = keys[ 1 ] comp5 = keys[ 1 ].
+        ENDIF.
+    ENDCASE.
   ENDMETHOD.
 
   METHOD store_runtime.
-    cl_abap_utclong=>diff( EXPORTING high    = high
-                                     low     = low
-                           IMPORTING seconds = DATA(seconds) ).
-
+    cl_abap_utclong=>diff( EXPORTING high = high low = low IMPORTING seconds = DATA(seconds) ).
     APPEND seconds TO runtime_tab.
   ENDMETHOD.
 
-  METHOD get_avg_runtime.
-    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
-                                   FOR wa IN runtime_tab
-                                   NEXT s += wa ).
-
-    TRY.
-        avg_runtime = sum / lines( runtime_tab ).
-      CATCH cx_sy_zerodivide.
-    ENDTRY.
-
+  METHOD get_median_runtime.
+    SORT runtime_tab BY table_line ASCENDING.
+    median_runtime = runtime_tab[ ( lines( runtime_tab ) + 1 ) DIV 2 ].
     CLEAR runtime_tab.
   ENDMETHOD.
 
-  METHOD calculate_score.
-
-    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
-    FIELD-SYMBOLS <avg> TYPE string.
-
-    DO 3 TIMES.
-
-      CASE sy-index.
-        WHEN 1.
-          ASSIGN comparison1 TO <tab>.
-        WHEN 2.
-          ASSIGN comparison2 TO <tab>.
-        WHEN 3.
-          ASSIGN comparison3 TO <tab>.
-      ENDCASE.
-
-      READ TABLE <tab> WITH KEY ('SCORE') = benchmark100 ASSIGNING FIELD-SYMBOL(<entry>).
-
-      IF sy-subrc = 0.
-        ASSIGN <entry>-('AVG_RUNTIME') TO <avg>.
-
-        IF sy-subrc = 0.
-          LOOP AT <tab> ASSIGNING FIELD-SYMBOL(<line>) WHERE ('SCORE IS INITIAL').
-            TRY.
-                <line>-('SCORE') = |{ 100 / <avg> * <line>-('AVG_RUNTIME') STYLE = SIMPLE DECIMALS = 5 }|.
-              CATCH cx_sy_zerodivide.
-            ENDTRY.
-          ENDLOOP.
-        ENDIF.
-      ENDIF.
-    ENDDO.
+  METHOD write_section.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
   ENDMETHOD.
 
-  METHOD comparison1_nuk_primary_std.
-    FREE it_std_nu_pr_key.
-    it_std_nu_pr_key = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
+  METHOD read_std_nuk_primary_key.
+    LOOP AT keys INTO DATA(idx_char).
       READ TABLE it_std_nu_pr_key TRANSPORTING NO FIELDS
         WITH TABLE KEY primary_key COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison1_nuk_primary_std`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    score = |{ benchmark100 STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the non-unique primary table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison1.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD comparison1_nuk_primary_so.
-    FREE it_so_nu_pr_key.
-    it_so_nu_pr_key = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE it_so_nu_pr_key TRANSPORTING NO FIELDS
-        WITH TABLE KEY primary_key COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison1_nuk_primary_so`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Reading from a sorted table using the non-unique sorted primary table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison1.
+  METHOD insert_std_nuk_primary_key.
+    LOOP AT batch_ranges INTO DATA(range).
+      INSERT LINES OF itab_content FROM range-batch_from TO range-batch_to INTO TABLE it_std_nu_pr_key.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD comparison1_nuk_sec_key_std_a.
-    FREE it_std_nu_so_sk.
-    it_std_nu_so_sk = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
+  METHOD read_std_nu_so_sk_lazy_incl.
+    LOOP AT keys INTO DATA(idx_char).
       READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
         WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison1_nuk_sec_key_std_a`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the secondary, non-unique sorted table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison1.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD comparison1_nuk_sec_key_std_b.
-    FREE it_std_nu_so_sk.
-    it_std_nu_so_sk = itab_content.
-
-    READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
-            WITH TABLE KEY nu_so COMPONENTS comp1 = '1' comp2 = '1' comp3 = '1' comp4 = '1' comp5 = '1'.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
+  METHOD read_std_nu_so_sk_lazy_excl.
+    LOOP AT keys INTO DATA(idx_char).
       READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
         WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison1_nuk_sec_key_std_b`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Same as comparison1_nuk_sec_key_std_a but without first read after population`
-                    count = CONV #( idx_char )
-                  ) TO comparison1.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD comparison2_nuk_sec_insert.
-    FREE it_std_nu_so_sk.
-
-    DATA from TYPE i VALUE 1.
-    DATA to TYPE i VALUE 5.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-      IF sy-index <> 1.
-        from += 5.
-        to += 5.
-      ENDIF.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      INSERT LINES OF itab_content FROM from TO to INTO TABLE it_std_nu_so_sk.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison2_nuk_sec_insert`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    score = |{ benchmark100 STYLE = SIMPLE }|
-                    description = `Insertion into an internal with a non-unique, sorted secondary table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison2.
-  ENDMETHOD.
-
-  METHOD comparison2_uk_sec_insert.
-    FREE it_std_uni_so_sk.
-
-    DATA from TYPE i VALUE 1.
-    DATA to TYPE i VALUE 5.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-      IF sy-index <> 1.
-        from += 5.
-        to += 5.
-      ENDIF.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      INSERT LINES OF itab_content FROM from TO to INTO TABLE it_std_uni_so_sk.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison2_uk_sec_insert`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Insertion into an internal with a unique, sorted secondary table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison2.
-  ENDMETHOD.
-
-  METHOD comparison3_nu_so_sec_key_rd_a.
-    FREE it_std_nu_so_sk.
-    it_std_nu_so_sk = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
-        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
-        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison3_nu_so_sec_key_rd_a`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    score = |{ benchmark100 STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the secondary, non-unique sorted table key (without first read after population)`
-                    count = CONV #( idx_char )
-                  ) TO comparison3.
-  ENDMETHOD.
-
-  METHOD comparison3_nu_so_sec_key_rd_b.
-    FREE it_std_nu_so_sk.
-    it_std_nu_so_sk = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
-        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison3_nu_so_sec_key_rd_b`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the secondary, non-unique sorted table key (with first read after population)`
-                    count = CONV #( idx_char )
-                  ) TO comparison3.
-  ENDMETHOD.
-
-  METHOD comparison3_uni_ha_sec_key_rd.
-    FREE it_std_hash_sk.
-    it_std_hash_sk = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE it_std_hash_sk TRANSPORTING NO FIELDS
-        WITH TABLE KEY hak COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison3_uni_ha_sec_key_rd`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the secondary, unique hashed table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison3.
-  ENDMETHOD.
-
-  METHOD comparison3_uni_so_sec_key_rd.
-    FREE it_std_uni_so_sk.
-    it_std_uni_so_sk = itab_content.
-
-    DO loop_count_1k TIMES.
-      idx_char = sy-index.
-
-      ts1 = utclong_current( ).
-**********************************************************************
+  METHOD read_std_uk_sorted_sk.
+    LOOP AT keys INTO DATA(idx_char).
       READ TABLE it_std_uni_so_sk TRANSPORTING NO FIELDS
         WITH TABLE KEY uni_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    APPEND VALUE #( method = `comparison3_uni_so_sec_key_rd`
-                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
-                    description = `Reading from a standard table using the secondary, unique sorted table key`
-                    count = CONV #( idx_char )
-                  ) TO comparison3.
+    ENDLOOP.
   ENDMETHOD.
+
+  METHOD read_std_uk_hashed_sk.
+    LOOP AT keys INTO DATA(idx_char).
+      READ TABLE it_std_hash_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY hak COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD insert_std_nuk_sorted_sk.
+    LOOP AT batch_ranges INTO DATA(range).
+      INSERT LINES OF itab_content FROM range-batch_from TO range-batch_to INTO TABLE it_std_nu_so_sk.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD insert_std_uk_sorted_sk.
+    LOOP AT batch_ranges INTO DATA(range).
+      INSERT LINES OF itab_content FROM range-batch_from TO range-batch_to INTO TABLE it_std_uni_so_sk.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD insert_std_uk_hashed_sk.
+    LOOP AT batch_ranges INTO DATA(range).
+      INSERT LINES OF itab_content FROM range-batch_from TO range-batch_to INTO TABLE it_std_hash_sk.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD baseline_loop_only.
+    LOOP AT keys INTO DATA(idx_char).
+    ENDLOOP.
+  ENDMETHOD.
+
 ENDCLASS.
 ```
 
@@ -8955,13 +8893,21 @@ ENDCLASS.
 #### Improving Read Performance with Secondary Table Keys
 
 - Consider a scenario where you have a standard internal table that you access frequently using the primary table key or a free key. The table is declared without a secondary key. 
-- In both cases, the read performance is slow because these accesses are not optimized in standard tables.
+- In both cases, the read performance using the primary or empty key is slow because these accesses are not optimized in standard tables.
 - You can add a secondary key to optimize access and improve read performance.
-- The following example creates three demo internal tables: two without a secondary key, accessed by the primary key and a free key, and a third table declared with a secondary key. All tables are populated with many table lines. Then, in a `DO` loop, multiple reads are performed on the internal tables. Before and after the reads, the current timestamp is retrieved to evaluate runtime. Find additional details in the similarly structured example in the next section. The results should demonstrate a significant performance improvement for reads on an internal table using the secondary key.
-- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console.
+- The following example creates demo standard tables with:  
+  - Empty key
+  - Non-unique primary table key
+  - Non-unique sorted secondary table key
+  - Unique sorted secondary table key
+  - Unique hashed secondary table key
+- All tables are populated with many table lines. Then, in a `DO` loop, multiple reads are performed on the internal tables to evaluate the runtime. The example output should reflect significant differences.
 
 > [!NOTE] 
-> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information and, particularly, the disclaimer regarding the runtime measurement there.
+> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information regarding the setup and, particularly, the disclaimer regarding the runtime measurement there.
+
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console.
+
 
 <br>
 
@@ -8969,15 +8915,32 @@ ENDCLASS.
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
+**Example description**
+
+- Demonstrates how the choice of table key type affects read performance on ABAP standard internal tables
+- Compares five access strategies: free key (linear search), non-unique primary key, non-unique sorted secondary key, unique sorted secondary key, and unique hashed secondary key
+- Note the update behavior for non-unique sorted secondary keys. See the previous section. The example also includes the differentiation, affecting access time.
+- Standard tables are populated with a predefined number of table lines.
+- A randomized pool of a predefined number of read keys is generated.
+- For each access variant, 5 repetitions of a predefined number of reads is performed per batch.
+- The runtime is calculated by retrieving timestamps and the delta value. The median runtime value is taken as result.
+- Additionally, a baseline loop (without table access) is measured just for orientation. It should give a rough value for the runtime consumed by the loop iterations.
+- As a result, a table is output with information. It is sorted by ascending runtime, showing for each variant:
+  - Median runtime per operation (in microseconds)
+  - The relative factor compared to the fastest variant (1.00 = fastest), i.e. a ratio showing how many times slower each variant is compared to the fastest
+  - Access type and description
+- Expected result: 
+  - Empty key and non-unique primary table key: table access not optimized, should show considerably slower access times than the other examples
+  - Unique hashed secondary table key: Should show the fastest access
+  - The other secondary table keys should demonstrate optimized access. 
+  - The example with the non-unique sorted secondary table key that includes the lazy update should show the additional runtime costs.  
+  
+
 <br>
 
 ```abap
 "! <p class="shorttext"><strong>Improving Read Performance with Secondary Table Keys</strong><br/>
 "! ABAP cheat sheet example class</p>
-"!
-"! <p>The example class includes several methods that explore both inefficient and potentially more
-"! efficient code examples affecting performance.</p>
-"! <p>In ADT, choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
 "! <ul><li>The example is for exploration, experimentation, and demonstration. It is not intended for accurate
@@ -8987,140 +8950,251 @@ ENDCLASS.
 CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-  PROTECTED SECTION.
+
   PRIVATE SECTION.
+    TYPES:
+      BEGIN OF ENUM enum_read_access,
+        free_key,
+        primary_non_uni_key,
+        sec_nu_sk_lazy_incl,
+        sec_nu_sk_lazy_excl,
+        sec_uni_sorted_key,
+        sec_uni_hashed_key,
+      END OF ENUM enum_read_access.
+
+    TYPES:
+      BEGIN OF demo_struc,
+        comp1 TYPE i,
+        comp2 TYPE i,
+        comp3 TYPE i,
+        comp4 TYPE i,
+        comp5 TYPE i,
+        comp6 TYPE i,
+        comp7 TYPE i,
+      END OF demo_struc.
+
+    TYPES:
+      BEGIN OF s_table_info,
+        method_name           TYPE string,
+        median_runtime_per_op TYPE decfloat34,
+        relative_to_min       TYPE decfloat34,
+        access                TYPE enum_read_access,
+        ops                   TYPE i,
+        description           TYPE string,
+      END OF s_table_info,
+      tt_table_info TYPE STANDARD TABLE OF s_table_info WITH EMPTY KEY.
+
     METHODS:
-      primary_table_key RETURNING VALUE(result) TYPE decfloat34,
-      free_key RETURNING VALUE(result) TYPE decfloat34,
-      secondary_table_key RETURNING VALUE(result) TYPE decfloat34,
-      store_runtime IMPORTING high TYPE utclong low  TYPE utclong,
-      get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34.
+      baseline_loop_only,
+      read_free_key,
+      read_primary_key,
+      read_sec_key_lazy_incl,
+      read_sec_key_lazy_excl,
+      read_uni_sorted_sk,
+      read_uni_hashed_sk,
+      prepare,
+      build_keys,
+      store_runtime IMPORTING high TYPE utclong
+                              low  TYPE utclong,
+      get_median_runtime RETURNING VALUE(median_runtime) TYPE decfloat34,
+      write_section      IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                   text TYPE string.
 
-    "Demo internal table
-    TYPES: BEGIN OF demo_struc,
-             comp1 TYPE i,
-             comp2 TYPE c LENGTH 20,
-             comp3 TYPE c LENGTH 20,
-             comp4 TYPE c LENGTH 20,
-             comp5 TYPE c LENGTH 20,
-             comp6 TYPE c LENGTH 20,
-             comp7 TYPE c LENGTH 20,
-           END OF demo_struc.
+    DATA itab_content         TYPE TABLE OF demo_struc WITH EMPTY KEY.
+    DATA itab_empty_key       TYPE TABLE OF demo_struc WITH EMPTY KEY.
+    DATA itab_w_primary_key   TYPE TABLE OF demo_struc WITH NON-UNIQUE KEY comp1 comp2 comp3.
+    DATA itab_w_secondary_key TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                       WITH NON-UNIQUE SORTED KEY sk  COMPONENTS comp1 comp2 comp3.
+    DATA itab_w_sk_excl       TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                       WITH NON-UNIQUE SORTED KEY sk  COMPONENTS comp1 comp2 comp3.
+    DATA itab_w_uni_so_sk     TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                       WITH UNIQUE SORTED KEY     usk COMPONENTS comp1 comp2 comp3.
+    DATA itab_w_uni_hk        TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                       WITH UNIQUE HASHED KEY     uhk COMPONENTS comp1 comp2 comp3.
+    DATA runtime_tab  TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    DATA keys         TYPE TABLE OF i            WITH EMPTY KEY.
+    DATA t_table_info TYPE tt_table_info.
 
-    DATA: itab_empty_key       TYPE TABLE OF demo_struc WITH EMPTY KEY,
-          itab_w_primary_key   TYPE TABLE OF demo_struc WITH NON-UNIQUE KEY comp1 comp2 comp3,
-          itab_w_secondary_key TYPE TABLE OF demo_struc WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp1 comp2 comp3.
+    CONSTANTS: table_lines TYPE i VALUE 10000,
+               reads       TYPE i VALUE 5000,
+               repetitions TYPE i VALUE 5.
 
-    DATA: ts1         TYPE utclong,
-          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
-          description TYPE string,
-          idx         TYPE i,
-          idx_char    TYPE c LENGTH 20.
-
-    CONSTANTS: loop_count TYPE i VALUE 5000.
 ENDCLASS.
 
 
 CLASS zcl_demo_abap IMPLEMENTATION.
+
   METHOD if_oo_adt_classrun~main.
-
-    "Populating demo tables
-    DO loop_count TIMES.
-      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
-                      comp5 = sy-index comp6 = sy-index comp7 = sy-index ) INTO TABLE itab_empty_key.
+    DO table_lines TIMES.
+      INSERT VALUE demo_struc( comp1 = sy-index comp2 = sy-index comp3 = sy-index
+                               comp4 = sy-index comp5 = sy-index comp6 = sy-index comp7 = sy-index )
+             INTO TABLE itab_content.
     ENDDO.
-    itab_w_primary_key = itab_empty_key.
-    itab_w_secondary_key = itab_empty_key.
 
-    DATA(res1) = primary_table_key( ).
-    out->write( `Average runtime for reading lines of a standard table using the primary table key:` ).
-    out->write( |{ res1 STYLE = SIMPLE }| ).
+    build_keys( ).
 
-    DATA(res2) = free_key( ).
-    out->write( `Average runtime for reading lines of a standard table using a free key:` ).
-    out->write( |{ res2 STYLE = SIMPLE }| ).
+    DO repetitions TIMES.
+      DATA(ts_base) = utclong_current( ).
+      baseline_loop_only( ).
+      store_runtime( high = utclong_current( ) low = ts_base ).
+    ENDDO.
+    DATA(loop_overhead_us) = round( val = get_median_runtime( ) / reads * 1000000 dec = 4 ).
 
-    DATA(res3) = secondary_table_key( ).
-    out->write( `Average runtime for reading lines of a standard table using the secondary table key:` ).
-    out->write( |{ res3 STYLE = SIMPLE }| ).
+    t_table_info = VALUE #(
+      ( method_name = `read_free_key`
+        access = free_key          ops = reads
+        description = `Read from standard table with empty key using a free key (components correspond to key components of other examples)` )
+      ( method_name = `read_primary_key`
+        access = primary_non_uni_key        ops = reads
+        description = `Read from standard table using non-unique primary key` )
+      ( method_name = `read_sec_key_lazy_incl`
+        access = sec_nu_sk_lazy_incl     ops = reads
+        description = `Read using non-unique sorted secondary key (includes lazy update in the measurement)` )
+      ( method_name = `read_sec_key_lazy_excl`
+        access = sec_nu_sk_lazy_excl     ops = reads
+        description = `Read using non-unique sorted secondary key (excludes lazy update in the measurement)` )
+      ( method_name = `read_uni_sorted_sk`
+        access = sec_uni_sorted_key      ops = reads
+        description = `Read from standard table using unique sorted secondary key` )
+      ( method_name = `read_uni_hashed_sk`
+        access = sec_uni_hashed_key     ops = reads
+        description = `Read from standard table using unique hashed secondary key` )
+    ).
+
+    LOOP AT t_table_info REFERENCE INTO DATA(info).
+      info->method_name = to_upper( info->method_name ).
+      DO repetitions TIMES.
+        prepare( ).
+        DATA(ts1) = utclong_current( ).
+        CALL METHOD (info->method_name).
+        store_runtime( high = utclong_current( ) low = ts1 ).
+      ENDDO.
+      info->median_runtime_per_op = round( val = get_median_runtime( ) / info->ops * 1000000 dec = 4 ).
+    ENDLOOP.
+
+    SORT t_table_info BY median_runtime_per_op ASCENDING.
+
+    DATA(min_runtime) = t_table_info[ 1 ]-median_runtime_per_op.
+    LOOP AT t_table_info REFERENCE INTO DATA(item).
+      item->relative_to_min = round( val = item->median_runtime_per_op / min_runtime dec = 2 ).
+    ENDLOOP.
+
+    write_section( out = out text = `Results sorted by runtime (median of 5 batches, microseconds per operation)` ).
+    out->write( `Note:` ).
+    out->write( |- Loop overhead per read without table access (for orientation): { loop_overhead_us } microseconds| ).
+    out->write( `- *lazy_incl includes the first read cost of building the non-unique sorted secondary key index. *lazy_excl pre-builds the index before timing starts, excluding that cost.` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( t_table_info ).
   ENDMETHOD.
 
-  METHOD primary_table_key.
-    "Reading lines from an internal table using the primary table key
-
-    DO loop_count TIMES.
-      idx = sy-index.
-      idx_char = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE itab_w_primary_key TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx_char comp3 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
+  METHOD build_keys.
+    DATA(gap) = table_lines DIV reads.
+    DATA pool TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DO reads TIMES.
+      APPEND ( sy-index - 1 ) * gap + 1 TO pool.
     ENDDO.
-    result = get_avg_runtime( ).
+
+    DATA(rng) = cl_abap_random_int=>create( seed = 42 min = 1 max = reads ).
+    DATA(swaps) = reads * 2.
+    DO swaps TIMES.
+      DATA(i) = rng->get_next( ).
+      DATA(j) = rng->get_next( ).
+      DATA(tmp) = pool[ i ].
+      pool[ i ] = pool[ j ].
+      pool[ j ] = tmp.
+    ENDDO.
+
+    DO reads TIMES.
+      APPEND pool[ sy-index ] TO keys.
+    ENDDO.
   ENDMETHOD.
 
-  METHOD free_key.
-    "Reading lines from an internal table using a free key
-    "The free key corresponds to the primary and secondary table key components
-    "of the other demo internal tables.
-
-    DO loop_count TIMES.
-      idx = sy-index.
-      idx_char = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE itab_empty_key TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx_char comp3 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    result = get_avg_runtime( ).
-  ENDMETHOD.
-
-  METHOD secondary_table_key.
-    "Reading lines from an internal table using the secondary table key
-
-    DO loop_count TIMES.
-      idx = sy-index.
-      idx_char = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE itab_w_secondary_key TRANSPORTING NO FIELDS WITH TABLE KEY sk COMPONENTS comp1 = idx comp2 = idx_char comp3 = idx_char.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    result = get_avg_runtime( ).
+  METHOD prepare.
+    FREE: itab_empty_key, itab_w_primary_key, itab_w_secondary_key, itab_w_sk_excl, itab_w_uni_so_sk, itab_w_uni_hk.
+    itab_empty_key       = itab_content.
+    itab_w_primary_key   = itab_content.
+    itab_w_secondary_key = itab_content.
+    itab_w_sk_excl       = itab_content.
+    itab_w_uni_so_sk     = itab_content.
+    itab_w_uni_hk        = itab_content.
+    READ TABLE itab_w_sk_excl TRANSPORTING NO FIELDS WITH TABLE KEY sk COMPONENTS comp1 = 1 comp2 = 1 comp3 = 1.
   ENDMETHOD.
 
   METHOD store_runtime.
-    cl_abap_utclong=>diff( EXPORTING high    = high
-                                     low     = low
-                           IMPORTING seconds = DATA(seconds) ).
-
+    cl_abap_utclong=>diff( EXPORTING high = high low = low IMPORTING seconds = DATA(seconds) ).
     APPEND seconds TO runtime_tab.
   ENDMETHOD.
 
-  METHOD get_avg_runtime.
-    "Calculating the average runtime value
-    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
-                                   FOR wa IN runtime_tab
-                                   NEXT s += wa ).
-
-    TRY.
-        avg_runtime = sum / lines( runtime_tab ).
-      CATCH cx_sy_zerodivide.
-    ENDTRY.
-
+  METHOD get_median_runtime.
+    SORT runtime_tab BY table_line ASCENDING.
+    median_runtime = runtime_tab[ ( lines( runtime_tab ) + 1 ) DIV 2 ].
     CLEAR runtime_tab.
   ENDMETHOD.
+
+  METHOD write_section.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD read_free_key.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_empty_key TRANSPORTING NO FIELDS
+        WITH KEY comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_primary_key.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_w_primary_key TRANSPORTING NO FIELDS
+        WITH TABLE KEY comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_sec_key_lazy_incl.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_w_secondary_key TRANSPORTING NO FIELDS
+        WITH TABLE KEY sk COMPONENTS comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_sec_key_lazy_excl.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_w_sk_excl TRANSPORTING NO FIELDS
+        WITH TABLE KEY sk COMPONENTS comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_uni_sorted_sk.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_w_uni_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY usk COMPONENTS comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_uni_hashed_sk.
+    LOOP AT keys INTO DATA(key_i).
+      READ TABLE itab_w_uni_hk TRANSPORTING NO FIELDS
+        WITH TABLE KEY uhk COMPONENTS comp1 = key_i comp2 = key_i comp3 = key_i.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD baseline_loop_only.
+    LOOP AT keys INTO DATA(key_i).
+    ENDLOOP.
+  ENDMETHOD.
+
 ENDCLASS.
 ```
 
-</details>  
+</details>   
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -9205,101 +9279,184 @@ ENDCLASS.
 
 ### Exploring Read Access Performance with Internal Tables
 
-- The following example explores the performance of read accesses to different types of internal tables (standard, sorted, hashed tables, with and without secondary table keys) in a simplified and self-contained manner. 
-- The scenario involves reading lines of large internal tables (10000 table lines) frequently (10000 times) after initial population. 
-- The read accesses use `READ TABLE` statements (including the `TRANSPORTING NO FIELDS` addition, as the table content and its storage or further processing are not relevant to this example) to access the tables by: 
-  - Index (both primary and secondary table index) 
-  - Key (primary table key, secondary table key, free key)
-- Among the demonstrated read operations are the following:
-   - Index accesses (standard and sorted tables, hashed tables using the secondary table index)
-   - Primary table key accesses (various tables specified with a single and multiple key components; examples with full key, partial and left-aligned key, partial and not left-aligned key)
-   - Secondary table key access
-   - Free key access
-   - Dynamic key specifications
-- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console. It may take some time to finish and display the output. See the following note on the expected results.
+- The following example explores the performance of read accesses to different kinds of internal tables (standard, sorted, hashed tables, with and without secondary table keys). It covers a selection of read access patterns and tries to visualize relative differences between them in a simplified and self-contained way.
+- The demonstration example includes:
+  - Primary and secondary table index access on standard, sorted, and hashed tables
+  - Primary table key access with single and multiple key components; full key, partial left-aligned key, and partial non-left-aligned key
+  - Secondary table key access: non-unique sorted secondary key, unique sorted secondary key, unique hashed secondary key; the lazy update behavior of non-unique sorted secondary keys is demonstrated by including reads with and without the first read after table population (which triggers the lazy update)
+  - Free key access, including free keys that match the full primary key or a left-aligned partial key of sorted tables (where the runtime can optimize the access) and free keys that cannot optimize table access
+  - Free key access on standard tables and the `BINARY SEARCH` addition: sorting once before all reads, sorting before each read (as anti pattern), and measuring reads with a pre-sorted table where the `SORT` is excluded from timing
+  - Static and dynamic key specifications
+  - A separate series that runs the same four access patterns (index, linear search, binary search, hash) against three different table sizes to show how runtime scales
 
-> [!IMPORTANT] 
+
+> [!IMPORTANT]
 > This example:
-> - Is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing (see the notes in the _ABAP Performance Notes_ cheat sheet). Due to its simplified nature (for example, the table line type is flat and includes fairly simple components of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet (see also the general notes in the first expandable below). 
-> - Is intended to underscore the significance of choosing the right table categories and specifications for your internal tables, tailored to your specific use case and the frequency of table access.
+> - Is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance measurement (see the notes in the *ABAP Performance Notes* cheat sheet). Various factors (such as system, environment, system load, etc.) can influence the runtime of an ABAP program, so that results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet. Small differences between (fast) accesses must not be used to rank those accesses precisely.
+> - Aims to illustrate general table access performance aspects, and highlight the described behavior and potential pitfalls related to table access using a fairly unrealistic, intentionally exaggerated, non-representative example.
+> - Is intended to emphasize the importance of choosing the appropriate table category, key specification, and access pattern for a given use case.
+> - Does not represent best practices regarding performance testing and is not a substitute or role model for profiling real applications with realistic data and workloads.
 
-> [!NOTE] 
-> - The runtime analysis in this example is as follows: The code snippets (i.e., `READ TABLE` statements) to measure runtime are included in method implementations. The methods are called, with each call surrounded by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta between these two timestamp values, indicating the runtime for the code snippet. To provide a more meaningful analysis, the methods are called multiple times, which is achieved by enclosing them in a `DO` loop. The runtime delta is stored in an internal table that collects all delta values for the specific code snippet across all iterations. Finally, the average runtime is calculated based on these collected delta values and added to an internal table along with other relevant information. This approach of using multiple iterations and computing an average runtime aims to offer a balanced view of performance. Note that this implementation is for exploratory and demonstration purposes only.
-> - The following points should be reflected by the result: 
->   - Index access (both primary and secondary table index) is generally very fast.
->   - Hash key access (both full primary table keys of hashed tables and hashed secondary table keys) is fast. 
->   - Table access using secondary table keys is optimized. 
->     - Specifying secondary table keys for standard tables means enabling optimized access and fast key access also for this table category.  
->     - For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key. The example includes two methods that attempt to illustrate the behavior: Read access by secondary table key with and without counting in the first read access by key. The runtime measurement for the example without the first key access should (on multiple example executions) reflect the extra administrational effort.
->   - Both full and partial, left-aligned key accesses in sorted tables are optimized. The example access using a not left-aligned key should reflect a slower, non-optimized access.
->   - Free key searches are generally slower.
->     - `READ TABLE` statements with standard tables can include the `BINARY SEARCH` addition (which is no longer recommended; see the section on `BINARY SEARCH`). This method optimizes read access but generally requires sorting beforehand. The example includes two methods to demonstrate reading using `BINARY SEARCH`: one where the runtime measurement includes and does not include a prior, single sorting.
->   - Primary table key access in standard tables is relatively slow. Secondary table key access is optimized.
->   - Dynamic key specifications require effort for evaluation. The example includes methods that illustrate static key access and a comparable dynamic key access.
+
+Despite the previously mentioned disclaimer, the results should reveal the following aspects:
+
+- **Index access**
+  - Is the fastest access type. Both primary and secondary table index provide direct positional access without searching.
+  - Is available for standard and sorted tables via the primary table index. Hashed tables have no primary table index, but index access can be enabled for them via  sorted secondary table keys.
+  - Runtime does not grow with table size: the position is already known, so no search is performed.
+
+- **Hashed table key access**
+  - Is the fastest key-based access type due to a hash algorithm mapping the keys, so the runtime is fairly constant regardless of table size.
+  - Requires the full primary key to be specified. A partial key specification triggers a linear search instead.
+
+- **Sorted table key access**
+  - Uses a binary search for full primary table key access and for partial left-aligned primary table key access. That is, the specified components are the leading components of the key without gaps. Assume a key contains the components a, b, and c. Specifying a and b represents a gap-free, left-aligned primary table key, whereas specifying b and c is not left-aligned, and therefore table access is not optimized. Non-left-aligned partial key specifications trigger a linear search.
+  - Is considerably faster than a linear search. Runtime grows logarithmically with table size.
+
+- **Primary table key access in standard tables**
+  - Uses a linear search, which is the slowest key-based access type. 
+  - Runtime grows linearly with table size. 
+
+- **Secondary table key access**
+  - Enables optimized access for all table categories
+  - In doing so, also standard tables can be enriched with an optimized table key access, for example, adding a hashed secondary table key to a standard table allows hash-based access without changing the table category.
+  - Non-unique sorted secondary keys update lazily, i. e. the secondary index is built on the first access after the table was populated. Some examples reflect this extra runtime cost by including and not including the first read in the measurement.
+  - Unique secondary keys (sorted and hashed) update immediately on every table change.
+
+- **Free key access**
+  - Is generally a linear search unless the specified components allow optimized access to a table:
+    - For sorted tables: full primary key components, or left-aligned partial primary key components
+    - For hashed tables: all primary key components
+  - The example includes the use of the `BINARY SEARCH` addition in combination with reads on a standard table. It is an older approach to optimized table access with free keys for standard tables. However, it requires the table to be sorted by the search key. See the notes in the `BINARY SEARCH` section. The use of secondary table keys is recommended instead. Examples are included in the class for demonstration purposes.
+
+- **Dynamic key specifications**
+  - Add runtime overhead for key parsing and evaluation. 
+  - The extra cost compared with the equivalent static specification should be small but visible.
+
+- **Read access performance when table size increases**
+  - The demonstration example covers index access, sorted and hashed key access, key access on standard tables.
+  - Index access and hashed key access: The runtime stays fairly constant as the table grows.
+  - Sorted key access: The access is optimized, yet the runtime grows logarithmically with table size. The result should show moderate growth with the example values used, but should be visible though. You may want to change the example values.
+  - Standard table key access: The access is not optimized. Linear search is performed. The result should show that runtime grows almost linearly.
+
+
+To try out the example, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console. **It may take some time to finish and display the output.** The output shows the overall runtime measurement results, including all example read operations as well as results clustered by access kind (primary table key and index, secondary table key and index, free key, dynamic key).
 
 
 <details>
-  <summary>🟢 Click to expand for general notes</summary>
+  <summary>🟢 Click to expand for more information on the example</summary>
   <!-- -->
 
 <br>
 
-Notes on ...
+**Setup**
 
-... primary table key and primary table index: 
-- Each internal table has a primary key, which can be custom-defined or use the standard key. In standard tables, it is also possible to use an empty key. 
-  - Be aware of the implications of specifying the standard key, either intentionally or unintentionally. The standard key combines all character-like components, such as `txt` in the example below, while the remaining components are of type `i`.
-  - The primary key of a table is ... 
-    - a hash key in hashed tables, 
-    - a sorted key in sorted tables, 
-    - always non-unique in standard tables. 
-- Key access is optimized for hashed and sorted tables, but not for standard tables. 
-  - You cannot modify key fields in hashed and sorted tables. 
-  - In standard tables, key access is not optimized regarding the primary table index (for the secondary table index, it is optimized) because the search is linear. 
-  - In sorted tables, optimized access is also possible for partial primary table key specifications. As a prerequisite, the key specification must be left-aligned and gap-free. For example, if the primary table key consists of components `a`, `b`, and `c`, optimized access is valid if only `a` and `b` are specified. If the keys are not left-aligned, such as in the case where `b` and `c` are specified without `a`, optimized access is not applicable, and a linear search will be used.
-- Generally, the larger the table, the slower the key access. The benefit of hash tables is that they offer constant access time, even for very large tables.
-- Sorted and standard tables have a primary table index, hence their designation as index tables. 
-- The primary table index assigns a unique line number to each table line. 
-  - The index updates whenever a line is added or removed. 
-  - Unlike key access, access time via the index does not increase linearly with table size.
+- The example class includes various demo internal tables. They share the same line type with seven integer components (`comp1` to `comp7`). 
+  - Various standard tables with primary table keys (and also empty keys) or secondary table keys specified, some with just one, others with multiple key components
+  - The same applies to various sorted and hashed tables included in the example.
+- A base table is populated that feeds all examples. Every component in each row equals the row number: row 1 has all components = 1, row 5 has all components = 5, and so on. - This simplified setup allows to have one base table serve all table variants without additional preparation.
+- The main demonstration examples use tables with 10000 lines. The table size series examples use tables with different sizes (up to 100000 lines).
 
-... secondary table key and secondary table index:
-- Secondary table keys, which can be sorted or hashed, are available for all table categories. 
-- They enhance table access efficiency and performance. 
-- Declaring a secondary table key generates a corresponding secondary table index. However, the index for a non-unique key does not update immediately upon adding or deleting a line (for unique keys, it does). The update happens when the internal table is accessed using the secondary table key. 
-- In ABAP statements, you must specify the secondary table key explicitly. Otherwise, the primary table key is used implicitly. 
-- Data access using the secondary table key is always optimized, even for standard tables. Thus, even older standard tables can gain from optimized access by adding secondary table keys later, without impacting existing table-related statements. 
-- However, weigh the administrative costs of secondary table keys. Use them only in scenarios where they offer substantial benefits, like large internal tables that are filled once and rarely altered. Frequent modifications can lead to regular index updates, potentially impacting performance.
+**Notes on the runtime measurement** 
 
-... the use of table categories:
-- Standard tables: 
-  - Suitable for ... 
-    - small, sequentially accessed tables that are often accessed by index 
-    - tables where sorting is not critical. However, you can explicitly sort using `SORT` statements, especially after table population.
-    - tables that are populated frequently, as there is no need to check for unique entries regarding the primary table key. 
-  - Access speed: 
-    - Fast: By index, optimized key access with secondary table keys, and free keys using `READ TABLE ... BINARY SEARCH` statements (Note: It is recommended to use secondary table keys for an optimized access.)
-    - Slow: Primary table and free key
+- Batch reads are used instead of single reads
+  - Each example method performs a complete batch of reads in a loop - not a single read. 
+  - One pair of timestamp retrievals (using _utclong_current_) wraps the entire loop. 
+  - The total elapsed time is then divided by the number of reads to get the per-read number.
+  - Using multiple reads tries to get balanced view on read operations.
+  - In the example, the batch sizes used are implemented for the expected access speed, i.e. for the fast accesses (index, binary search, hash) 10000 reads per batch are performed, for slow accesses (linear search) 1000 reads. This is intented to keep the total runtime manageable. An anti-pattern example (using a full table sort before each read operation) only uses 50 reads per batch.
+- Retrieval of median values 
+   - The batch reads are performed with five repetitions also to have a balanced view on read operations.
+   - Instead of the average runtime value, the median value of those five measurements represents the resulting runtime value. The example uses the median value to avoid a potentially higher average results in case of factors that affect the runtime (e.g. high system load). So, even if one of the five runs took a lot longer for whatever reason, the median value stays stable and reflects a more representative value.
+- Fresh table before every batch
+  - Before each of the five measured batches, all tables are cleared and re-populated from the base table. This should ensure that the table is in a known, consistent state for every repetition. It is also used to reflect the lazy update behavior of non-unique sorted secondary keys. For examples where the lazy update *should* be included in the measurement, the very first read after population - which triggers the index build - falls inside the timed batch. For examples where it *should not* be included, a single untimed read is triggered before the measurement starts.
+- Table population and preparation are not included in the timing.
+- The indices and key values for each batch are calculated before the timing starts so that key generation does not increase the measured time. For the key generation, see the `build_keys` method. The keys are shuffled so as not start from 1, then 2 and 3, and so on, so as not to artificially produce faster results. 
+- Special preparations are included for selected examples before the actual method calls, e.g. a sort on a table is implemented.
+- In the result:
+  - The `RUNTIME_PER_READ_US` value represents the median batch time / reads per batch * 1000000. The unit is microseconds, rounded to 4 decimal places.  
+  - `READS` represents the number of reads per batch. 
+  - `LOOP_OVERHEAD_US` (which is output at the beginning) represents the per-read cost of the measurement loop itself with no table access, measured with the same approach. This is included only for  orientation. The value is not subtracted from the example values. See the `baseline_loop_only` method.
+  - `RELATIVE_TO_SMALLEST` in the table size series: This value represents each table size's per-read runtime divided by the 1000-line table's per-read runtime for the same access pattern. The value for the smallest table is 1. A value of 9.8 means this table size took 9.8 times longer per read.
 
-- Sorted tables: 
-  - Suitable for ...
-    - large tables requiring consistent sorted content 
-    - tables frequently accessed both by index and in sequence 
-  - Access is fast by index, primary table key (always optimized; also optimized for an incomplete, left-aligned and gap-free primary table key specification), secondary table key (also optimized)
+**Example methods**
 
-- Hashed tables: 
-  - Suitable for ...
-    - very large tables that are filled once and rarely altered 
-    - tables where key-based access is the primary method 
-    - tables that do not require index access on the primary table index 
-  - Access is ... 
-    - fast and optimized for both primary and secondary table keys 
-    - consistent for large internal tables due to a special hash algorithm
+- `baseline_loop_only`: Loops over the key list without any table access. Measures the overhead of the `LOOP` statement itself. Shown in the output for orientation.
+
+_Standard table examples_
+
+| # | Method | What it does |
+|---|---|---|
+| 01 | `std_01_index` | `READ TABLE ... INDEX idx` — direct positional access; no search |
+| 02 | `std_02_pr_key_single_comp` | Primary table key, single component (`comp1`); linear search |
+| 03 | `std_03_mult_key_full` | Full 3-component primary table key (`comp1`, `comp2`, `comp3`); linear search |
+| 04 | `std_04_mult_key_partial_la` | Free key, partial left-aligned primary key (`comp1`, `comp2`); standard tables ignore alignment — linear search |
+| 05 | `std_05_mult_key_partial_non` | Free key, partial non-left-aligned (`comp2`, `comp3`); linear search |
+| 06 | `std_06_free_key_no_prk_co` | Free key, no primary key component (`comp7` only); linear search |
+| 07 | `std_07_free_key_full_prk` | Free key, all primary key components + non-key `comp7`; linear search (free key on standard table is never optimized) |
+| 08 | `std_08_freekey_binary_1sort` | `SORT BY comp4` once at the start of the batch, then `BINARY SEARCH` for all reads; sort cost included |
+| 09 | `std_09_freekey_binary_nosort` | `BINARY SEARCH` with pre-sorted table; sort cost excluded from timing |
+| 10 | `std_10_sec_key_nonuni_so_w1st` | Non-unique sorted secondary key; first read (lazy update) **included** in timing |
+| 11 | `std_11_sec_key_nonuni_so_no1st` | Non-unique sorted secondary key; lazy update triggered before timing — **excluded** |
+| 12 | `std_12_sec_key_nonuni_sort_idx` | Secondary index on non-unique sorted key; lazy update **included** |
+| 13 | `std_13_sec_key_unique_sorted` | Unique sorted secondary key; binary search |
+| 14 | `std_14_sec_key_unique_hashed` | Unique hashed secondary key; hash-based access |
+| 15 | `std_15_sec_key_unique_sort_idx` | Secondary index on unique sorted key |
+| 16 | `std_16_sec_key_nouni_soixno1st` | Secondary index on non-unique sorted key; lazy update **excluded** |
+| 17 | `std_17_freekey_binary_withsort` | `SORT BY comp4` before **every** read — anti-pattern; compare with STD_08 |
+
+_Sorted table examples_
+
+| # | Method | What it does |
+|---|---|---|
+| 01 | `sorted_01_index` | Direct index access |
+| 02 | `sorted_02_pr_key_single_comp` | Primary table key, single component; binary search |
+| 03 | `sorted_03_mult_key_full` | Full 3-component primary table key; binary search |
+| 04 | `sorted_04_mult_key_partial_la` | Free key, left-aligned partial primary key (`comp1`, `comp2`); sorted tables optimize left-aligned access — binary search |
+| 05 | `sorted_05_mult_key_partial_non` | Free key, non-left-aligned partial key (`comp2`, `comp3`); alignment gap breaks optimization — linear search |
+| 06 | `sorted_06_freekey_noprkeyco` | Free key, no primary key component (`comp7`); linear search |
+| 07 | `sorted_07_freekey_full_prk_co` | Free key, all primary key components + non-key `comp7`; runtime uses the primary key components — binary search |
+| 08 | `sorted_08_freekey_la_prk_co` | Free key, left-aligned partial primary key components + `comp7`; binary search |
+| 09 | `sorted_09_freekey_nonla_prk_co` | Free key, non-left-aligned partial primary key components + `comp7`; linear search |
+| 10 | `sorted_10_sec_key_nonuni_so` | Non-unique sorted secondary key; lazy update included |
+| 11 | `sorted_11_pr_key_single_co_dyn` | Primary table key, single component — dynamic key specification `('COMP1') = idx`; shows overhead vs. static |
+
+_Hashed table examples_
+
+| # | Method | What it does |
+|---|---|---|
+| 01 | `hashed_01_pr_key_single_comp` | Primary table key, single component; hash-based access |
+| 02 | `hashed_02_mult_key_full` | Full 3-component primary table key; hash-based access |
+| 03 | `hashed_03_mult_key_partial_la` | Free key, left-aligned partial primary key (`comp1`, `comp2`); hashed tables require *all* primary key components for hash access — linear search |
+| 04 | `hashed_04_mult_key_partial_non` | Free key, non-left-aligned partial key; linear search |
+| 05 | `hashed_05_sec_key_nonun_so_idx` | Secondary index on non-unique sorted key; lazy update included |
+| 06 | `hashed_06_free_key_no_prk_co` | Free key, no primary key component (`comp7`); linear search |
+| 07 | `hashed_07_free_key_full_prk_co` | Free key, all primary key components + non-key `comp7`; runtime uses the primary key components — hash-based access |
+| 08 | `hashed_08_free_la_prk_co` | Free key, left-aligned partial primary key components + `comp7`; partial key means no hash — linear search |
+| 09 | `hashed_09_sec_k_nu_so_ixno1st` | Secondary index on non-unique sorted key; lazy update excluded |
+| 10 | `hashed_10_sec_key_nonuni_so` | Non-unique sorted secondary key; lazy update included |
+| 11 | `hashed_11_mult_key_full_dyn` | Full 3-component primary table key — **dynamic** key specification; shows overhead vs. static |
+
+_Table size series_
+
+Four representative access patterns are re-run on three table sizes: 1000 / 10000 / 100000 lines.
+
+| Method | Table category | Access type |
+|---|---|---|
+| STD_01_INDEX | Standard | Index |
+| STD_03_MULT_KEY_FULL | Standard | Linear search |
+| SORTED_03_MULT_KEY_FULL | Sorted | Binary search |
+| HASHED_02_MULT_KEY_FULL | Hashed | Hash-based access |
+
+In every run, exactly 1,000 distinct positions are accessed, evenly spread across the table. The gap between positions scales with the table size so coverage is always proportional - the same fraction of the table is visited at every size. This isolates the effect of table size from any coverage effect.
+
+The `RELATIVE_TO_SMALLEST` column shows the growth factor relative to the 1000-line table (= 1).
 
 
-</details> 
+</details>
 
 <br>
+
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -9313,7 +9470,7 @@ Notes on ...
 "!
 "! <p>The example class includes several methods that explore the performance of read accesses to
 "! internal tables of various kinds.</p>
-"! <p>In ADT, choose F9 in ADT to run the class.</p>
+"! <p>In ADT, choose F9 to run the class.</p>
 "!
 "! <h2>Note</h2>
 "! <ul><li>The example is for exploration, experimentation, and demonstration. It is not intended for accurate
@@ -9332,16 +9489,14 @@ CLASS zcl_demo_abap DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
-    "Types and data object used for providing and
-    "storing information such as method name, internal
-    "table kind, runtime
-
+    "Types used for describing the examples and storing the results
     TYPES: BEGIN OF ENUM enum_access,
-             index,
+             primary_table_index,
              primary_table_key,
              secondary_table_key,
              free_key,
              secondary_table_index,
+             primary_tkey_dynamic,
            END OF ENUM enum_access.
 
     TYPES: BEGIN OF ENUM enum_category,
@@ -9350,16 +9505,52 @@ CLASS zcl_demo_abap DEFINITION
              hashed,
            END OF ENUM enum_category.
 
-    TYPES: BEGIN OF s_table_info,
-             method_name     TYPE string,
-             avg_runtime     TYPE string,
-             table_category  TYPE enum_category,
-             access          TYPE enum_access,
-             description     TYPE string,
-             iteration_count TYPE i,
-           END OF s_table_info.
+    "Search types behind an access
+    "- Describes what kind of search is applied
+    "- The search types include:
+    "  - binary/index searches that include and exclude the lazy update behavior of a
+    "    non-unique sorted secondary key.
+    "- search_binary_sort_* types for examples using the BINARY SEARCH addition.
+    TYPES: BEGIN OF ENUM enum_search_type,
+             search_index,
+             search_linear,
+             search_binary,
+             search_binary_sort_once,
+             search_binary_sort_per_read,
+             search_binary_incl_lazy_upd,
+             search_binary_excl_lazy_upd,
+             search_index_incl_lazy_upd,
+             search_index_excl_lazy_upd,
+             search_hash,
+           END OF ENUM enum_search_type.
 
-    CLASS-DATA t_table_info TYPE TABLE OF s_table_info WITH EMPTY KEY.
+    TYPES: BEGIN OF s_table_info,
+             method_name                   TYPE string,
+             median_runtime_per_batch_read TYPE decfloat34,
+             table_category                TYPE enum_category,
+             access                        TYPE enum_access,
+             search_type                   TYPE enum_search_type,
+             reads                         TYPE i,
+             description                   TYPE string,
+           END OF s_table_info,
+           tt_table_info TYPE STANDARD TABLE OF s_table_info WITH EMPTY KEY.
+
+    TYPES: BEGIN OF s_size_result,
+             method_name                   TYPE string,
+             table_category                TYPE enum_category,
+             search_type                   TYPE enum_search_type,
+             table_lines                   TYPE i,
+             reads                         TYPE i,
+             median_runtime_per_batch_read TYPE decfloat34,
+             relative_to_smallest          TYPE decfloat34,
+           END OF s_size_result,
+           tt_size_result TYPE STANDARD TABLE OF s_size_result WITH EMPTY KEY.
+
+    "Examples executed with tables of line_count lines
+    CLASS-DATA t_table_info TYPE tt_table_info.
+    "Examples executed with different table sizes
+    CLASS-DATA t_size_series TYPE tt_table_info.
+    CLASS-DATA series_table_sizes TYPE STANDARD TABLE OF i WITH EMPTY KEY.
 
     "Demo internal tables used by the examples
 
@@ -9374,7 +9565,8 @@ CLASS zcl_demo_abap DEFINITION
            END OF ty_tab.
 
     CLASS-DATA:
-      base_tab                      TYPE TABLE OF ty_tab WITH EMPTY KEY,
+      base_tab                      TYPE STANDARD TABLE OF ty_tab WITH EMPTY KEY,
+      base_tab_series               TYPE STANDARD TABLE OF ty_tab WITH EMPTY KEY,
 
       "Standard tables
       standard_tab                  TYPE TABLE OF ty_tab WITH NON-UNIQUE KEY comp1,
@@ -9393,19 +9585,27 @@ CLASS zcl_demo_abap DEFINITION
       hashed_tab_mult_key_comp      TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 comp2 comp3,
       hashed_tab_w_sec_key          TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY non_uni_so_key COMPONENTS comp2.
 
-    "Constant determining the number of internal table lines and
-    "read accesses
-    CONSTANTS loop_count TYPE i VALUE 10000.
+    CONSTANTS:
+      "Number of table lines for the main examples
+      line_count            TYPE i VALUE 10000,
+      "Number of reads per measured batch. Linear searches are considerably slower
+      "and are therefore measured with fewer reads.
+      reads_optimized       TYPE i VALUE 10000,
+      reads_linear          TYPE i VALUE 1000,
+      reads_sort_per_read   TYPE i VALUE 50,
+      "Number of measured batches per example; the median value represents the result
+      repetitions           TYPE i VALUE 5,
+      "Table size series: largest table and number of distinct lines read in each table
+      series_max_line_count TYPE i VALUE 100000,
+      series_distinct_keys  TYPE i VALUE 1000.
 
-    "Data objects used for calculating the average runtime
+    "Data objects used for the runtime measurement
     DATA: ts1         TYPE utclong,
-          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
-          runtime     TYPE decfloat34,
-          description TYPE string,
+          runtime_tab TYPE STANDARD TABLE OF decfloat34 WITH EMPTY KEY,
+          keys        TYPE STANDARD TABLE OF i WITH EMPTY KEY,
           idx         TYPE i.
 
-    "Exemplary methods containing READ TABLE statements
-    "The method names reflect the illustration purpose.
+    "Example methods
     METHODS:
       "Standard tables
       std_01_index,
@@ -9413,42 +9613,67 @@ CLASS zcl_demo_abap DEFINITION
       std_03_mult_key_full,
       std_04_mult_key_partial_la,
       std_05_mult_key_partial_non,
-      std_06_mult_key_dynamic,
-      std_07_free_key,
-      std_08a_free_key_binary_search,
-      std_08b_free_key_binary_search,
-      std_09a_sec_key_nonuni_sorted,
-      std_09b_sec_key_nonuni_sorted,
-      std_10_sec_key_nonuni_sort_idx,
-      std_10_sec_key_unique_sorted,
-      std_11_sec_key_unique_hashed,
+      std_06_free_key_no_prk_co,
+      std_07_free_key_full_prk,
+      std_08_freekey_binary_1sort,
+      std_09_freekey_binary_nosort,
+      std_10_sec_key_nonuni_so_w1st,
+      std_11_sec_key_nonuni_so_no1st,
+      std_12_sec_key_nonuni_sort_idx,
+      std_13_sec_key_unique_sorted,
+      std_14_sec_key_unique_hashed,
+      std_15_sec_key_unique_sort_idx,
+      std_16_sec_key_nouni_soixno1st,
+      std_17_freekey_binary_withsort,
       "Sorted tables
       sorted_01_index,
       sorted_02_pr_key_single_comp,
       sorted_03_mult_key_full,
       sorted_04_mult_key_partial_la,
       sorted_05_mult_key_partial_non,
-      sorted_06_mult_key_dynamic,
-      sorted_07_free_key,
+      sorted_06_freekey_noprkeyco,
+      sorted_07_freekey_full_prk_co,
+      sorted_08_freekey_la_prk_co,
+      sorted_09_freekey_nonla_prk_co,
+      sorted_10_sec_key_nonuni_so,
+      sorted_11_pr_key_single_co_dyn,
       "Hashed tables
       hashed_01_pr_key_single_comp,
       hashed_02_mult_key_full,
       hashed_03_mult_key_partial_la,
       hashed_04_mult_key_partial_non,
-      hashed_05_mult_key_dynamic,
-      hashed_06_free_key,
-      hashed_07_sec_key_nonun_so_idx.
+      hashed_05_sec_key_nonun_so_idx,
+      hashed_06_free_key_no_prk_co,
+      hashed_07_free_key_full_prk_co,
+      hashed_08_free_la_prk_co,
+      hashed_09_sec_k_nu_so_ixno1st,
+      hashed_10_sec_key_nonuni_so,
+      hashed_11_mult_key_full_dyn,
+      "Loop without table access, used to show the loop overhead per read
+      baseline_loop_only.
 
     METHODS:
-      "Preparation methods that populate respective tables anew
+      "Preparation methods
+      free_all_tables,
       prep_std_tabs,
       prep_sorted_tabs,
       prep_hashed_tabs,
-      "Collects timestamps to calculate the average runtime
+      prepare_case IMPORTING table_info TYPE s_table_info,
+      prep_series_table IMPORTING method_name     TYPE string
+                                  number_of_lines TYPE i,
+      build_keys IMPORTING number_of_lines TYPE i
+                           reads           TYPE i
+                           distinct_keys   TYPE i,
+      "Methods for runtime measurement
       store_runtime IMPORTING high TYPE utclong
                               low  TYPE utclong,
-      "Calculates the average runtime
-      get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34.
+      get_median_runtime RETURNING VALUE(median_runtime) TYPE decfloat34,
+      "Methods for output
+      write_section IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                              text TYPE string,
+      write_access_group IMPORTING out         TYPE REF TO if_oo_adt_classrun_out
+                                   title       TYPE string
+                                   access_kind TYPE enum_access.
 
 ENDCLASS.
 
@@ -9457,221 +9682,536 @@ ENDCLASS.
 CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD class_constructor.
-    "Providing demo content for the base table that is used to populate all
-    "demo tables that are accessed throughout the method calls.
-    DO loop_count TIMES.
-      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
-                      comp5 = sy-index comp6 = sy-index comp7 = sy-index  ) INTO TABLE base_tab.
+    "Base table for the main examples
+    DO line_count TIMES.
+      APPEND VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
+                      comp5 = sy-index comp6 = sy-index comp7 = sy-index ) TO base_tab.
     ENDDO.
 
-    "Initially populating an info table, which is output in the console after calling all
-    "methods and assigning the average runtime value.
-    t_table_info = VALUE #(
-   ( method_name = `std_01_index`
-     table_category = standard
-     access = index
-     description = `Read standard table lines by index` )
-   ( method_name = `std_02_pr_key_single_comp`
-     table_category = standard
-     access = primary_table_key
-     description = `Read standard table lines by primary table key (single key component)` )
-   ( method_name = `std_03_mult_key_full`
-     table_category = standard
-     access = primary_table_key
-     description = `Read standard table lines by the full primary table key (multiple key components)` )
-   ( method_name = `std_04_mult_key_partial_la`
-     table_category = standard
-     access = primary_table_key
-     description = `Read standard table lines by the partial, left-aligned primary table key` )
-   ( method_name = `std_05_mult_key_partial_non`
-     table_category = standard
-     access = primary_table_key
-     description = `Read standard table lines by the partial, not left-aligned primary table key` )
-   ( method_name = `std_06_mult_key_dynamic`
-     table_category = standard
-     access = primary_table_key
-     description = `Read standard table lines by primary table key, dynamic key specifications` )
-   ( method_name = `std_07_free_key`
-     table_category = standard
-     access = free_key
-     description = `Read standard table lines by free key` )
-   ( method_name = `std_08a_free_key_binary_search`
-     table_category = standard
-     access = free_key
-     description = `Read standard table lines with free key and binary search (SORT included in measurement)` )
-   ( method_name = `std_08b_free_key_binary_search`
-     table_category = standard
-     access = free_key
-     description = `Read standard table lines with free key and binary search (SORT not included in measurement)` )
-   ( method_name = `std_09a_sec_key_nonuni_sorted`
-     table_category = standard
-     access = secondary_table_key
-     description = `Read standard table lines by secondary table key (non-unique sorted key; measurement includes first read after population)` )
-   ( method_name = `std_09b_sec_key_nonuni_sorted`
-     table_category = standard
-     access = secondary_table_key
-     description = `Read standard table lines by secondary table key (non-unique sorted key; measurement does not include first read after population)` )
-   ( method_name = `std_10_sec_key_nonuni_sort_idx`
-     table_category = standard
-     access = secondary_table_index
-     description = `Read standard table lines by secondary table index (non-unique sorted key)` )
-   ( method_name = `std_10_sec_key_unique_sorted`
-     table_category = standard
-     access = secondary_table_key
-     description = `Read standard table lines by secondary table key (unique sorted key)` )
-   ( method_name = `std_11_sec_key_unique_hashed`
-     table_category = standard
-     access = secondary_table_key
-     description = `Read standard table lines by secondary table key (unique hashed key)` )
-   ( method_name = `sorted_01_index`
-     table_category = sorted
-     access = index
-     description = `Read sorted table lines by index` )
-   ( method_name = `sorted_02_pr_key_single_comp`
-     table_category = sorted
-     access = primary_table_key
-     description = `Read sorted table lines by primary table key (single key component)` )
-   ( method_name = `sorted_03_mult_key_full`
-     table_category = sorted
-     access = primary_table_key
-     description = `Read sorted table lines by the full primary table key (multiple key components)` )
-   ( method_name = `sorted_04_mult_key_partial_la`
-     table_category = sorted
-     access = primary_table_key
-     description = `Read sorted table lines by partial, left-aligned primary table key` )
-   ( method_name = `sorted_05_mult_key_partial_non`
-     table_category = sorted
-     access = primary_table_key
-     description = `Read sorted table lines by partial, not left-aligned primary table key` )
-   ( method_name = `sorted_06_mult_key_dynamic`
-     table_category = sorted
-     access = primary_table_key
-     description = `Read sorted table lines by primary table key, dynamic key specification` )
-   ( method_name = `sorted_07_free_key`
-     table_category = sorted
-     access = free_key
-     description = `Read sorted table lines by free key` )
-   ( method_name = `hashed_01_pr_key_single_comp`
-     table_category = hashed
-     access = primary_table_key
-     description = `Read hashed table lines by primary table key (single key component)` )
-   ( method_name = `hashed_02_mult_key_full`
-     table_category = hashed
-     access = primary_table_key
-     description = `Read hashed table lines by the full primary table key (multiple key components)` )
-   ( method_name = `hashed_03_mult_key_partial_la`
-     table_category = hashed
-     access = primary_table_key
-     description =  `Read hashed table lines by partial, left-aligned primary table key` )
-   ( method_name = `hashed_04_mult_key_partial_non`
-     table_category = hashed
-     access = primary_table_key
-     description = `Read hashed table lines by partial, not left-aligned primary table key` )
-   ( method_name = `hashed_05_mult_key_dynamic`
-     table_category = hashed
-     access = primary_table_key
-     description = `Read hashed table lines by primary table key, dynamic key specification` )
-   ( method_name = `hashed_06_free_key`
-     table_category = hashed
-     access = free_key
-     description = `Read hashed table lines by free key` )
-   ( method_name = `hashed_07_sec_key_nonun_so_idx`
-     table_category = hashed
-     access = secondary_table_index
-     description = `Read hashed table lines by secondary table index (non-unique sorted key)` )
-   ).
+    "Base table for the table size series
+    DO series_max_line_count TIMES.
+      APPEND VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
+                      comp5 = sy-index comp6 = sy-index comp7 = sy-index ) TO base_tab_series.
+    ENDDO.
 
+    "The following table describes the examples executed with tables of line_count lines.
+    "The method names correspond to the methods in this class. Based on the method name,
+    "a dynamic method call is executed. The description provides a short explanation of the example.
+    "The other values determine the table category, the type of access, and the search type. The reads value
+    "differs for many examples. The expected fast table accesses use more reads than the expected
+    "slower accesses.
+
+    t_table_info = VALUE #(
+      "Standard tables
+      ( method_name = `std_01_index`
+        table_category = standard access = primary_table_index search_type = search_index reads = reads_optimized
+        description = `Read standard table lines by index` )
+      ( method_name = `std_02_pr_key_single_comp`
+        table_category = standard access = primary_table_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by primary table key (single key component)` )
+      ( method_name = `std_03_mult_key_full`
+        table_category = standard access = primary_table_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by the full primary table key (multiple key components)` )
+      ( method_name = `std_04_mult_key_partial_la`
+        table_category = standard access = free_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by free key: partial, left-aligned primary table key` )
+      ( method_name = `std_05_mult_key_partial_non`
+        table_category = standard access = free_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by free key: partial, not left-aligned primary table key` )
+      ( method_name = `std_06_free_key_no_prk_co`
+        table_category = standard access = free_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by free key, no primary table key components specified` )
+      ( method_name = `std_07_free_key_full_prk`
+        table_category = standard access = free_key search_type = search_linear reads = reads_linear
+        description = `Read standard table lines by free key: all primary key components plus a non-key component (linear search)` )
+      ( method_name = `std_08_freekey_binary_1sort`
+        table_category = standard access = free_key search_type = search_binary_sort_once reads = reads_optimized
+        description = `Read standard table lines by free key with BINARY SEARCH (one SORT of the unsorted table included in measurement)` )
+      ( method_name = `std_09_freekey_binary_nosort`
+        table_category = standard access = free_key search_type = search_binary reads = reads_optimized
+        description = `Read standard table lines by free key with BINARY SEARCH (SORT not included in measurement)` )
+      ( method_name = `std_10_sec_key_nonuni_so_w1st`
+        table_category = standard access = secondary_table_key search_type = search_binary_incl_lazy_upd reads = reads_optimized
+        description = `Read standard table lines by secondary table key (non-unique sorted key; measurement includes first read after population)` )
+      ( method_name = `std_11_sec_key_nonuni_so_no1st`
+        table_category = standard access = secondary_table_key search_type = search_binary_excl_lazy_upd reads = reads_optimized
+        description = `Read standard table lines by secondary table key (non-unique sorted key; measurement does not include first read after population)` )
+      ( method_name = `std_12_sec_key_nonuni_sort_idx`
+        table_category = standard access = secondary_table_index search_type = search_index_incl_lazy_upd reads = reads_optimized
+        description = `Read standard table lines by secondary table index (non-unique sorted key; measurement includes first read after population)` )
+      ( method_name = `std_13_sec_key_unique_sorted`
+        table_category = standard access = secondary_table_key search_type = search_binary reads = reads_optimized
+        description = `Read standard table lines by secondary table key (unique sorted key)` )
+      ( method_name = `std_14_sec_key_unique_hashed`
+        table_category = standard access = secondary_table_key search_type = search_hash reads = reads_optimized
+        description = `Read standard table lines by secondary table key (unique hashed key)` )
+      ( method_name = `std_15_sec_key_unique_sort_idx`
+        table_category = standard access = secondary_table_index search_type = search_index reads = reads_optimized
+        description = `Read standard table lines by secondary table index (unique sorted key)` )
+      ( method_name = `std_16_sec_key_nouni_soixno1st`
+        table_category = standard access = secondary_table_index search_type = search_index_excl_lazy_upd reads = reads_optimized
+        description = `Read standard table lines by secondary table index (non-unique sorted key; measurement does not include first read after population)` )
+      ( method_name = `std_17_freekey_binary_withsort`
+        table_category = standard access = free_key search_type = search_binary_sort_per_read reads = reads_sort_per_read
+        description = `Read standard table lines by free key with BINARY SEARCH (SORT executed before each read)` )
+      "Sorted tables
+      ( method_name = `sorted_01_index`
+        table_category = sorted access = primary_table_index search_type = search_index reads = reads_optimized
+        description = `Read sorted table lines by index` )
+      ( method_name = `sorted_02_pr_key_single_comp`
+        table_category = sorted access = primary_table_key search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by primary table key (single key component)` )
+      ( method_name = `sorted_03_mult_key_full`
+        table_category = sorted access = primary_table_key search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by the full primary table key (multiple key components)` )
+      ( method_name = `sorted_04_mult_key_partial_la`
+        table_category = sorted access = free_key search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by free key: partial, left-aligned primary table key` )
+      ( method_name = `sorted_05_mult_key_partial_non`
+        table_category = sorted access = free_key search_type = search_linear reads = reads_linear
+        description = `Read sorted table lines by free key: partial, not left-aligned primary table key` )
+      ( method_name = `sorted_06_freekey_noprkeyco`
+        table_category = sorted access = free_key search_type = search_linear reads = reads_linear
+        description = `Read sorted table lines by free key, no primary table key components specified` )
+      ( method_name = `sorted_07_freekey_full_prk_co`
+        table_category = sorted access = free_key search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by free key: all primary key components plus a non-key component (binary search)` )
+      ( method_name = `sorted_08_freekey_la_prk_co`
+        table_category = sorted access = free_key search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by free key, partial, left-aligned primary table key components specified` )
+      ( method_name = `sorted_09_freekey_nonla_prk_co`
+        table_category = sorted access = free_key search_type = search_linear reads = reads_linear
+        description = `Read sorted table lines by free key, partial, not left-aligned primary table key components specified` )
+      ( method_name = `sorted_10_sec_key_nonuni_so`
+        table_category = sorted access = secondary_table_key search_type = search_binary_incl_lazy_upd reads = reads_optimized
+        description = `Read sorted table lines by secondary table key (non-unique sorted key; measurement includes first read after population)` )
+      ( method_name = `sorted_11_pr_key_single_co_dyn`
+        table_category = sorted access = primary_tkey_dynamic search_type = search_binary reads = reads_optimized
+        description = `Read sorted table lines by primary table key (single key component), dynamic key specification` )
+      "Hashed tables
+      ( method_name = `hashed_01_pr_key_single_comp`
+        table_category = hashed access = primary_table_key search_type = search_hash reads = reads_optimized
+        description = `Read hashed table lines by primary table key (single key component)` )
+      ( method_name = `hashed_02_mult_key_full`
+        table_category = hashed access = primary_table_key search_type = search_hash reads = reads_optimized
+        description = `Read hashed table lines by the full primary table key (multiple key components)` )
+      ( method_name = `hashed_03_mult_key_partial_la`
+        table_category = hashed access = free_key search_type = search_linear reads = reads_linear
+        description = `Read hashed table lines by free key: partial, left-aligned primary table key` )
+      ( method_name = `hashed_04_mult_key_partial_non`
+        table_category = hashed access = free_key search_type = search_linear reads = reads_linear
+        description = `Read hashed table lines by free key: partial, not left-aligned primary table key` )
+      ( method_name = `hashed_05_sec_key_nonun_so_idx`
+        table_category = hashed access = secondary_table_index search_type = search_index_incl_lazy_upd reads = reads_optimized
+        description = `Read hashed table lines by secondary table index (non-unique sorted key; measurement includes first read after population)` )
+      ( method_name = `hashed_06_free_key_no_prk_co`
+        table_category = hashed access = free_key search_type = search_linear reads = reads_linear
+        description = `Read hashed table lines by free key, no primary table key components specified` )
+      ( method_name = `hashed_07_free_key_full_prk_co`
+        table_category = hashed access = free_key search_type = search_hash reads = reads_optimized
+        description = `Read hashed table lines by free key: all primary key components plus a non-key component (hash-based access)` )
+      ( method_name = `hashed_08_free_la_prk_co`
+        table_category = hashed access = free_key search_type = search_linear reads = reads_linear
+        description = `Read hashed table lines by free key, partial, left-aligned primary table key components specified` )
+      ( method_name = `hashed_09_sec_k_nu_so_ixno1st`
+        table_category = hashed access = secondary_table_index search_type = search_index_excl_lazy_upd reads = reads_optimized
+        description = `Read hashed table lines by secondary table index (non-unique sorted key; measurement does not include first read after population)` )
+      ( method_name = `hashed_10_sec_key_nonuni_so`
+        table_category = hashed access = secondary_table_key search_type = search_binary_incl_lazy_upd reads = reads_optimized
+        description = `Read hashed table lines by secondary table key (non-unique sorted key; measurement includes first read after population)` )
+      ( method_name = `hashed_11_mult_key_full_dyn`
+        table_category = hashed access = primary_tkey_dynamic search_type = search_hash reads = reads_optimized
+        description = `Read hashed table lines by the full primary table key (multiple key components), dynamic key specification` ) ).
+
+    "Table size series
+    "The same accesses are executed for different table sizes.
+    "Each table is read the same number of times, and the same number of
+    "distinct lines are accessed. Only the table size changes.
+    t_size_series = VALUE #(
+      ( method_name = `STD_01_INDEX`
+        table_category = standard access = primary_table_index search_type = search_index reads = reads_optimized )
+      ( method_name = `STD_03_MULT_KEY_FULL`
+        table_category = standard access = primary_table_key search_type = search_linear reads = reads_linear )
+      ( method_name = `SORTED_03_MULT_KEY_FULL`
+        table_category = sorted access = primary_table_key search_type = search_binary reads = reads_optimized )
+      ( method_name = `HASHED_02_MULT_KEY_FULL`
+        table_category = hashed access = primary_table_key search_type = search_hash reads = reads_optimized ) ).
+
+    series_table_sizes = VALUE #( ( 1000 ) ( 10000 ) ( series_max_line_count ) ).
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
-    "Dynamically calling all methods that were inserted into the info table,
-    "and which include READ TABLE statements
-    LOOP AT t_table_info REFERENCE INTO DATA(t).
-      t->method_name = to_upper( condense( val = t->method_name to = `` ) ).
+*&----------------------------------------------------------------------------*
+*& Measuring the loop overhead per read without table access (for orientation)
+*&----------------------------------------------------------------------------*
 
-      "Populating relevant demo tables anew with every method call procedure
-      CASE t->table_category.
-        WHEN standard.
-          prep_std_tabs( ).
-        WHEN sorted.
-          prep_sorted_tabs( ).
-        WHEN hashed.
-          prep_hashed_tabs( ).
-      ENDCASE.
+    "Note:
+    "- loop_overhead_us is intended to reflect the runtime cost of one iteration (i.e. one loop pass) without any table access.
+    "- The assumption is that each iteration of LOOP AT keys INTO idx. is fairly constant and costs the same fixed amount
+    "  regardless of the total loop length, be it 1000 or 10000 iterations.
+    "- The example does not consider potential minor inaccuracies. So, the resulting value represents a rough orientation value.
 
-      "Preparation steps for selected methods to illustrate specific behavior
-      CASE t->method_name.
-        WHEN `STD_08B_FREE_KEY_BINARY_SEARCH`.
-          "Excluding a prior sorting from the runtime measurement for an example that uses BINARY SEARCH
-          SORT standard_tab BY comp7 ASCENDING.
-        WHEN `STD_09B_SEC_KEY_NONUNI_SORTED`.
-          "For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately.
-          "It updates only upon the first access of the table using the secondary table key. For this example run, the first read
-          "is not considered for the runtime measurement.
-          READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = 1.
-      ENDCASE.
+    build_keys( number_of_lines = line_count reads = reads_optimized distinct_keys = line_count ).
+    DO repetitions TIMES.
+      ts1 = utclong_current( ).
+      baseline_loop_only( ).
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+    DATA(loop_overhead_us) = round( val = get_median_runtime( ) / reads_optimized * 1000000 dec = 4 ).
 
-      TRY.
-          DO loop_count TIMES.
-            idx = sy-index.
+*&---------------------------------------------------------------------*
+*& Main examples with tables of line_count lines
+*&---------------------------------------------------------------------*
 
-            ts1 = utclong_current( ).
-            "Dynamically calling methods using the method names stored
-            "in the info internal table
-            CALL METHOD (t->method_name).
-            store_runtime( high = utclong_current( ) low = ts1 ).
-          ENDDO.
-          runtime = get_avg_runtime( ).
+    "Note:
+    "- The t_table_info table contains the method names of the examples to be executed.
+    "  The methods are called dynamically based on the method name.
+    "- Before the runtime measurement, the build_keys method determines the lookup keys used
+    "  in each measured batch of reads. See the keys table that is iterated in the respective
+    "  methods for runtime measurement. The purpose is to avoid measuring with key values going
+    "  one after another (1, 2, 3, ...) such as sy-index values.
+    "- The DO loop represents batch runs in which table reads are executed. The example is set up to
+    "  perform 5 repetitions.
+    "- Some examples are intended to show specific behavior based on a prerequisite (see the
+    "  prepare_case method). For example, a SORT is implemented, which should not be part of the
+    "  runtime measurement.
+    "- The runtime measurement in the example is performed by retrieving a timestamp using
+    "  utclong_current( ) before and after the dynamic method call. The difference is stored in the
+    "  runtime_tab table.
+    "- The get_median_runtime method returns the median of the collected batch runtimes. The resulting
+    "  value is in microseconds.
 
-          t->avg_runtime = |{ runtime STYLE = SIMPLE }|.
-          t->iteration_count = idx.
-        CATCH cx_root INTO DATA(error).
-          RAISE SHORTDUMP error.
-      ENDTRY.
+    LOOP AT t_table_info REFERENCE INTO DATA(info).
+      info->method_name = to_upper( info->method_name ).
+
+      "Lookup keys scattered over the entire table, calculated before the measurement
+      build_keys( number_of_lines = line_count reads = info->reads distinct_keys = line_count ).
+
+      DO repetitions TIMES.
+        "Populating the tables anew and executing case-specific preparation steps.
+        "Neither is part of the measurement.
+        prepare_case( info->* ).
+
+        "One measurement for the complete batch of reads
+        ts1 = utclong_current( ).
+        CALL METHOD (info->method_name).
+        store_runtime( high = utclong_current( ) low = ts1 ).
+      ENDDO.
+
+      "The get_median_runtime method returns the median of the collected batch runtimes.
+      "This value is in seconds. One batch covers info->reads reads in a single loop.
+      "Dividing the total batch time by the number of reads normalizes the result to a per-read value.
+      "This enables direct comparison: fast accesses use 10000 reads per batch, slower (linear) accesses use 1000.
+      "The division by reads makes all values directly comparable regardless of the batch size.
+      "The multiplication by 1000000 converts the result from seconds to microseconds to make it more readable.
+      info->median_runtime_per_batch_read = round( val = get_median_runtime( ) / info->reads * 1000000 dec = 4 ).
     ENDLOOP.
 
-    SORT t_table_info BY avg_runtime ASCENDING.
+*&---------------------------------------------------------------------*
+*& Table size series
+*&---------------------------------------------------------------------*
+
+    "Note:
+    "The purpose of the table size series is to show how the runtime scales with table size
+    "for the same access pattern (index, standard key, sorted key, hashed key).
+
+    DATA size_results TYPE tt_size_result.
+    "Baseline for relative comparison within each access pattern.
+    "The smallest table is set to 1.0; larger tables are expressed as a multiple of it.
+    DATA smallest_runtime TYPE decfloat34.
+
+    "Outer loop: one iteration per access pattern (index, standard key, sorted key, hashed key)
+    LOOP AT t_size_series INTO DATA(series_case).
+      CLEAR smallest_runtime.
+
+      "Inner loop: one iteration per table size (1000, 10000, 100000 lines)
+      LOOP AT series_table_sizes INTO DATA(number_of_lines).
+        "Populate the series table with the current number of lines for this access pattern
+        prep_series_table( method_name = series_case-method_name number_of_lines = number_of_lines ).
+
+        build_keys( number_of_lines = number_of_lines
+                    reads           = series_case-reads
+                    distinct_keys   = series_distinct_keys ).
+
+        "The following method call represents a warm-up run that is not measured. The method is executed
+        "once before timing starts to account for potential runtime measurement hiccups.
+        CALL METHOD (series_case-method_name).
+
+        "Collecting timing samples for this table size, similar to the main measurement above
+        DO repetitions TIMES.
+          ts1 = utclong_current( ).
+          CALL METHOD (series_case-method_name).
+          store_runtime( high = utclong_current( ) low = ts1 ).
+        ENDDO.
+
+        "Retrieving the median runtime per single read in microseconds across all measured batches
+        DATA(runtime_per_read) = get_median_runtime( ) / series_case-reads * 1000000.
+        "The first (i.e. the smallest) table size anchors the relative scale at 1.0.
+        "Expected outcome:
+        "- For index and hashed key accesses, this ratio should be fairly constant and stay near 1.0,
+        "  despite a growing table size.
+        "- For sorted key access (binary search) it should grow logarithmically with table size.
+        "- For standard key access (linear search) it should grow proportionally with table size.
+        IF smallest_runtime IS INITIAL.
+          smallest_runtime = runtime_per_read.
+        ENDIF.
+
+        APPEND VALUE #( method_name          = series_case-method_name
+                        table_category       = series_case-table_category
+                        search_type          = series_case-search_type
+                        table_lines          = number_of_lines
+                        reads                = series_case-reads
+                        median_runtime_per_batch_read  = round( val = runtime_per_read dec = 4 )
+                        relative_to_smallest = COND #( WHEN smallest_runtime > 0
+                                                       THEN round( val = runtime_per_read / smallest_runtime dec = 2 ) ) )
+               TO size_results.
+      ENDLOOP.
+    ENDLOOP.
+
+    free_all_tables( ).
+
+*&---------------------------------------------------------------------*
+*& Output
+*&---------------------------------------------------------------------*
+
+    SORT t_table_info BY median_runtime_per_batch_read ASCENDING.
+
+    write_section( out = out text = `Overall result (runtime per batch read in microseconds)` ).
+    out->write( `Note:` ).
+    out->write( |- Each value is the median of { repetitions } measured batches, divided by the number of reads.| ).
+    out->write( |- The runtime measurement includes the loop overhead per read without table access: { loop_overhead_us } microseconds.| ).
+    out->write( `- Linear searches are measured with fewer reads (see the READS column). The values per read should remain comparable.` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
     out->write( t_table_info ).
+
+    write_access_group( out = out title = `Result for primary table index accesses` access_kind = primary_table_index ).
+    write_access_group( out = out title = `Result for secondary table index accesses` access_kind = secondary_table_index ).
+    write_access_group( out = out title = `Result for primary table key accesses` access_kind = primary_table_key ).
+    write_access_group( out = out title = `Result for secondary table key accesses` access_kind = secondary_table_key ).
+    write_access_group( out = out title = `Result for free key accesses` access_kind = free_key ).
+
+    write_section( out = out text = `Result for primary table key accesses (dynamic key specification), compared to static equivalents` ).
+    out->write( |\n| ).
+    out->write( VALUE tt_table_info( FOR dyn IN t_table_info
+                                     WHERE ( method_name = `SORTED_02_PR_KEY_SINGLE_COMP`
+                                          OR method_name = `SORTED_11_PR_KEY_SINGLE_CO_DYN`
+                                          OR method_name = `HASHED_02_MULT_KEY_FULL`
+                                          OR method_name = `HASHED_11_MULT_KEY_FULL_DYN` )
+                                     ( dyn ) ) ).
+
+    write_section( out = out text = `Table size series` ).
+    out->write( `Note:` ).
+    out->write( |- Each table size is read { reads_optimized } times (linear search: { reads_linear } times).| ).
+    out->write( |- In each table, the same number of distinct lines ({ series_distinct_keys }) is accessed, | &&
+                `evenly spread over the table. Only the table size changes.` ).
+    out->write( `- Expected result:` ).
+    out->write( `  - Index access and hashed key access remain fairly constant` ).
+    out->write( `  - Sorted key access grows logarithmically` ).
+    out->write( `  - Standard table key access grows linearly` ).
+    out->write( `- The RELATIVE_TO_SMALLEST value compares each value with the smallest table size of the same example.` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( size_results ).
+
   ENDMETHOD.
 
-  METHOD prep_hashed_tabs.
-    FREE: hashed_tab, hashed_tab_mult_key_comp, hashed_tab_w_sec_key.
-    INSERT LINES OF base_tab INTO TABLE hashed_tab.
-    INSERT LINES OF base_tab INTO TABLE hashed_tab_mult_key_comp.
-    INSERT LINES OF base_tab INTO TABLE hashed_tab_w_sec_key.
+
+  METHOD build_keys.
+    "Note:
+    "- The goal of the build_keys method is to populate the keys table with exactly reads entries,
+    "  i.e. one lookup position per read in the benchmark loop. Note that the keys table is iterated in the respective example
+    "  methods for runtime measurement.
+    "- The implementation ensures that these positions are scattered across the table to avoid sequential keys such as 1, 2, 3, ...,
+    "  which could produce artificially fast runtimes.
+    "- Purpose of the method's parameters:
+    "  - number_of_lines: Total lines in the table being measured
+    "  - distinct_keys: How many different table positions to cover
+    "  - reads: How many keys to produce; may differ from distinct_keys
+
+    CLEAR keys.
+
+    "Filling the pool with distinct_keys positions spread evenly across the full table
+    "- For the main examples, the following logic mostly applies: distinct_keys = number_of_lines = 10000.
+    "  The gap is 1 and the pool table is filled with the values 1, 2, 3, ..., 10000.
+    "- For the table size series, the situation is different: distinct_keys = series_distinct_keys = 1000,
+    "  but the table can have up to 100000 lines.
+    "- The implementation ensures that the 1000 positions are spread evenly across the entire table,
+    "  regardless of its size. The gap therefore scales with the table size, and the 1000 positions still
+    "  cover the entire table, providing a more meaningful and balanced distribution.
+    "- Example:
+    "    1000-line table: gap =   1 -> pool = 1,   2,   3, ...,  1000
+    "   10000-line table: gap =  10 -> pool = 1,  11,  21, ...,  9991
+    "  100000-line table: gap = 100 -> pool = 1, 101, 201, ..., 99901
+
+    DATA(gap) = number_of_lines DIV distinct_keys.
+    DATA pool TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DO distinct_keys TIMES.
+      APPEND ( sy-index - 1 ) * gap + 1 TO pool.
+    ENDDO.
+
+    "Shuffling the pool of distinct keys to avoid sequential access patterns
+    "- The pool table is an intermediate working set, and is sorted at this stage (e.g. 1, 2, 3,
+    "  or 1, 101, 201, ...).
+    "- The shuffling is done by swapping random pairs of entries in the pool table. A class is used to
+    "  create random integer values. Using seed 42 keeps the shuffle deterministic.
+    "- Doubling distinct_keys should provide a sufficient number of swap pairs to break up the original order.
+    "- Example result:
+    "  - Pool before shuffle: distinct_keys positions spread across the table, e.g. 1, 101, 201, ..., 99901
+    "  - Pool after shuffle: the same positions, randomised to avoid sequential access, e.g. 45701, 201, 88301, ...
+
+    DATA(rng) = cl_abap_random_int=>create( seed = 42 min = 1 max = distinct_keys ).
+    DATA(swaps) = distinct_keys * 2.
+    DO swaps TIMES.
+      DATA(i) = rng->get_next( ).
+      DATA(j) = rng->get_next( ).
+      DATA(tmp) = pool[ i ].
+      pool[ i ] = pool[ j ].
+      pool[ j ] = tmp.
+    ENDDO.
+
+    "Building the final keys table on which the loops are based when executing the runtime measurement.
+    "- The reads value determines how many keys to produce. This value may differ from the distinct_keys value.
+    "- The benchmark needs exactly reads lookup keys, but pool always has exactly distinct_keys entries.
+    "  That is why keys cannot simply use pool entries directly.
+    "- The following implementation handles three distinct call patterns:
+    "  - 1) Main examples: reads = distinct_keys, e.g. reads = 10000, distinct_keys = 10000.
+    "       Same size: keys represents one full pass through pool.
+    "  - 2) Examples with expected slower access and fewer reads: reads < distinct_keys, e.g. reads = 1000, distinct_keys = 10000.
+    "       keys needs fewer entries than pool. The MOD never wraps (see the wrapping with the table size series case), so keys
+    "       contains just the first 1000 entries of pool.
+    "  - 3) Table size series: reads > distinct_keys, e.g. reads = reads_optimized = 10000, distinct_keys = 1000.
+    "       keys needs more entries than pool. Therefore, the pool is cycled (MOD wraps) to cover enough reads for stable timing.
+    "- This single loop implementation handles all three cases.
+    "- Describing the implementation with an example using few entries in pool:
+    "  - The assumption is that pool has 5 entries
+    "    pool = [ 47, 12, 83, 5, 61 ]
+    "  - Building keys with exactly reads entries: one entry per read the benchmark will perform.
+    "  - reads can be larger, equal, or smaller than distinct_keys due to the example setup. One formula in the APPEND statement
+    "    handles all three.
+    "  - Case 1: reads = distinct_keys = 5
+    "    - pool has 5 entries, 5 keys are needed: keys represents one full pass through pool.
+    "       sy-index  formula              pool index  value appended to keys
+    "       1         (1-1) MOD 5 + 1 = 1   pool[1]       47
+    "       2         (2-1) MOD 5 + 1 = 2   pool[2]       12
+    "       3         (3-1) MOD 5 + 1 = 3   pool[3]       83
+    "       4         (4-1) MOD 5 + 1 = 4   pool[4]        5
+    "       5         (5-1) MOD 5 + 1 = 5   pool[5]       61
+    "  - Case 2: reads = 3, distinct_keys = 5
+    "    - pool has 5 entries, but only 3 keys are needed (3 iterations; purpose: fewer reads to keep
+    "      timing manageable for linear search examples).
+    "       sy-index  formula              pool index  value appended to keys
+    "       1         (1-1) MOD 5 + 1 = 1   pool[1]       47
+    "       2         (2-1) MOD 5 + 1 = 2   pool[2]       12
+    "       3         (3-1) MOD 5 + 1 = 3   pool[3]       83
+    "  - Case 3: reads = 10, distinct_keys = 3
+    "    - pool only has 3 entries, but 10 keys are needed for stable timing; pool must be cycled and, consequently, MOD wraps.
+    "    - In the example, a pool with 1000 entries is cycled 10 times to produce 10000 keys.
+    "       sy-index  formula               pool index  value appended to keys
+    "       1         ( 1-1) MOD 3 + 1 = 1   pool[1]       47
+    "       2         ( 2-1) MOD 3 + 1 = 2   pool[2]       12
+    "       3         ( 3-1) MOD 3 + 1 = 3   pool[3]       83
+    "       4         ( 4-1) MOD 3 + 1 = 1   pool[1]       47  (wraps back)
+    "       5         ( 5-1) MOD 3 + 1 = 2   pool[2]       12
+    "       6         ( 6-1) MOD 3 + 1 = 3   pool[3]       83
+    "       7         ( 7-1) MOD 3 + 1 = 1   pool[1]       47  (wraps again)
+    "       8         ( 8-1) MOD 3 + 1 = 2   pool[2]       12
+    "       9         ( 9-1) MOD 3 + 1 = 3   pool[3]       83
+    "       10        (10-1) MOD 3 + 1 = 1   pool[1]       47  (wraps again)
+
+    DO reads TIMES.
+      APPEND pool[ ( sy-index - 1 ) MOD distinct_keys + 1 ] TO keys.
+    ENDDO.
   ENDMETHOD.
 
-  METHOD prep_sorted_tabs.
-    FREE: sorted_tab, sorted_tab_mult_key_comp, sorted_tab_w_sec_key.
-    INSERT LINES OF base_tab INTO TABLE sorted_tab.
-    INSERT LINES OF base_tab INTO TABLE sorted_tab_mult_key_comp.
-    INSERT LINES OF base_tab INTO TABLE sorted_tab_w_sec_key.
+
+  METHOD prepare_case.
+    "Populating the relevant tables anew so that each measurement starts afresh
+    CASE table_info-table_category.
+      WHEN standard.
+        prep_std_tabs( ).
+      WHEN sorted.
+        prep_sorted_tabs( ).
+      WHEN hashed.
+        prep_hashed_tabs( ).
+    ENDCASE.
+
+    "Preparation steps for selected examples
+    CASE table_info-method_name.
+      WHEN `STD_08_FREEKEY_BINARY_1SORT` OR `STD_17_FREEKEY_BINARY_WITHSORT`.
+        "The example implementation uses 50 random swaps to displace comp4 values throughout
+        "the table.
+        "The idea is to create a more realistic sorting scenario for comp4-based SORT operations.
+        DATA(rng) = cl_abap_random_int=>create( seed = 42 min = 1 max = line_count ).
+        DO 50 TIMES.
+          DATA(p) = rng->get_next( ).
+          DATA(q) = rng->get_next( ).
+          DATA(swap) = standard_tab[ p ]-comp4.
+          standard_tab[ p ]-comp4 = standard_tab[ q ]-comp4.
+          standard_tab[ q ]-comp4 = swap.
+        ENDDO.
+      WHEN `STD_09_FREEKEY_BINARY_NOSORT`.
+        "The SORT required for BINARY SEARCH is not included in the measurement
+        SORT standard_tab BY comp4 ASCENDING.
+      WHEN `STD_11_SEC_KEY_NONUNI_SO_NO1ST` OR `STD_16_SEC_KEY_NOUNI_SOIXNO1ST`.
+        "Non-unique sorted secondary table keys are updated lazily, i.e. upon the first
+        "access using the key. This first access is not included in the measurement.
+        READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = 1.
+      WHEN `HASHED_09_SEC_K_NU_SO_IXNO1ST`.
+        "See above
+        READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp2 = 1.
+    ENDCASE.
   ENDMETHOD.
+
+
+  METHOD free_all_tables.
+    "Clearing all tables to ensure that each measurement starts with a fresh table population.
+    FREE: standard_tab, standard_tab_mult_key_comp, standard_tab_non_uni_so_sec_k,
+          standard_tab_uni_so_sec_k, standard_tab_hashed_sec_k,
+          sorted_tab, sorted_tab_mult_key_comp, sorted_tab_w_sec_key,
+          hashed_tab, hashed_tab_mult_key_comp, hashed_tab_w_sec_key.
+  ENDMETHOD.
+
 
   METHOD prep_std_tabs.
-    FREE: standard_tab, standard_tab_mult_key_comp, standard_tab_non_uni_so_sec_k, standard_tab_uni_so_sec_k, standard_tab_hashed_sec_k.
-    INSERT LINES OF base_tab INTO TABLE standard_tab.
-    INSERT LINES OF base_tab INTO TABLE standard_tab_mult_key_comp.
-    INSERT LINES OF base_tab INTO TABLE standard_tab_non_uni_so_sec_k.
-    INSERT LINES OF base_tab INTO TABLE standard_tab_uni_so_sec_k.
-    INSERT LINES OF base_tab INTO TABLE standard_tab_hashed_sec_k.
+    "Populating the relevant tables anew so that each measurement starts afresh.
+    free_all_tables( ).
+    INSERT LINES OF base_tab INTO TABLE: standard_tab, standard_tab_mult_key_comp, standard_tab_non_uni_so_sec_k,
+                                         standard_tab_uni_so_sec_k, standard_tab_hashed_sec_k.
   ENDMETHOD.
 
-  METHOD get_avg_runtime.
-    "Calculating the average runtime value
-    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
-                                   FOR wa IN runtime_tab
-                                   NEXT s += wa ).
 
-    TRY.
-        avg_runtime = sum / lines( runtime_tab ).
-      CATCH cx_sy_zerodivide INTO DATA(error).
-        RAISE SHORTDUMP error.
-    ENDTRY.
-
-    CLEAR runtime_tab.
+  METHOD prep_sorted_tabs.
+    "Populating the relevant tables anew so that each measurement starts afresh.
+    free_all_tables( ).
+    INSERT LINES OF base_tab INTO TABLE: sorted_tab, sorted_tab_mult_key_comp, sorted_tab_w_sec_key.
   ENDMETHOD.
+
+
+  METHOD prep_hashed_tabs.
+    "Populating the relevant tables anew so that each measurement starts afresh.
+    free_all_tables( ).
+    INSERT LINES OF base_tab INTO TABLE: hashed_tab, hashed_tab_mult_key_comp, hashed_tab_w_sec_key.
+  ENDMETHOD.
+
+
+  METHOD prep_series_table.
+    "For the table size series, populating only those tables used by the example.
+    free_all_tables( ).
+    CASE method_name.
+      WHEN `STD_01_INDEX`.
+        INSERT LINES OF base_tab_series TO number_of_lines INTO TABLE standard_tab.
+      WHEN `STD_03_MULT_KEY_FULL`.
+        INSERT LINES OF base_tab_series TO number_of_lines INTO TABLE standard_tab_mult_key_comp.
+      WHEN `SORTED_03_MULT_KEY_FULL`.
+        INSERT LINES OF base_tab_series TO number_of_lines INTO TABLE sorted_tab_mult_key_comp.
+      WHEN `HASHED_02_MULT_KEY_FULL`.
+        INSERT LINES OF base_tab_series TO number_of_lines INTO TABLE hashed_tab_mult_key_comp.
+    ENDCASE.
+  ENDMETHOD.
+
 
   METHOD store_runtime.
     cl_abap_utclong=>diff( EXPORTING high    = high
@@ -9680,126 +10220,334 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     APPEND seconds TO runtime_tab.
   ENDMETHOD.
-  
-  METHOD sorted_01_index.
-    READ TABLE sorted_tab TRANSPORTING NO FIELDS INDEX idx.
+
+
+  METHOD get_median_runtime.
+    "Note:
+    "- The method returns the median value of the collected runtime deltas and clears the table
+    "  for the next measurement round.
+    "- The median is used instead of the average because a single, unexpectedly slow
+    "  iteration regardless of its cause would have a disproportionate effect on the average,
+    "  while the median (i.e. the value at the midpoint of the sorted list) is
+    "  unaffected by potential, external runtime-impacting effects.
+    "- For an odd number of entries the middle element is used directly. For an even number,
+    "  the calculation ( n + 1 ) DIV 2 rounds down to the lower of the two middle elements.
+
+    SORT runtime_tab BY table_line ASCENDING.
+    median_runtime = runtime_tab[ ( lines( runtime_tab ) + 1 ) DIV 2 ].
+    CLEAR runtime_tab.
   ENDMETHOD.
 
-  METHOD sorted_02_pr_key_single_comp.
-    READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+
+  METHOD write_section.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
   ENDMETHOD.
 
-  METHOD sorted_03_mult_key_full.
-    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+
+  METHOD write_access_group.
+    write_section( out = out text = title ).
+    out->write( |\n| ).
+    out->write( VALUE tt_table_info( FOR line IN t_table_info
+                                     WHERE ( access = access_kind )
+                                     ( line ) ) ).
   ENDMETHOD.
 
-  METHOD sorted_04_mult_key_partial_la.
-    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+
+  METHOD baseline_loop_only.
+    LOOP AT keys INTO idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD sorted_05_mult_key_partial_non.
-    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
-  ENDMETHOD.
-
-  METHOD sorted_06_mult_key_dynamic.
-    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
-  ENDMETHOD.
-
-  METHOD sorted_07_free_key.
-    READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
-  ENDMETHOD.
 
   METHOD std_01_index.
-    READ TABLE standard_tab TRANSPORTING NO FIELDS INDEX idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab TRANSPORTING NO FIELDS INDEX idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD std_02_pr_key_single_comp.
-    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD std_03_mult_key_full.
-    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD std_04_mult_key_partial_la.
-    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD std_05_mult_key_partial_non.
-    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_06_mult_key_dynamic.
-    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
+
+  METHOD std_06_free_key_no_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_07_free_key.
-    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+
+  METHOD std_07_free_key_full_prk.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp3 = idx comp7 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_08a_free_key_binary_search.
-    IF idx = 1.
-      SORT standard_tab BY comp7 ASCENDING.
-    ENDIF.
-    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx BINARY SEARCH.
+
+  METHOD std_08_freekey_binary_1sort.
+    SORT standard_tab BY comp4 ASCENDING.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp4 = idx BINARY SEARCH.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_08b_free_key_binary_search.
-    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx BINARY SEARCH.
+
+  METHOD std_09_freekey_binary_nosort.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp4 = idx BINARY SEARCH.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_09a_sec_key_nonuni_sorted.
-    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+
+  METHOD std_10_sec_key_nonuni_so_w1st.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_09b_sec_key_nonuni_sorted.
-    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+
+  METHOD std_11_sec_key_nonuni_so_no1st.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_10_sec_key_nonuni_sort_idx.
-    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+
+  METHOD std_12_sec_key_nonuni_sort_idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_10_sec_key_unique_sorted.
-    READ TABLE standard_tab_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY uni_so_key COMPONENTS comp1 = idx.
+
+  METHOD std_13_sec_key_unique_sorted.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY uni_so_key COMPONENTS comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD std_11_sec_key_unique_hashed.
-    READ TABLE standard_tab_hashed_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY hashed_key COMPONENTS comp1 = idx.
+
+  METHOD std_14_sec_key_unique_hashed.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_hashed_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY hashed_key COMPONENTS comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
-    
+
+
+  METHOD std_15_sec_key_unique_sort_idx.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY uni_so_key INDEX idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD std_16_sec_key_nouni_soixno1st.
+    LOOP AT keys INTO idx.
+      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD std_17_freekey_binary_withsort.
+    "Note:
+    "- This method represents an anti-pattern: sorting the table before each read.
+    "- The prepare_case method applies several random comp4 value swaps before each
+    "  batch run to create a more realistic sorting effect (at least for the first run;
+    "  subsequent sorts are applied on an already sorted table). Nevertheless, the runtime
+    "  compared to other examples using BINARY SEARCH should be visible.
+    LOOP AT keys INTO idx.
+      SORT standard_tab BY comp4 ASCENDING.
+      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp4 = idx BINARY SEARCH.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_01_index.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab TRANSPORTING NO FIELDS INDEX idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_02_pr_key_single_comp.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_03_mult_key_full.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_04_mult_key_partial_la.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_05_mult_key_partial_non.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_06_freekey_noprkeyco.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_07_freekey_full_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp3 = idx comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_08_freekey_la_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_09_freekey_nonla_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_10_sec_key_nonuni_so.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY sec_key COMPONENTS comp2 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD sorted_11_pr_key_single_co_dyn.
+    LOOP AT keys INTO idx.
+      READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
   METHOD hashed_01_pr_key_single_comp.
-    READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD hashed_02_mult_key_full.
-    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD hashed_03_mult_key_partial_la.
-    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD hashed_04_mult_key_partial_non.
-    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD hashed_05_mult_key_dynamic.
-    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
+
+  METHOD hashed_05_sec_key_nonun_so_idx.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD hashed_06_free_key.
-    READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+
+  METHOD hashed_06_free_key_no_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD hashed_07_sec_key_nonun_so_idx.
-    READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+
+  METHOD hashed_07_free_key_full_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp3 = idx comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD hashed_08_free_la_prk_co.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp7 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD hashed_09_sec_k_nu_so_ixno1st.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD hashed_10_sec_key_nonuni_so.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp2 = idx.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD hashed_11_mult_key_full_dyn.
+    LOOP AT keys INTO idx.
+      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.
 ```
 
-</details>  
+</details>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

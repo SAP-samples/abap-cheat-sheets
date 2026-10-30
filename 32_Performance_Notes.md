@@ -18,11 +18,9 @@
     - [Block-wise Processing of Table Lines](#block-wise-processing-of-table-lines)
     - [Using Secondary Table Keys to Improve Read Performance](#using-secondary-table-keys-to-improve-read-performance)
     - [Applying a Sort Key when Sorting Internal Tables](#applying-a-sort-key-when-sorting-internal-tables)
-    - [Clearing with CLEAR and FREE](#clearing-with-clear-and-free)
     - [Dynamic and Static Specifications when Processing Internal Tables](#dynamic-and-static-specifications-when-processing-internal-tables)
     - [Overusing Table Expressions](#overusing-table-expressions)
   - [Miscellaneous Contexts](#miscellaneous-contexts)
-    - [Using DO and WHILE](#using-do-and-while)
     - [Using Strings](#using-strings)
     - [Avoiding Implicit Type Conversions](#avoiding-implicit-type-conversions)
     - [Passing by Reference and Value](#passing-by-reference-and-value)
@@ -83,7 +81,7 @@ You can minimize database accesses by considering the following aspects:
 - Using joins and subqueries
   - When accessing and combining data from multiple databases, joins are preferable to handling individual data retrievals separately.
   - Subqueries in the `WHERE` and `HAVING` clauses do not transfer data from the database system.
-  - If your use case is to match entries of an internal table when selecting data from a data source, you can also use joins and subqueries with internal tables in `SELECT` statements in modern ABAP to avoid unnecessary data transfers from the database. You may also stumble on the (older) `FOR ALL ENTRIES` addition in `SELECT` statements. Here, internal table content is used to match entries. However, note that if the internal table is empty, all data will be read.
+  - If your use case is to match entries of an internal table when selecting data from a data source, you can also use joins and subqueries with internal tables in `SELECT` statements in modern ABAP to avoid unnecessary data transfers from the database. You may also stumble on the (older) `FOR ALL ENTRIES` addition in `SELECT` statements. Here, internal table content is used to match entries. However, note that if the internal table is empty, all data will be read. Note that `FOR ALL ENTRIES` is considered deprecated. See the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -126,7 +124,8 @@ You can minimize database accesses by considering the following aspects:
 > - Generally, a suitable table type should be chosen based on aspects such as the frequency of table access and modifications.
 > - On a high level, standard tables should be used for smaller data sets and sequential processing. Sorted tables may also be used for sequential processing and when you always need to keep content in a sorted order. They offer optimized access through the table key. For very large data sets that require minimal modifications, consider using hashed tables. The primary access method for hashed tables is key access, supported by a hash algorithm for consistent and optimized retrieval.
 > - Standard tables are searched linearly by keys. They do not offer an optimized key access. However, standard tables (and the other table categories, too) can be enriched by secondary table keys, providing optimized access.
-> - Find more information in the Internal Tables cheat sheet.
+> - Find more information in the [Internal Tables](01_Internal_Tables.md) cheat sheet.
+> - The [Internal Tables](01_Internal_Tables.md) cheat sheet includes sections dealing with performance-related aspects for internal table accesses (e.g. key access, using secondary table keys, etc.). You can find several executable examples there. These are more representative and detailed than those covered in the executable example of this cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -211,15 +210,6 @@ Contexts of reducing content transfer are, for example, the following:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Clearing with CLEAR and FREE
-
-- The `CLEAR` and `FREE` statements allow you to delete the entire table content.
-- The difference between the two is in the handling of the memory space originally allocated to the table. When a table is cleared with `CLEAR`, the content is removed, but the memory space initially requested remains allocated. 
-- If the table is populated again later, the memory space is still available, which is a performance advantage over clearing an internal table with `FREE`. Such a statement also deletes the table content, but it also releases the memory space. 
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
 ### Dynamic and Static Specifications when Processing Internal Tables
 
 - Statements that process internal tables provide syntax options for dynamic programming, such as specifying the table key dynamically.  
@@ -234,128 +224,9 @@ Contexts of reducing content transfer are, for example, the following:
 - Table expressions - expression enabling in modern ABAP as such - are quite useful in various positions.
 - It is recommended to avoid multiple accesses to the same table line when using multiple table expressions. Instead, it is advisable to reference the table line with a field symbol or data reference variable first and then perform the necessary accesses.
 
-<details>
-  <summary>🟢 Click to expand for example code</summary>
-  <!-- -->
-
-<br>
-
-The following example demonstrates multiple reads and writes using table expressions. The first loop includes multiple table expressions, while the second loop is designed differently, referencing the table line by a field symbol and involving fewer table expressions. The runtimes of both loops are recorded, showing that the second loop has a significantly shorter runtime than the first.
-
-Note: This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes.
-
-
-```abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-CONSTANTS: num_of_repetitions     TYPE i VALUE 100,
-           num_of_assignment_runs TYPE i VALUE 1000.
-
-    TYPES: BEGIN OF struct,
-             a TYPE i,
-             b TYPE i,
-             c TYPE i,
-             d TYPE i,
-             e TYPE i,
-             f TYPE i,
-           END OF struct.
-
-    DATA it TYPE TABLE OF struct WITH EMPTY KEY.
-
-    it = VALUE #( ( a = 0 b = 0 c = 0 d = 0 e = 0 f = 0 )
-                  ( a = 1 b = 1 c = 1 d = 1 e = 1 f = 1 ) ).
-    DATA(it_original) = it.
-
-    DATA runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
-
-    DO num_of_repetitions TIMES.
-      DATA(ts1) = utclong_current( ).
-      DO num_of_assignment_runs TIMES.
-        it[ 1 ]-a = sy-index.
-        it[ 1 ]-b = sy-index.
-        it[ 1 ]-c = sy-index.
-        it[ 2 ]-d = sy-index.
-        it[ 2 ]-e = sy-index.
-        it[ 2 ]-f = sy-index.
-        it[ 1 ]-d = it[ 2 ]-d.
-        it[ 1 ]-e = it[ 2 ]-e.
-        it[ 1 ]-f = it[ 2 ]-f.
-        INSERT it[ 1 ] INTO TABLE it.
-        INSERT it[ 2 ] INTO TABLE it.
-      ENDDO.
-      DATA(ts2) = utclong_current( ).
-      cl_abap_utclong=>diff( EXPORTING high    = ts2
-                                       low     = ts1
-                             IMPORTING seconds = DATA(seconds) ).
-
-      APPEND seconds TO runtime_tab.
-    ENDDO.
-
-    SORT runtime_tab BY table_line ASCENDING.
-
-    out->write( `Multiple table expressions, fastest run:` ).
-    out->write( runtime_tab[ 1 ] ).
-
-    CLEAR runtime_tab.
-    it = it_original.
-
-    DO num_of_repetitions TIMES.
-      ts1 = utclong_current( ).
-      DO num_of_assignment_runs TIMES.
-        ASSIGN it[ 1 ] TO FIELD-SYMBOL(<fs1>).
-        ASSIGN it[ 2 ] TO FIELD-SYMBOL(<fs2>).
-        <fs1>-a = sy-index.
-        <fs1>-b = sy-index.
-        <fs1>-c = sy-index.
-        <fs2>-d = sy-index.
-        <fs2>-e = sy-index.
-        <fs2>-f = sy-index.
-        <fs1>-d = <fs2>-d.
-        <fs1>-e = <fs2>-e.
-        <fs1>-f = <fs2>-f.
-        INSERT <fs1> INTO TABLE it.
-        INSERT <fs2> INTO TABLE it.
-      ENDDO.
-      ts2 = utclong_current( ).
-      cl_abap_utclong=>diff( EXPORTING high    = ts2
-                                       low     = ts1
-                             IMPORTING seconds = seconds ).
-
-      APPEND seconds TO runtime_tab.
-    ENDDO.
-
-    SORT runtime_tab BY table_line ASCENDING.
-
-    out->write( `Avoiding overusing table expressions, fastest run:` ).
-    out->write( runtime_tab[ 1 ] ).
-  ENDMETHOD.
-ENDCLASS.
-```
-
-</details>  
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Miscellaneous Contexts
-
-### Using DO and WHILE
-
-A `WHILE` loop may be faster than a `DO` loop (including an explicit `EXIT`).
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using Strings
 
@@ -402,20 +273,30 @@ Examples of string-related contexts:
 
 ## Executable Example
 
-To try the example out, create a demo class named `zcl_demo_abap` in the _SAP Business AI Platform, ABAP environment_ and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). 
-After activation, choose F9 in ADT to execute the class. The example is set up to display output in the console. The class execution may take a while to complete.
+The executable example explores a selection of performance-related aspects. The code snippets, for which runtime is measured, aim to illustrate potentially inefficient techniques and use of statements.
 
-The simplified example is set up as follows: 
-- The global class declares multiple components that are used in the demo, including various internal table declarations to illustrate specific examples, such as demonstrating secondary table keys.
-- Several methods are implemented, containing code snippets that show both inefficient and rather efficient statements. For example, the method `sql_01_reduce_t_rows_a` shows an efficient example for minimizing the result set of `SELECT` statements. The method `sql_01_reduce_t_rows_z` shows an inefficient example.
-- The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is output to the console for each code snippet, evaluated in each method. This approach aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only. For proper analyses, the mentioned tools should be used.
-- The parallelization example uses a local class implemented in the CCIMP include.
+The example is simplified and set up as follows:
 
-Overview of covered examples (see also the inline comments in the method implementations): 
+- The global class declares multiple components used across demo methods (they include implementations that are used to visualize performance-related aspects), including a variety of type and data object declarations such as internal tables (standard, sorted, and hashed tables, tables with secondary keys, and a deep table) that are used to illustrate specific examples.
+- The demo methods are grouped into thematic subgroups: ABAP SQL (`SQL_*`), internal tables (`ITAB_*`), EML (`EML_*`), and miscellaneous topics (`MISC_*`). 
+- Within a subgroup, the methods contain code snippets that compare an approach with a less efficient one. The idea is to mark the more efficient example with the suffix `a` and the less efficient one with `z` (for example, `sql_01_reduce_t_rows_a` shows an efficient way to minimize the result set of a `SELECT`, while `sql_01_reduce_t_rows_z` shows an inefficient one). This does not apply to each subgroup. Some subgroups compare more than two variants and use additional suffixes such as `b` or `c`. 
+- A central control table (`t_info`) drives the example: 
+  - It lists each method together with its subgroup, the number of repetitions per measurement (`ops`), and a short description. 
+  - A loop runs all registered methods dynamically, so the benchmark set can be maintained in one place.
+- The runtime analysis in this self-contained example works as follows: 
+  - The code snippet to be measured is enclosed by two timestamp retrievals using `utclong_current( )`, and the runtime is the delta of the two values. 
+  - To make the measurement more meaningful, each snippet is executed many times within a `DO` loop (`ops` iterations), and the whole measurement is repeated several times. 
+  - The runtime deltas of the repetitions are collected in an internal table, and the median runtime is determined and divided by the number of operations to obtain a median runtime per operation. Any data setup needed for a snippet is prepared beforehand, outside the measured section. 
+  - The results are written to the console grouped by category and subgroup and sorted by runtime. A `relative_to_min` column shows each variant relative to the fastest one in its subgroup, making the ranking easier to read.
+- The parallelization example is measured differently from the other snippets and is therefore handled separately. It uses a local class implemented in the CCIMP include and compares parallel against sequential processing.
+- Note the disclaimer below and in the ABAP Cheat Sheet repository's README. 
+
+
+Overview of covered performance-related aspects:
+
 - <strong>ABAP SQL statements</strong>	
-	- Static vs. dynamic token specification
 	- Using a `WHERE` clause vs. reading all table rows, looping across the result set and filtering out data
-	- Using `SELECT SINGLE` to read a single data set vs. reading all table rows and filter out single data set vs. `SELECT ... UP TO 1 ROWS`
+	- Using `SELECT SINGLE` to read a single data set vs. reading all table rows and filtering out a single data set vs. `SELECT ... UP TO 1 ROWS`
 	- Reading a specific number of datasets using `UP TO n ROWS` vs. reading all table rows and discarding unnecessary data
 	- Specifying columns in the `SELECT` list vs. specifying `SELECT *`
 	- Single database access vs. multiple accesses in a loop
@@ -423,40 +304,47 @@ Overview of covered examples (see also the inline comments in the method impleme
 	- Block-wise modify operation vs. line by line modify operation in a loop
 	- Using a join vs. using a nested `SELECT` loop
 	- Using an `UPDATE ... SET` statement vs. `UPDATE` using a work area
-	- Using an aggregate function vs. reading all table rows and calculation of average value
+	- Static vs. dynamic token specification
 - <strong>Internal table processing</strong>
-	- Reading single lines using the primary table key: standard table vs. sorted table vs. hashed table	
-	- Reading single lines using the incomplete primary table key: hashed table vs. sorted table (both partial, left-aligned key and partial, not left-aligned key)	
-	- Reading single lines in standard table using `BINARY SEARCH` and without the addition (both examples use a preceding `SORT` statement)
-	- Loop across internal table by specifying a `WHERE` condition: standard table vs. sorted (full key + partial,  left-aligned key + partial, not left-aligned key) vs. hashed (full key + partially specified key)
-	- Loop across standard table:  Specifying a `WHERE` condition vs. no `WHERE` condition and filtering out data in the loop
-	- Loop across deep standard table (includes a nested structure and internal table) specifying target areas: Work area vs. field symbol vs. data reference variable
-	- `READ TABLE ... WITH` statement vs. `READ TABLE ... WHERE` statement 
-	- Modifying internal table content in a loop: Work area as target area, modifying the target area, applying a `MODIFY` statement vs. direct modification using a field symbol vs. direct modification using a data reference variable
+	- Reading single lines using the primary table key: standard table vs. sorted table vs. hashed table
+	- Reading single lines using the incomplete primary table key: hashed table vs. sorted table (partial key, both left-aligned and not left-aligned)
+	- Reading single lines in a standard table using `BINARY SEARCH` and without the addition (both examples use a preceding `SORT` statement)
+	- Loop across internal table by specifying a `WHERE` condition: standard table vs. sorted (full key + partial, left-aligned key + partial, not left-aligned key) vs. hashed (full key + partially specified key)
+	- Loop across standard table: specifying a `WHERE` condition vs. no `WHERE` condition and filtering out data in the loop
+	- Loop across deep standard table (includes a nested structure and internal table) specifying target areas: field symbol vs. data reference variable vs. work area
+	- Iterating an internal table using `LOOP AT` vs. manual index-based access with a `DO` loop and `READ TABLE ... INDEX`
+	- Modifying internal table content in a loop: direct modification using a field symbol vs. direct modification using a data reference variable vs. work area as target area and applying a `MODIFY` statement
 	- Block-wise insertion into an internal table vs. line by line insertion in a loop
-	- Find and replace operations on an internal table with character-like data type vs. line by line search and replacement
 	- Restricting the transfer of table line content using the `TRANSPORTING` addition vs. not using the addition and overwriting all table line content based on a work area
-	- Reading single lines from a standard table: Using a secondary table key vs. using the primary table key (which corresponds to the secondary table key in the other table)
-	- Loop across a standard table that specifies a secondary table key: Performing only reads in the loop vs. performing reads and modifications
-	- Sorting an internal table that specifies the standard key: Explicitly specifying the sort key vs. implicit sorting by the standard key
-	- Clearing an internal table by applying `CLEAR` vs `FREE` (the table is populated again after the statements)
+	- Reading single lines from a standard table: using a secondary table key vs. using the primary table key (which corresponds to the secondary table key in the other table)
+	- Loop across a standard table that specifies a secondary table key: performing only reads in the loop vs. performing reads and modifications
+	- Sorting an internal table that specifies the standard key: explicitly specifying the sort key vs. implicit sorting by the standard key
 	- Reading from an internal table by specifying the keys dynamically vs. static key specification
+	- `READ TABLE ... WITH KEY` statement vs. `READ TABLE ... WHERE` statement
+	- Find operations on an internal table with character-like line type: block-wise `FIND ... IN TABLE` vs. line by line search in a loop
+	- Multiple reads and writes on the same table lines: using table lines assigned to field symbols vs. using individual table expressions
+	- Replace operations on an internal table with character-like line type: block-wise `REPLACE ... IN TABLE` vs. line by line replacement in a loop
 - <strong>Miscellaneous contexts</strong>
-    - `WHILE` vs `DO`
-    - Concatenating a variable-length string of type `string` vs. concatenating a fixed-length string of type `c`
+	- Concatenating a variable-length string of type `string` vs. concatenating a fixed-length string of type `c`
 	- String specified as string literal using backquotes vs. string template only using characters, without embedded expression
 	- Pattern-based search using a comparison operator vs. a `FIND PCRE` statement and a regular expression
 	- Calculation of numbers that share the same type vs. calculation of numbers that have different types
 	- Actual parameters passed by reference vs. actual parameters passed by value
-	- Parallel processing vs. sequential processing
 	- ABAP EML update request using a `FOR` loop for a block-wise operation vs. EML statement in a loop
+	- Parallel processing vs. sequential processing
+ 
+> [!IMPORTANT]
+> This example:
+> - Is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance measurement. Various factors (such as system, environment, system load, etc.) can influence the runtime of an ABAP program, so that results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet. 
+> - Aims to illustrate general performance aspects in various contexts, and highlight the described behavior and potential pitfalls using intentionally exaggerated example code snippets. Some results may be more representative and clear than others. Note that regarding internal table access examples in particular, the performance-related examples in the Internal Table cheat sheet are more representative and detailed.
+> - Is intended to emphasize the importance of choosing appropriate approaches for a given use case.
+> - Does not represent best practices regarding performance testing and is not a substitute or role model for profiling real applications with realistic data and workloads.
+> - Takes some time to complete due to many loops included.
+> Note the disclaimer in the ABAP cheat sheet repository's README.
 
-> [!NOTE]
-> - As a prerequisite, you have imported the ABAP cheat sheet repository, as this example uses some of its artifacts.
-> - Since the example contains multiple loops, the execution may take some time to complete.
-> - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets, and some may be clearer than others. You might run the example again. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal rather inefficient coding styles. 
-> - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. 
-> - Note the disclaimer in the ABAP cheat sheet repository's README.
+
+To try the example out, create a demo class named `zcl_demo_abap` in the _SAP Business AI Platform, ABAP environment_ and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). As a prerequisite, you have imported the ABAP Cheat Sheets GitHub repository as the example uses some of its artifacts.
+After activation, choose F9 in ADT to execute the class. The example is set up to display output in the console. The class execution may take a while to complete.
 
 
 <details>
@@ -492,6 +380,23 @@ Global class
 "! runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature,
 "! results may vary and not be entirely accurate, even across multiple runs.</li>
 "! <li>Note the disclaimer in the ABAP cheat sheet repository.</li></ul>
+"! <p class="shorttext"><strong>Performance Notes</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class includes several methods that explore both inefficient and potentially more
+"! efficient code examples affecting performance.</p>
+"! <p>In ADT, choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>As a prerequisite, you have imported the ABAP cheat sheet repository since the
+"! example uses some of its artifacts.</li>
+"! <li>The example is for exploration, experimentation, and demonstration. It is not intended for accurate
+"! runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature,
+"! results may vary and not be entirely accurate, even across multiple runs.</li>
+"! <li>Note the disclaimer in the ABAP cheat sheet repository.</li>
+"! <li>Within a subgroup, <em>_A</em> is generally the recommended approach and <em>_Z</em> the slower
+"! antipattern. Some subgroups (for example ITAB_01, ITAB_02, ITAB_04) instead compare equivalent
+"! table-access variants (standard/sorted/hashed); there the A/B/Z suffixes are only labels, not a
+"! quality ranking. The per-subgroup column 'relative_to_min' shows the actual runtime ranking.</li></ul>
 CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
@@ -501,132 +406,116 @@ CLASS zcl_demo_abap DEFINITION
     INTERFACES if_oo_adt_classrun.
     CLASS-METHODS class_constructor.
 
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
     "Constants used for DO n TIMES statements
     CONSTANTS loop_count_5 TYPE i VALUE 5.
-    CONSTANTS loop_count_10 TYPE i VALUE 10.
-    CONSTANTS loop_count_50 TYPE i VALUE 50.
+    CONSTANTS loop_count_15 TYPE i VALUE 15.
+    CONSTANTS loop_count_30 TYPE i VALUE 30.
+    CONSTANTS loop_count_100 TYPE i VALUE 100.
     CONSTANTS loop_count_250 TYPE i VALUE 250.
     CONSTANTS loop_count_500 TYPE i VALUE 500.
     CONSTANTS loop_count_1000 TYPE i VALUE 1000.
 
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CONSTANTS repetitions TYPE i VALUE 5.
+
     "Components used for calculating the average runtime
     DATA: ts1         TYPE utclong,
           runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
-          runtime     TYPE decfloat34.
+          out         TYPE REF TO if_oo_adt_classrun_out.
 
-    "Collects timestamps to calculate the average runtime
-    METHODS store_runtime IMPORTING high TYPE utclong
-                                    low  TYPE utclong.
-
-    "Calculates the average runtime
-    METHODS get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34.
+    "Methods for the runtime measurement
+    METHODS: store_runtime IMPORTING high TYPE utclong
+                                     low  TYPE utclong,
+      get_median_runtime RETURNING VALUE(median) TYPE decfloat34,
+      write_section IMPORTING text TYPE string,
+      prepare IMPORTING method_name TYPE abap_methname.
 
     "Exemplary methods containing (in)efficient demo implementations
     METHODS:
-      sql_01_reduce_t_rows_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_01_reduce_t_rows_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_02_reduce_t_rows_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_02_reduce_t_rows_b IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_02_reduce_t_rows_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_03_reduce_t_rows_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_03_reduce_t_rows_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_04_reduce_data_volume_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_04_reduce_data_volume_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_05_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_05_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_06_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_06_reduce_db_access_b IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_06_reduce_db_access_c IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_06_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_07_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_07_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_08_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_08_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_09_update_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_09_update_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_10_db_logic_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_10_db_logic_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_11_dynamic_sql_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      sql_11_dynamic_sql_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_01_table_key_read_a_std IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_01_table_key_read_b_so IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_01_table_key_read_z_ha IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_02_incomplete_t_key_a_so IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_02_incomplete_t_key_b_ha IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_02_incomplete_t_key_z_so IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_03_std_binary_search_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_03_std_binary_search_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_a_std IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_b_so_compl_key IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_c_so_incompl_key IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_d_so_incompl_k_la IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_e_ha_compl_key IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_04_loop_z_ha_incompl_key IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_05_loop_no_where_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_05_loop_no_where_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_06_loop_target_a_wa IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_06_loop_target_b_fs IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_06_loop_target_z_dref IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_07_loop_modify_a_wa IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_07_loop_modify_b_fs IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_07_loop_modify_z_dref IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_08_block_insert_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_08_block_insert_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_09_restrict_copy_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_09_restrict_copy_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_10_sec_key_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_10_sec_key_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_11_sec_key_freq_mod_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_11_sec_key_freq_mod_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_12_sort_itab_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_12_sort_itab_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_13_clear_free_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_13_clear_free_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_14_dyn_itab_spec_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_14_dyn_itab_spec_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_15_read_where_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_15_read_where_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_16_find_replace_table_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      itab_16_find_replace_table_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_01_while_do_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_01_while_do_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_02_strings_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_02_strings_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_03_string_templates_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_03_string_templates_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_04_search_pattern_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_04_search_pattern_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_05_type_conversion_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_05_type_conversion_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_06_formal_parameters_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_06_formal_parameters_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_07_parallel_processing_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_07_parallel_processing_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      eml_01_eml_in_loop_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      eml_01_eml_in_loop_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname.
+      sql_01_reduce_t_rows_a IMPORTING ops TYPE i,
+      sql_01_reduce_t_rows_z IMPORTING ops TYPE i,
+      sql_02_reduce_t_rows_a IMPORTING ops TYPE i,
+      sql_02_reduce_t_rows_b IMPORTING ops TYPE i,
+      sql_02_reduce_t_rows_z IMPORTING ops TYPE i,
+      sql_03_reduce_t_rows_a IMPORTING ops TYPE i,
+      sql_03_reduce_t_rows_z IMPORTING ops TYPE i,
+      sql_04_reduce_data_volume_a IMPORTING ops TYPE i,
+      sql_04_reduce_data_volume_z IMPORTING ops TYPE i,
+      sql_05_reduce_db_access_a IMPORTING ops TYPE i,
+      sql_05_reduce_db_access_z IMPORTING ops TYPE i,
+      sql_06_reduce_db_access_a IMPORTING ops TYPE i,
+      sql_06_reduce_db_access_b IMPORTING ops TYPE i,
+      sql_06_reduce_db_access_c IMPORTING ops TYPE i,
+      sql_06_reduce_db_access_z IMPORTING ops TYPE i,
+      sql_07_reduce_db_access_a IMPORTING ops TYPE i,
+      sql_07_reduce_db_access_z IMPORTING ops TYPE i,
+      sql_08_reduce_db_access_a IMPORTING ops TYPE i,
+      sql_08_reduce_db_access_z IMPORTING ops TYPE i,
+      sql_09_update_a IMPORTING ops TYPE i,
+      sql_09_update_z IMPORTING ops TYPE i,
+      sql_11_dynamic_sql_a IMPORTING ops TYPE i,
+      sql_11_dynamic_sql_z IMPORTING ops TYPE i,
+      itab_01_table_key_read_a_std IMPORTING ops TYPE i,
+      itab_01_table_key_read_b_so IMPORTING ops TYPE i,
+      itab_01_table_key_read_z_ha IMPORTING ops TYPE i,
+      itab_02_incomplete_t_key_a_so IMPORTING ops TYPE i,
+      itab_02_incomplete_t_key_b_ha IMPORTING ops TYPE i,
+      itab_02_incomplete_t_key_z_so IMPORTING ops TYPE i,
+      itab_03_std_binary_search_a IMPORTING ops TYPE i,
+      itab_03_std_binary_search_z IMPORTING ops TYPE i,
+      itab_04_loop_a_std IMPORTING ops TYPE i,
+      itab_04_loop_b_so_compl_key IMPORTING ops TYPE i,
+      itab_04_loop_c_so_incompl_key IMPORTING ops TYPE i,
+      itab_04_loop_d_so_incompl_k_la IMPORTING ops TYPE i,
+      itab_04_loop_e_ha_compl_key IMPORTING ops TYPE i,
+      itab_04_loop_z_ha_incompl_key IMPORTING ops TYPE i,
+      itab_05_loop_no_where_a IMPORTING ops TYPE i,
+      itab_05_loop_no_where_z IMPORTING ops TYPE i,
+      itab_06_loop_target_z_wa IMPORTING ops TYPE i,
+      itab_06_loop_target_a_fs IMPORTING ops TYPE i,
+      itab_06_loop_target_b_dref IMPORTING ops TYPE i,
+      itab_07_loop_modify_z_wa IMPORTING ops TYPE i,
+      itab_07_loop_modify_a_fs IMPORTING ops TYPE i,
+      itab_07_loop_modify_b_dref IMPORTING ops TYPE i,
+      itab_08_loop_a IMPORTING ops TYPE i,
+      itab_08_do_read_z IMPORTING ops TYPE i,
+      itab_09_block_insert_a IMPORTING ops TYPE i,
+      itab_09_block_insert_z IMPORTING ops TYPE i,
+      itab_10_restrict_copy_a IMPORTING ops TYPE i,
+      itab_10_restrict_copy_z IMPORTING ops TYPE i,
+      itab_11_sec_key_a IMPORTING ops TYPE i,
+      itab_11_sec_key_z IMPORTING ops TYPE i,
+      itab_12_sec_key_freq_mod_a IMPORTING ops TYPE i,
+      itab_12_sec_key_freq_mod_z IMPORTING ops TYPE i,
+      itab_13_sort_itab_a IMPORTING ops TYPE i,
+      itab_13_sort_itab_z IMPORTING ops TYPE i,
+      itab_14_dyn_itab_spec_a IMPORTING ops TYPE i,
+      itab_14_dyn_itab_spec_z IMPORTING ops TYPE i,
+      itab_15_read_where_a IMPORTING ops TYPE i,
+      itab_15_read_where_z IMPORTING ops TYPE i,
+      itab_16_find_block_a IMPORTING ops TYPE i,
+      itab_16_find_loop_z IMPORTING ops TYPE i,
+      itab_18_replace_block_a IMPORTING ops TYPE i,
+      itab_18_replace_loop_z IMPORTING ops TYPE i,
+      itab_17_table_expr_mult_acc_a IMPORTING ops TYPE i,
+      itab_17_table_expr_mult_acc_z IMPORTING ops TYPE i,
+      eml_01_eml_in_loop_a IMPORTING ops TYPE i,
+      eml_01_eml_in_loop_z IMPORTING ops TYPE i,
+      misc_01_strings_a IMPORTING ops TYPE i,
+      misc_01_strings_z IMPORTING ops TYPE i,
+      misc_02_string_templates_a IMPORTING ops TYPE i,
+      misc_02_string_templates_z IMPORTING ops TYPE i,
+      misc_03_search_pattern_a IMPORTING ops TYPE i,
+      misc_03_search_pattern_z IMPORTING ops TYPE i,
+      misc_04_type_conversion_a IMPORTING ops TYPE i,
+      misc_04_type_conversion_z IMPORTING ops TYPE i,
+      misc_05_formal_parameters_a IMPORTING ops TYPE i,
+      misc_05_formal_parameters_z IMPORTING ops TYPE i,
+      misc_06_parallel_processing_a RETURNING VALUE(diff) TYPE tzntstmpl,
+      misc_06_parallel_processing_z RETURNING VALUE(diff) TYPE tzntstmpl.
 
-    "Methods demonstrating parameter passing by value and reference
-    METHODS: meth_pass_by_ref IMPORTING a TYPE i
-                                        b TYPE i
-                                        c TYPE string_table
-                                        d TYPE string_table
-                              EXPORTING e TYPE i
-                                        f TYPE i
-                                        g TYPE string_table
-                                        h TYPE string_table,
-      meth_pass_by_value IMPORTING VALUE(i) TYPE i
-                                   VALUE(j) TYPE i
-                                   VALUE(k) TYPE string_table
-                                   VALUE(l) TYPE string_table
-                         EXPORTING VALUE(m) TYPE i
-                                   VALUE(n) TYPE i
-                                   VALUE(o) TYPE string_table
-                                   VALUE(p) TYPE string_table.
-
-    "Demo internal tables used by the examples
+    "Demo types and data objects used by the examples
     TYPES: BEGIN OF ty_tab,
              comp1 TYPE i,
              comp2 TYPE i,
@@ -636,7 +525,8 @@ CLASS zcl_demo_abap DEFINITION
              comp6 TYPE i,
            END OF ty_tab.
 
-    CLASS-DATA: standard_tab               TYPE TABLE OF ty_tab WITH NON-UNIQUE KEY comp1,
+    CLASS-DATA: base_tab                   TYPE TABLE OF ty_tab WITH EMPTY KEY,
+                standard_tab               TYPE TABLE OF ty_tab WITH NON-UNIQUE KEY comp1,
                 sorted_tab                 TYPE SORTED TABLE OF ty_tab WITH UNIQUE KEY comp1,
                 hashed_tab                 TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1,
                 standard_tab_w_sec_key     TYPE TABLE OF ty_tab WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS comp1,
@@ -644,9 +534,51 @@ CLASS zcl_demo_abap DEFINITION
                 hashed_tab_mult_key_comp   TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 comp2 comp3,
                 standard_tab_w_default_key TYPE TABLE OF ty_tab,
                 key_tab                    TYPE TABLE OF zdemo_abap_tab1-key_field WITH EMPTY KEY,
-                itab1                      TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY,
-                flsch_tab                  TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
-                carr_tab                   TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+                itab                       TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY,
+                carr_tab                   TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY,
+                str                        TYPE string,
+                char_a                     TYPE c LENGTH 1000,
+                char_b                     TYPE c LENGTH 1 VALUE '#',
+                str_a                      TYPE string,
+                str_b                      TYPE string VALUE `#`,
+                num_1                      TYPE decfloat34 VALUE '1.2345',
+                num_2                      TYPE decfloat34 VALUE '12345',
+                num_3                      TYPE decfloat34 VALUE '12345',
+                num_4                      TYPE decfloat34 VALUE '1.2345',
+                num_5                      TYPE decfloat34 VALUE '1.2345',
+                num_6                      TYPE decfloat34 VALUE '1.2345',
+                res                        TYPE decfloat34,
+                num_1b                     TYPE f VALUE '1.2345',
+                num_2b                     TYPE i VALUE 12345,
+                num_3b                     TYPE int8 VALUE 12345,
+                num_4b                     TYPE p LENGTH 16 DECIMALS 8 VALUE '1.2345',
+                num_5b                     TYPE decfloat16 VALUE '1.2345',
+                num_6b                     TYPE decfloat34 VALUE '1.2345',
+                res_b                      TYPE decfloat34.
+
+
+    TYPES: BEGIN OF ty_wide,
+             id   TYPE i,
+             col1 TYPE c LENGTH 100,
+             col2 TYPE c LENGTH 100,
+             col3 TYPE c LENGTH 100,
+             col4 TYPE c LENGTH 100,
+             col5 TYPE c LENGTH 100,
+           END OF ty_wide.
+
+    CLASS-DATA: lt_wide   TYPE TABLE OF ty_wide WITH EMPTY KEY,
+                str_tab_a TYPE string_table,
+                str_tab_b TYPE string_table.
+
+    TYPES: BEGIN OF s_info,
+             method_name           TYPE abap_methname,
+             subgroup              TYPE string,
+             ops                   TYPE i,
+             description           TYPE string,
+             median_runtime_per_op TYPE decfloat34,
+             relative_to_min       TYPE decfloat34,
+           END OF s_info.
+    CLASS-DATA t_info TYPE TABLE OF s_info WITH EMPTY KEY.
 
     TYPES: BEGIN OF ty_deep_tab,
              comp1 TYPE i,
@@ -660,6 +592,28 @@ CLASS zcl_demo_abap DEFINITION
            END OF ty_deep_tab.
 
     CLASS-DATA deep_standard_tab TYPE TABLE OF ty_deep_tab WITH EMPTY KEY.
+    CLASS-DATA read_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\\root.
+    "CLASS-DATA result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\\root.
+
+    CLASS-DATA upd TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m\\root.
+
+    "Methods demonstrating parameter passing by value and reference
+    METHODS: meth_pass_by_ref IMPORTING a TYPE i
+                                        b TYPE i
+                                        c LIKE deep_standard_tab
+                                        d LIKE deep_standard_tab
+                              EXPORTING e TYPE i
+                                        f TYPE i
+                                        g LIKE deep_standard_tab
+                                        h LIKE deep_standard_tab,
+      meth_pass_by_value IMPORTING VALUE(i) TYPE i
+                                   VALUE(j) TYPE i
+                                   VALUE(k) LIKE deep_standard_tab
+                                   VALUE(l) LIKE deep_standard_tab
+                         EXPORTING VALUE(m) TYPE i
+                                   VALUE(n) TYPE i
+                                   VALUE(o) LIKE deep_standard_tab
+                                   VALUE(p) LIKE deep_standard_tab.
 
 ENDCLASS.
 
@@ -667,27 +621,205 @@ ENDCLASS.
 CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
+    me->out = out.
 
-    "Dynamically calling all exemplary methods (excluding the main method)
-    "The method names are retrieved using RTTI. Refer to the Dynamic Programming ABAP cheat sheet.
-    DATA(oref) = NEW zcl_demo_abap( ).
-    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
-    DELETE methods WHERE name = 'IF_OO_ADT_CLASSRUN~MAIN'.
-    SORT methods BY name ASCENDING.
+    t_info = VALUE #(
+      "SQL
+      ( subgroup = `SQL_01` method_name = 'SQL_01_REDUCE_T_ROWS_A'        ops = loop_count_5    description = `WHERE clause` )
+      ( subgroup = `SQL_01` method_name = 'SQL_01_REDUCE_T_ROWS_Z'        ops = loop_count_5    description = `SELECT *, filter in LOOP (no WHERE)` )
+      ( subgroup = `SQL_02` method_name = 'SQL_02_REDUCE_T_ROWS_A'        ops = loop_count_5    description = `SELECT SINGLE` )
+      ( subgroup = `SQL_02` method_name = 'SQL_02_REDUCE_T_ROWS_B'        ops = loop_count_5    description = `SELECT *, then READ TABLE` )
+      ( subgroup = `SQL_02` method_name = 'SQL_02_REDUCE_T_ROWS_Z'        ops = loop_count_5    description = `SELECT ... UP TO 1 ROWS` )
+      ( subgroup = `SQL_03` method_name = 'SQL_03_REDUCE_T_ROWS_A'        ops = loop_count_5    description = `SELECT ... UP TO 1000 ROWS` )
+      ( subgroup = `SQL_03` method_name = 'SQL_03_REDUCE_T_ROWS_Z'        ops = loop_count_5    description = `SELECT *, DELETE from index` )
+      ( subgroup = `SQL_04` method_name = 'SQL_04_REDUCE_DATA_VOLUME_A'   ops = loop_count_5    description = `SELECT 2 fields only from table (assumption: only these two are needed)` )
+      ( subgroup = `SQL_04` method_name = 'SQL_04_REDUCE_DATA_VOLUME_Z'   ops = loop_count_5    description = `SELECT * from same table (assumption: only two are needed)` )
+      ( subgroup = `SQL_05` method_name = 'SQL_05_REDUCE_DB_ACCESS_A'     ops = loop_count_5    description = `Single SELECT` )
+      ( subgroup = `SQL_05` method_name = 'SQL_05_REDUCE_DB_ACCESS_Z'     ops = loop_count_5    description = `SELECT SINGLE in loop` )
+      ( subgroup = `SQL_06` method_name = 'SQL_06_REDUCE_DB_ACCESS_A'     ops = loop_count_5    description = `INNER JOIN with host variable itab` )
+      ( subgroup = `SQL_06` method_name = 'SQL_06_REDUCE_DB_ACCESS_B'     ops = loop_count_5    description = `WHERE EXISTS subquery` )
+      ( subgroup = `SQL_06` method_name = 'SQL_06_REDUCE_DB_ACCESS_C'     ops = loop_count_5    description = `FOR ALL ENTRIES` )
+      ( subgroup = `SQL_06` method_name = 'SQL_06_REDUCE_DB_ACCESS_Z'     ops = loop_count_5    description = `SELECT in LOOP (row-by-row)` )
+      ( subgroup = `SQL_07` method_name = 'SQL_07_REDUCE_DB_ACCESS_A'     ops = loop_count_5    description = `MODIFY FROM TABLE (block)` )
+      ( subgroup = `SQL_07` method_name = 'SQL_07_REDUCE_DB_ACCESS_Z'     ops = loop_count_5    description = `MODIFY row-by-row in LOOP` )
+      ( subgroup = `SQL_08` method_name = 'SQL_08_REDUCE_DB_ACCESS_A'     ops = loop_count_5    description = `LEFT OUTER JOIN` )
+      ( subgroup = `SQL_08` method_name = 'SQL_08_REDUCE_DB_ACCESS_Z'     ops = loop_count_5    description = `Nested SELECT loop (ENDSELECT)` )
+      ( subgroup = `SQL_09` method_name = 'SQL_09_UPDATE_A'               ops = loop_count_5    description = `UPDATE ... SET (set-based)` )
+      ( subgroup = `SQL_09` method_name = 'SQL_09_UPDATE_Z'               ops = loop_count_5    description = `UPDATE row-by-row in SELECT loop` )
+      ( subgroup = `SQL_11` method_name = 'SQL_11_DYNAMIC_SQL_A'          ops = loop_count_250  description = `Static SQL specification` )
+      ( subgroup = `SQL_11` method_name = 'SQL_11_DYNAMIC_SQL_Z'          ops = loop_count_250  description = `Dynamic SQL specification` )
+      "ITAB
+      ( subgroup = `ITAB_01` method_name = 'ITAB_01_TABLE_KEY_READ_A_STD'   ops = loop_count_500 description = `READ TABLE standard, primary key` )
+      ( subgroup = `ITAB_01` method_name = 'ITAB_01_TABLE_KEY_READ_B_SO'    ops = loop_count_500 description = `READ TABLE sorted, primary key` )
+      ( subgroup = `ITAB_01` method_name = 'ITAB_01_TABLE_KEY_READ_Z_HA'    ops = loop_count_500 description = `READ TABLE hashed, primary key` )
+      ( subgroup = `ITAB_02` method_name = 'ITAB_02_INCOMPLETE_T_KEY_A_SO'  ops = loop_count_500 description = `Sorted, partial key (left-aligned)` )
+      ( subgroup = `ITAB_02` method_name = 'ITAB_02_INCOMPLETE_T_KEY_B_HA'  ops = loop_count_500 description = `Hashed, partial key` )
+      ( subgroup = `ITAB_02` method_name = 'ITAB_02_INCOMPLETE_T_KEY_Z_SO'  ops = loop_count_500 description = `Sorted, partial key (not left-aligned)` )
+      ( subgroup = `ITAB_03` method_name = 'ITAB_03_STD_BINARY_SEARCH_A'    ops = loop_count_500 description = `READ TABLE standard + BINARY SEARCH` )
+      ( subgroup = `ITAB_03` method_name = 'ITAB_03_STD_BINARY_SEARCH_Z'    ops = loop_count_500 description = `READ TABLE standard, no BINARY SEARCH` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_A_STD'             ops = loop_count_500 description = `LOOP WHERE, standard table` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_B_SO_COMPL_KEY'    ops = loop_count_500 description = `LOOP WHERE, sorted, full key` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_C_SO_INCOMPL_KEY'  ops = loop_count_500 description = `LOOP WHERE, sorted, partial key (not left-aligned)` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_D_SO_INCOMPL_K_LA' ops = loop_count_500 description = `LOOP WHERE, sorted, partial key (left-aligned)` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_E_HA_COMPL_KEY'    ops = loop_count_500 description = `LOOP WHERE, hashed, full key` )
+      ( subgroup = `ITAB_04` method_name = 'ITAB_04_LOOP_Z_HA_INCOMPL_KEY'  ops = loop_count_500 description = `LOOP WHERE, hashed, partial key` )
+      ( subgroup = `ITAB_05` method_name = 'ITAB_05_LOOP_NO_WHERE_A'        ops = loop_count_500 description = `LOOP WHERE comp1 > 800` )
+      ( subgroup = `ITAB_05` method_name = 'ITAB_05_LOOP_NO_WHERE_Z'        ops = loop_count_500 description = `LOOP + IF inside (no WHERE)` )
+      ( subgroup = `ITAB_06` method_name = 'ITAB_06_LOOP_TARGET_A_FS'       ops = loop_count_500 description = `LOOP ASSIGNING field symbol (deep table)` )
+      ( subgroup = `ITAB_06` method_name = 'ITAB_06_LOOP_TARGET_B_DREF'     ops = loop_count_500 description = `LOOP REFERENCE INTO data ref (deep table)` )
+      ( subgroup = `ITAB_06` method_name = 'ITAB_06_LOOP_TARGET_Z_WA'       ops = loop_count_500 description = `LOOP INTO work area (deep table)` )
+      ( subgroup = `ITAB_07` method_name = 'ITAB_07_LOOP_MODIFY_A_FS'       ops = loop_count_500 description = `LOOP ASSIGNING FS, direct modification` )
+      ( subgroup = `ITAB_07` method_name = 'ITAB_07_LOOP_MODIFY_B_DREF'     ops = loop_count_500 description = `LOOP REFERENCE dref, modify via dref` )
+      ( subgroup = `ITAB_07` method_name = 'ITAB_07_LOOP_MODIFY_Z_WA'       ops = loop_count_500 description = `LOOP INTO wa, MODIFY FROM wa` )
+      ( subgroup = `ITAB_08` method_name = 'ITAB_08_LOOP_A'                 ops = loop_count_250  description = `LOOP AT (sequential cursor)` )
+      ( subgroup = `ITAB_08` method_name = 'ITAB_08_DO_READ_Z'              ops = loop_count_250  description = `DO + READ TABLE INDEX (manual iteration)` )
+      ( subgroup = `ITAB_09` method_name = 'ITAB_09_BLOCK_INSERT_A'         ops = loop_count_500 description = `APPEND LINES OF (block)` )
+      ( subgroup = `ITAB_09` method_name = 'ITAB_09_BLOCK_INSERT_Z'         ops = loop_count_500 description = `APPEND in LOOP (row-by-row)` )
+      ( subgroup = `ITAB_10` method_name = 'ITAB_10_RESTRICT_COPY_A'        ops = loop_count_500 description = `MODIFY TRANSPORTING (selected fields)` )
+      ( subgroup = `ITAB_10` method_name = 'ITAB_10_RESTRICT_COPY_Z'        ops = loop_count_500 description = `MODIFY without TRANSPORTING (all fields)` )
+      ( subgroup = `ITAB_11` method_name = 'ITAB_11_SEC_KEY_A'              ops = loop_count_500 description = `READ TABLE WITH TABLE KEY (secondary key)` )
+      ( subgroup = `ITAB_11` method_name = 'ITAB_11_SEC_KEY_Z'              ops = loop_count_500 description = `READ TABLE WITH TABLE KEY (primary key)` )
+      ( subgroup = `ITAB_12` method_name = 'ITAB_12_SEC_KEY_FREQ_MOD_A'     ops = loop_count_500 description = `Secondary key + LOOP with READ (no writes)` )
+      ( subgroup = `ITAB_12` method_name = 'ITAB_12_SEC_KEY_FREQ_MOD_Z'     ops = loop_count_500 description = `Secondary key + LOOP with READ and writes` )
+      ( subgroup = `ITAB_13` method_name = 'ITAB_13_SORT_ITAB_A'            ops = loop_count_500 description = `SORT BY comp1 (explicit key)` )
+      ( subgroup = `ITAB_13` method_name = 'ITAB_13_SORT_ITAB_Z'            ops = loop_count_500 description = `SORT (implicit standard key)` )
+      ( subgroup = `ITAB_14` method_name = 'ITAB_14_DYN_ITAB_SPEC_A'        ops = loop_count_500 description = `READ TABLE with static key specification` )
+      ( subgroup = `ITAB_14` method_name = 'ITAB_14_DYN_ITAB_SPEC_Z'        ops = loop_count_500 description = `READ TABLE with dynamic key specification` )
+      ( subgroup = `ITAB_15` method_name = 'ITAB_15_READ_WHERE_A'           ops = loop_count_100 description = `READ TABLE WITH KEY` )
+      ( subgroup = `ITAB_15` method_name = 'ITAB_15_READ_WHERE_Z'           ops = loop_count_100 description = `READ TABLE WHERE (linear search)` )
+      ( subgroup = `ITAB_16` method_name = 'ITAB_16_FIND_BLOCK_A'           ops = loop_count_100  description = `FIND IN TABLE (block)` )
+      ( subgroup = `ITAB_16` method_name = 'ITAB_16_FIND_LOOP_Z'            ops = loop_count_100 description = `FIND in LOOP (row-by-row)` )
+      ( subgroup = `ITAB_17` method_name = 'ITAB_17_TABLE_EXPR_MULT_ACC_A'   ops = loop_count_500  description = `Multiple reads and writes using table lines assigned to field symbols` )
+      ( subgroup = `ITAB_17` method_name = 'ITAB_17_TABLE_EXPR_MULT_ACC_Z'   ops = loop_count_500 description = `Multiple reads and writes using individual table expressions` )
+      ( subgroup = `ITAB_18` method_name = 'ITAB_18_REPLACE_BLOCK_A'        ops = loop_count_100  description = `REPLACE IN TABLE (block)` )
+      ( subgroup = `ITAB_18` method_name = 'ITAB_18_REPLACE_LOOP_Z'         ops = loop_count_100 description = `REPLACE in LOOP (row-by-row)` )
+      "EML
+      ( subgroup = `EML_01`  method_name = 'EML_01_EML_IN_LOOP_A'           ops = loop_count_5    description = `MODIFY ENTITIES with FOR loop (block)` )
+      ( subgroup = `EML_01`  method_name = 'EML_01_EML_IN_LOOP_Z'           ops = loop_count_5    description = `MODIFY ENTITIES per row in LOOP` )
+      "MISC
+      ( subgroup = `MISC_01` method_name = 'MISC_01_STRINGS_A'              ops = loop_count_1000 description = `Concatenate TYPE string` )
+      ( subgroup = `MISC_01` method_name = 'MISC_01_STRINGS_Z'              ops = loop_count_1000 description = `Concatenate TYPE c` )
+      ( subgroup = `MISC_02` method_name = 'MISC_02_STRING_TEMPLATES_A'     ops = loop_count_1000            description = `String assignment: backquote literal` )
+      ( subgroup = `MISC_02` method_name = 'MISC_02_STRING_TEMPLATES_Z'     ops = loop_count_1000            description = `String assignment: template (no expression)` )
+      ( subgroup = `MISC_03` method_name = 'MISC_03_SEARCH_PATTERN_A'       ops = loop_count_250   description = `Pattern search: IF ... CP` )
+      ( subgroup = `MISC_03` method_name = 'MISC_03_SEARCH_PATTERN_Z'       ops = loop_count_250   description = `Pattern search: FIND PCRE` )
+      ( subgroup = `MISC_04` method_name = 'MISC_04_TYPE_CONVERSION_A'      ops = loop_count_1000 description = `Arithmetic with same types (decfloat34)` )
+      ( subgroup = `MISC_04` method_name = 'MISC_04_TYPE_CONVERSION_Z'      ops = loop_count_1000 description = `Arithmetic with mixed types (implicit conversions)` )
+      ( subgroup = `MISC_05` method_name = 'MISC_05_FORMAL_PARAMETERS_A'    ops = loop_count_30  description = `Pass parameters by reference` )
+      ( subgroup = `MISC_05` method_name = 'MISC_05_FORMAL_PARAMETERS_Z'    ops = loop_count_30  description = `Pass parameters by value` )
 
-    LOOP AT methods INTO DATA(meth_wa).
-      TRY.
-          CALL METHOD oref->(meth_wa-name) EXPORTING out = out name = meth_wa-name.
-        CATCH cx_root.
-      ENDTRY.
+    ).
 
-      "For better readability of the output and reference in the console, inserting a divider
-      "after the final method of an example context. These methods include _Z in the name.
-      FIND `_Z` IN meth_wa-name IGNORING CASE.
-      IF sy-subrc = 0.
-        out->write( repeat( val = `*` occ = 70 ) ).
+    "Run all benchmarks
+    LOOP AT t_info REFERENCE INTO DATA(info).
+      CLEAR runtime_tab.
+      DO repetitions TIMES.
+        prepare( info->method_name ).
+        ts1 = utclong_current( ).
+        CALL METHOD (info->method_name) EXPORTING ops = info->ops.
+        store_runtime( high = utclong_current( ) low = ts1 ).
+      ENDDO.
+      info->median_runtime_per_op = get_median_runtime( ) / info->ops.
+    ENDLOOP.
+
+    "Compute relative_to_min per subgroup
+    DATA sg TYPE string.
+    DATA min_t TYPE decfloat34.
+    LOOP AT t_info REFERENCE INTO info.
+      IF info->subgroup <> sg.
+        sg = info->subgroup.
+        min_t = info->median_runtime_per_op.
+        LOOP AT t_info REFERENCE INTO DATA(scan) WHERE subgroup = sg.
+          IF scan->median_runtime_per_op < min_t.
+            min_t = scan->median_runtime_per_op.
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+      IF min_t > 0.
+        info->relative_to_min = info->median_runtime_per_op / min_t.
       ENDIF.
     ENDLOOP.
+
+    "Output results
+    TYPES: BEGIN OF s_result,
+             method_name           TYPE abap_methname,
+             description           TYPE string,
+             ops                   TYPE i,
+             median_runtime_per_op TYPE p LENGTH 8 DECIMALS 3,
+             relative_to_min       TYPE p LENGTH 8 DECIMALS 3,
+           END OF s_result.
+    DATA t_sg_result TYPE TABLE OF s_result WITH EMPTY KEY.
+    DATA curr_cat TYPE string.
+    DATA curr_sg TYPE string.
+    LOOP AT t_info REFERENCE INTO info.
+      DATA(cat) = COND string(
+        WHEN info->subgroup(3) = `SQL` THEN `SQL`
+        WHEN info->subgroup(3) = `ITA` THEN `ITAB`
+        WHEN info->subgroup(3) = `MIS` THEN `MISC`
+        WHEN info->subgroup(3) = `EML` THEN `EML`
+        ELSE info->subgroup(3)
+      ).
+      IF cat <> curr_cat.
+        IF curr_sg IS NOT INITIAL.
+          SORT t_sg_result BY median_runtime_per_op ASCENDING.
+          out->write( t_sg_result ).
+          out->write( |\n| ).
+          out->write( |\n| ).
+          CLEAR t_sg_result.
+        ENDIF.
+        curr_cat = cat.
+        curr_sg = info->subgroup.
+        write_section( cat ).
+        out->write( |\n| ).
+        out->write( |--- { curr_sg } { repeat( val = `-` occ = 100 ) }| ).
+        out->write( |\n| ).
+        out->write( |\n| ).
+      ELSEIF info->subgroup <> curr_sg.
+        SORT t_sg_result BY median_runtime_per_op ASCENDING.
+        out->write( t_sg_result ).
+        CLEAR t_sg_result.
+        curr_sg = info->subgroup.
+        out->write( |\n| ).
+        out->write( |\n| ).
+        out->write( |--- { curr_sg } { repeat( val = `-` occ = 100 ) }| ).
+        out->write( |\n| ).
+        out->write( |\n| ).
+      ENDIF.
+      APPEND VALUE #(
+        method_name           = info->method_name
+        description           = info->description
+        ops                   = info->ops
+        median_runtime_per_op = info->median_runtime_per_op * 1000000
+        relative_to_min       = info->relative_to_min
+      ) TO t_sg_result.
+    ENDLOOP.
+    IF t_sg_result IS NOT INITIAL.
+      SORT t_sg_result BY median_runtime_per_op ASCENDING.
+      out->write( t_sg_result ).
+    ENDIF.
+
+    "Parallel processing uses a different measurement approach
+    out->write( |\n| ).
+    out->write( |\n| ).
+    write_section( `MISC - PARALLEL PROCESSING` ).
+    out->write( |\n| ).
+    out->write( |--- MISC_06 { repeat( val = `-` occ = 100 ) }| ).
+    out->write( |\n| ).
+    DATA(diff_par) = misc_06_parallel_processing_a( ).
+    out->write( |\n| ).
+    DATA(diff_no_par) = misc_06_parallel_processing_z( ).
+    out->write( |\n| ).
+    IF diff_par > 0 AND diff_no_par > 0.
+      DATA min_diff LIKE diff_par.
+      min_diff = nmin( val1 = diff_par val2 = diff_no_par ).
+      IF min_diff IS NOT INITIAL.
+        DATA(rel_par) = CONV decfloat34( diff_par ) / min_diff.
+        DATA(rel_seq) = CONV decfloat34( diff_no_par ) / min_diff.
+        out->write( |Relative to fastest - parallel (A):   { rel_par STYLE = SIMPLE }| ).
+        out->write( |Relative to fastest - sequential (Z): { rel_seq STYLE = SIMPLE DECIMALS = 3 }| ).
+      ENDIF.
+    ENDIF.
+    out->write( |\n| ).
   ENDMETHOD.
 
   METHOD store_runtime.
@@ -696,6 +828,50 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                            IMPORTING seconds = DATA(seconds) ).
 
     APPEND seconds TO runtime_tab.
+  ENDMETHOD.
+
+  METHOD write_section.
+    out->write( |*&{ repeat( val = `-` occ = 120 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = 120 ) }*| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD prepare.
+    CASE method_name.
+      WHEN 'ITAB_09_BLOCK_INSERT_A'
+        OR 'ITAB_09_BLOCK_INSERT_Z'.
+        CLEAR str_tab_a.
+        CLEAR str_tab_b.
+        DO 1000 TIMES.
+          APPEND sy-tabix TO str_tab_a.
+        ENDDO.
+      WHEN 'ITAB_16_FIND_BLOCK_A'
+        OR 'ITAB_16_FIND_LOOP_Z'
+        OR 'ITAB_18_REPLACE_BLOCK_A'
+        OR 'ITAB_18_REPLACE_LOOP_Z'.
+        CLEAR str_tab_a.
+        DO 100 TIMES.
+          APPEND |ABAP{ sy-index }| TO str_tab_a.
+        ENDDO.
+      WHEN 'SQL_04_REDUCE_DATA_VOLUME_A'
+        OR 'SQL_04_REDUCE_DATA_VOLUME_Z'.
+        CLEAR lt_wide.
+        DO 1000 TIMES.
+          INSERT VALUE ty_wide( id = sy-tabix col1 = 'X' col2 = 'X' col3 = 'X' col4 = 'X' col5 = 'X' ) INTO TABLE lt_wide.
+        ENDDO.
+      WHEN `MISC_03_SEARCH_PATTERN_A` OR
+            `MISC_03_SEARCH_PATTERN_Z`.
+        str = `abc_def_ghi`.
+      WHEN `ITAB_17_TABLE_EXPR_MULT_ACC_A`
+      OR `ITAB_17_TABLE_EXPR_MULT_ACC_Z`.
+        standard_tab = base_tab.
+      WHEN `MISC_01_STRINGS_A`
+            OR `MISC_01_STRINGS_Z`.
+        CLEAR str_a.
+        CLEAR char_a.
+
+    ENDCASE.
   ENDMETHOD.
 
   METHOD class_constructor.
@@ -716,7 +892,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     DATA demo_tab TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
 
-    DO 1000 TIMES.
+    DO 10000 TIMES.
       APPEND VALUE #( key_field = sy-index char1 = sy-index char2 = sy-index num1 = sy-index num2 = sy-index ) TO demo_tab.
     ENDDO.
 
@@ -724,7 +900,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     INSERT zdemo_abap_tab1 FROM TABLE @demo_tab.
 
     "Populating demo internal tables
-    DO loop_count_250 TIMES.
+    DO loop_count_100 TIMES.
       APPEND sy-index TO key_tab.
     ENDDO.
 
@@ -735,139 +911,70 @@ CLASS zcl_demo_abap IMPLEMENTATION.
           ( carrid = 'IJ' carrname = 'IJ Airways' ) ).
 
     DO loop_count_1000 TIMES.
-      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index comp5 = sy-index comp6 = sy-index ) INTO TABLE sorted_tab ASSIGNING FIELD-SYMBOL(<fs>).
+      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index comp5 = sy-index comp6 = sy-index ) INTO TABLE base_tab ASSIGNING FIELD-SYMBOL(<fs>).
 
       INSERT CORRESPONDING #( <fs> ) INTO TABLE deep_standard_tab ASSIGNING FIELD-SYMBOL(<deep>).
       <deep>-comp7 = VALUE #( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
       <deep>-comp8 = <fs>.
     ENDDO.
 
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab.
-    INSERT LINES OF sorted_tab INTO TABLE hashed_tab.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_w_sec_key.
-    INSERT LINES OF sorted_tab INTO TABLE sorted_tab_mult_key_comp.
-    INSERT LINES OF sorted_tab INTO TABLE hashed_tab_mult_key_comp.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_w_default_key.
-  ENDMETHOD.
+    sorted_tab = base_tab.
+    standard_tab = base_tab.
+    hashed_tab = base_tab.
+    standard_tab_w_sec_key = base_tab.
+    sorted_tab_mult_key_comp = base_tab.
+    hashed_tab_mult_key_comp = base_tab.
+    standard_tab_w_default_key = base_tab.
 
-  METHOD sql_10_db_logic_a.
-    "Using aggregate functions
-    "This simplified example does not necessarily show better performance than the
-    "other example. The purpose here is to leave calculation tasks to the database,
-    "in contrast to the manual calculation.
-
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
-**********************************************************************
-      SELECT AVG( key_field ) AS avg,
-             SUM( key_field ) AS sum,
-             MAX( key_field ) AS max,
-             MIN( key_field ) AS min,
-             COUNT( key_field ) AS count
-         FROM zdemo_abap_tab1
-         INTO @DATA(result).
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
+    DO loop_count_5 TIMES.
+      APPEND VALUE #( key_field = sy-index field3 = sy-index field4 = sy-index ) TO read_result.
     ENDDO.
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
-  ENDMETHOD.
-
-  METHOD sql_10_db_logic_z.
-    "Reading all table rows, then further processing the data sets
-    "to calculate values.
-
-    DATA: BEGIN OF result,
-            avg   TYPE decfloat34,
-            sum   TYPE i,
-            max   TYPE i,
-            min   TYPE i,
-            count TYPE i,
-          END OF result.
-
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
-**********************************************************************
-      SELECT key_field
-       FROM zdemo_abap_tab1
-       INTO TABLE @DATA(tab).
-
-      IF tab IS NOT INITIAL.
-        LOOP AT tab ASSIGNING FIELD-SYMBOL(<fs>).
-          result-count += 1.
-          result-sum += <fs>-key_field.
-          result-max = COND #( WHEN <fs>-key_field > result-max THEN <fs>-key_field ELSE result-max ).
-          result-min = COND #( WHEN sy-tabix = 1 THEN <fs>-key_field
-                               WHEN <fs>-key_field < result-min THEN <fs>-key_field
-                               ELSE result-min ).
-        ENDLOOP.
-        result-avg = result-sum / result-count.
-      ENDIF.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+    upd = VALUE #( FOR wa IN read_result ( %tky = wa-%tky field3 = wa-field3 + 1 field4 = wa-field4 + 1 ) ).
   ENDMETHOD.
 
   METHOD sql_11_dynamic_sql_a.
     "Using static specification in ABAP SQL statement
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT SINGLE carrid, connid, countryfr, cityfrom
-         FROM zdemo_abap_flsch
-         WHERE carrid <> 'LH'
-         INTO NEW @DATA(dref_fl).
+      SELECT key_field, char1, char2, num1, num2
+        FROM zdemo_abap_tab1
+         WHERE key_field < 1000
+         INTO TABLE NEW @DATA(dref_fl).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_11_dynamic_sql_z.
     "Dynamic specification in ABAP SQL statement
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT SINGLE ('CARRID, CONNID, COUNTRYFR, CITYFROM')
-        FROM ('ZDEMO_ABAP_FLSCH')
-        WHERE (`CARRID <> 'LH'`)
-        INTO NEW @DATA(dref_fl2).
+      SELECT ('KEY_FIELD, CHAR1, CHAR2, NUM1, NUM2')
+        FROM ('ZDEMO_ABAP_TAB1')
+        WHERE (`KEY_FIELD < 1000`)
+        INTO TABLE NEW @DATA(dref_fl2).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_01_reduce_t_rows_a.
     "ABAP SQL statement specifying a WHERE clause
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
         FROM zdemo_abap_tab1
-        WHERE key_field < 500
+        WHERE key_field < 1000
         INTO TABLE @DATA(it1).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_01_reduce_t_rows_z.
@@ -875,309 +982,254 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "Instead, reading all data from the database table, processing
     "the content further in a loop, and filtering out data sets.
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
         FROM zdemo_abap_tab1
         INTO TABLE @DATA(it2).
 
       LOOP AT it2 REFERENCE INTO DATA(dref2).
-        IF dref2->key_field < 500.
+        IF dref2->key_field < 1000.
           DELETE it2 INDEX sy-tabix.
         ENDIF.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_02_reduce_t_rows_a.
     "Using SELECT SINGLE to read a single line
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT SINGLE carrid, connid, cityfrom, countryfr, cityto, countryto
-       FROM zdemo_abap_flsch
-       WHERE carrid = char`LH` AND connid = char`0400`
-       INTO @DATA(line).
+      SELECT SINGLE key_field, char1, char2, num1, num2
+              FROM zdemo_abap_tab1
+              WHERE key_field = 5000
+              INTO @DATA(line).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_02_reduce_t_rows_b.
     "Reading all data sets from the database table, and reading
     "an entry using READ TABLE.
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-        FROM zdemo_abap_flsch
-        INTO TABLE @DATA(it3).
+      SELECT key_field, char1, char2, num1, num2
+         FROM zdemo_abap_tab1
+         INTO TABLE @DATA(it3).
 
-      READ TABLE it3 INTO DATA(line4) WITH KEY carrid = 'LH' connid = '0400'.
+      READ TABLE it3 INTO DATA(line4) WITH KEY key_field = 5000.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
+
+  METHOD sql_02_reduce_t_rows_z.
+    "Specifying UP TO 1 ROWS to retrieve a single row
+
+    DO ops TIMES.
+**********************************************************************
+      SELECT key_field, char1, char2, num1, num2
+        FROM zdemo_abap_tab1
+        WHERE key_field = 5000
+        INTO TABLE @DATA(it4)
+        UP TO 1 ROWS.
+**********************************************************************
+    ENDDO.
+
+  ENDMETHOD.
+
 
   METHOD sql_03_reduce_t_rows_a.
     "Reading a specific number of data sets from the database table using
     "the UP TO n ROWS addition
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
          FROM zdemo_abap_tab1
          INTO TABLE @DATA(it5)
-         UP TO 100 ROWS.
+         UP TO 1000 ROWS.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_03_reduce_t_rows_z.
     "Reading all database table entries and further process the internal table
     "content
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
              FROM zdemo_abap_tab1
              INTO TABLE @DATA(it6).
 
-      DELETE it6 FROM 101.
+      DELETE it6 FROM 1001.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_04_reduce_data_volume_a.
-    "Specifying columns so that not all columns are read
+    "Select only 2 of 6 fields from a wide in-memory table
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-       FROM zdemo_abap_flsch
-       INTO TABLE @DATA(it7).
+      SELECT id, col1 FROM @lt_wide AS tab INTO TABLE @DATA(it).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
   METHOD sql_04_reduce_data_volume_z.
-    "Specifying SELECT * to read all columns
+    "SELECT * fetches all 6 fields
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT *
-       FROM zdemo_abap_flsch
-       INTO TABLE @DATA(it8).
+      SELECT * FROM @lt_wide AS tab INTO TABLE @DATA(it).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
   METHOD sql_05_reduce_db_access_a.
     "Single database access
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-       FROM zdemo_abap_flsch
-       INTO TABLE @DATA(it9)
-       UP TO 5 ROWS.
+      SELECT key_field, char1, char2, num1, num2
+            FROM zdemo_abap_tab1
+            INTO TABLE @DATA(it9)
+            UP TO 5 ROWS.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_05_reduce_db_access_z.
     "Repeated database access in a loop
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       DO 5 TIMES.
-        SELECT SINGLE carrid, connid, cityfrom, countryfr, cityto, countryto
-           FROM zdemo_abap_flsch
-           INTO @DATA(fl_row).
+        SELECT SINGLE key_field, char1, char2, num1, num2
+          FROM zdemo_abap_tab1
+          INTO @DATA(fl_row).
       ENDDO.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_06_reduce_db_access_a.
     "Using an inner join
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
           FROM zdemo_abap_tab1
           INNER JOIN @key_tab AS tab
           ON zdemo_abap_tab1~key_field = tab~table_line
-          INTO CORRESPONDING FIELDS OF TABLE @itab1.
+          INTO CORRESPONDING FIELDS OF TABLE @itab.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_06_reduce_db_access_b.
     "Using WHERE EXISTS
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT key_field, char1, char2, num1, num2
         FROM zdemo_abap_tab1
         WHERE EXISTS ( SELECT 'X' FROM @key_tab AS tab WHERE zdemo_abap_tab1~key_field = tab~table_line )
-        INTO CORRESPONDING FIELDS OF TABLE @itab1.
+        INTO CORRESPONDING FIELDS OF TABLE @itab.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
 
   METHOD sql_06_reduce_db_access_c.
     "Using the FOR ALL ENTRIES addition
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       IF key_tab IS NOT INITIAL.
         SELECT key_field, char1, char2, num1, num2
          FROM zdemo_abap_tab1
          FOR ALL ENTRIES IN @key_tab
          WHERE key_field = @key_tab-table_line
-         INTO CORRESPONDING FIELDS OF TABLE @itab1.
+         INTO CORRESPONDING FIELDS OF TABLE @itab.
       ENDIF.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_06_reduce_db_access_z.
     "Repeated database access in a loop
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT key_tab INTO DATA(wa).
         SELECT key_field, char1, char2, num1, num2
           FROM zdemo_abap_tab1
           WHERE key_field = @wa
-          APPENDING CORRESPONDING FIELDS OF TABLE @itab1.
+          APPENDING CORRESPONDING FIELDS OF TABLE @itab.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_07_reduce_db_access_a.
     "Block-wise modify operation
 
-    DELETE FROM zdemo_abap_carr.
-
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       MODIFY zdemo_abap_carr FROM TABLE @carr_tab.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_07_reduce_db_access_z.
     "Line by line modify operations
 
-    DELETE FROM zdemo_abap_carr.
-
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT carr_tab INTO DATA(wa_carr).
         MODIFY zdemo_abap_carr FROM @wa_carr.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_08_reduce_db_access_a.
     "Join
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT fl~carrid, carr~carrname, fl~connid, fl~cityfrom, fl~cityto
          FROM zdemo_abap_flsch AS fl
@@ -1185,20 +1237,15 @@ CLASS zcl_demo_abap IMPLEMENTATION.
               ON fl~carrid = carr~carrid
          INTO TABLE @DATA(it10).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
 
   ENDMETHOD.
 
   METHOD sql_08_reduce_db_access_z.
     "Nested SELECT loop
 
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT carrid, CAST( ' ' AS CHAR( 20 ) ) AS carrname,
        connid, cityfrom, cityto
@@ -1212,35 +1259,27 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         it11 = VALUE #( BASE it11 ( wa_fl ) ).
       ENDSELECT.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_09_update_a.
     "UPDATE ... SET statement
 
-    DO loop_count_10 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       UPDATE zdemo_abap_tab1 SET char1 = 'X' WHERE key_field < 20.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD sql_09_update_z.
     "UPDATE statement using a work area
 
-    DO loop_count_10 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SELECT *
         FROM zdemo_abap_tab1
@@ -1250,145 +1289,92 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         UPDATE zdemo_abap_tab1 FROM @wa_tab.
       ENDSELECT.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
-
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
-  ENDMETHOD.
-
-  METHOD sql_02_reduce_t_rows_z.
-    "Specifying UP TO 1 ROWS to retrieve a single row
-
-    DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
-**********************************************************************
-      SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-        FROM zdemo_abap_flsch
-        WHERE carrid = char`LH` AND connid = char`0400`
-        INTO TABLE @DATA(it4)
-        UP TO 1 ROWS.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    runtime = get_avg_runtime(  ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
   METHOD itab_01_table_key_read_z_ha.
     "Reading from a hashed table using the primary table key
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_01_table_key_read_b_so.
     "Reading from a sorted table using the primary table key
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_01_table_key_read_a_std.
     "Reading from a standard table using the primary table key
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_02_incomplete_t_key_b_ha.
     "Reading from a hashed table using a free key
     "The primary table key is only partially used.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = sy-index comp2 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_02_incomplete_t_key_a_so.
     "Reading from a sorted table using a free key
     "The primary table key is only partially used.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = sy-index comp2 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_02_incomplete_t_key_z_so.
     "Reading from a sorted table using a free key
     "The primary table key is only partially used. The key is not left-aligned.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = sy-index comp3 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD get_avg_runtime.
-    "Calculating the average runtime value
-
-    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
-                               FOR wa IN runtime_tab
-                               NEXT s += wa ).
-
-    TRY.
-        avg_runtime = sum / lines( runtime_tab ).
-      CATCH cx_sy_zerodivide.
-    ENDTRY.
-
+  METHOD get_median_runtime.
+    DATA sorted TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    sorted = runtime_tab.
+    SORT sorted BY table_line ASCENDING.
+    DATA(n) = lines( sorted ).
+    IF n > 0.
+      READ TABLE sorted INDEX ( n DIV 2 + 1 ) INTO median.
+    ENDIF.
     CLEAR runtime_tab.
   ENDMETHOD.
 
@@ -1398,17 +1384,13 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     SORT standard_tab BY comp2 ASCENDING.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp2 = sy-index BINARY SEARCH.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_03_std_binary_search_z.
@@ -1417,156 +1399,123 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     SORT standard_tab BY comp2 ASCENDING.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp2 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_a_std.
     "A standard table is looped across, specifying a WHERE condition.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab REFERENCE INTO DATA(dref) WHERE comp1 = 800 AND comp2 = '800' AND comp3 = '800'.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_b_so_compl_key.
     "A sorted table is looped across, specifying a WHERE condition.
     "The full key is specified.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT sorted_tab_mult_key_comp REFERENCE INTO DATA(dref) WHERE comp1 = 800 AND comp2 = '800' AND comp3 = '800'.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_c_so_incompl_key.
     "A sorted table is looped across, specifying a WHERE condition.
     "The key is partially specified, but not left-aligned.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT sorted_tab_mult_key_comp REFERENCE INTO DATA(dref) WHERE comp2 = '800' AND comp3 = '800'.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_d_so_incompl_k_la.
     "A sorted table is looped across, specifying a WHERE condition.
     "The key is partially specified, left-aligned.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT sorted_tab_mult_key_comp REFERENCE INTO DATA(dref) WHERE comp1 = 800 AND comp2 = '800' .
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_e_ha_compl_key.
     "A hashed table is looped across, specifying a WHERE condition.
     "The key is fully specified.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT hashed_tab_mult_key_comp REFERENCE INTO DATA(dref) WHERE comp1 = 800 AND comp2 = '800' AND comp3 = '800' .
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_04_loop_z_ha_incompl_key.
     "A hashed table is looped across, specifying a WHERE condition.
     "The key is partially specified.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT hashed_tab_mult_key_comp REFERENCE INTO DATA(dref) WHERE comp1 = 800 AND comp2 = '800'.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_05_loop_no_where_a.
     "A standard table is looped across, specifying a WHERE condition.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab REFERENCE INTO DATA(dref) WHERE comp1 > 800.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_05_loop_no_where_z.
     "A standard table is looped across, not specifying a WHERE condition.
     "Instead, an IF constrol structure is implemented in the loop.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab REFERENCE INTO DATA(dref).
         IF dref->comp1 > 800.
@@ -1574,569 +1523,370 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_06_loop_target_a_wa.
+  METHOD itab_06_loop_target_z_wa.
     "A deep standard table is looped across. The target area is a work area.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT deep_standard_tab INTO DATA(wa) WHERE comp1 < 200.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_06_loop_target_b_fs.
+  METHOD itab_06_loop_target_a_fs.
     "A deep standard table is looped across. The target area is a field symbol.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT deep_standard_tab ASSIGNING FIELD-SYMBOL(<fs>) WHERE comp1 < 200.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_06_loop_target_z_dref.
+  METHOD itab_06_loop_target_b_dref.
     "A deep standard table is looped across. The target area is a data reference variable.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT deep_standard_tab REFERENCE INTO DATA(dref) WHERE comp1 < 200.
         ...
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_07_loop_modify_a_wa.
+  METHOD itab_07_loop_modify_z_wa.
     "A standard table is looped across. The target area is a work area.
     "The read table line is modified using a MODIFY statement based
     "on the work area.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab INTO DATA(wa) WHERE comp1 < 800.
         wa-comp6 += 1.
         MODIFY standard_tab FROM wa.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_07_loop_modify_b_fs.
+  METHOD itab_07_loop_modify_a_fs.
     "A standard table is looped across. The target area is a field symbol.
     "The read table line is directly modified using the field symbol.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab ASSIGNING FIELD-SYMBOL(<fs>) WHERE comp1 < 800.
         <fs>-comp6 += 1.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_07_loop_modify_z_dref.
+  METHOD itab_07_loop_modify_b_dref.
     "A standard table is looped across. The target area is a data reference variable.
     "The read table line is directly modified using the data reference variable.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab REFERENCE INTO DATA(dref) WHERE comp1 < 800.
         dref->comp6 += 1.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_08_block_insert_a.
+  METHOD itab_09_block_insert_a.
     "Block-wise insertion of table content
 
-    "Preparing demo data
-    DATA str_tab_a TYPE string_table.
-    DATA str_tab_b TYPE string_table.
-    DO 1000 TIMES.
-      APPEND sy-tabix TO str_tab_a.
-    ENDDO.
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       APPEND LINES OF str_tab_a TO str_tab_b.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_08_block_insert_z.
+  METHOD itab_09_block_insert_z.
     "Line by line insertion of table content
 
-    "Preparing demo data
-    DATA str_tab_a TYPE string_table.
-    DATA str_tab_b TYPE string_table.
-    DO 1000 TIMES.
-      APPEND sy-tabix TO str_tab_a.
-    ENDDO.
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT str_tab_a INTO DATA(wa).
         APPEND wa TO str_tab_b.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_09_restrict_copy_a.
+  METHOD itab_10_restrict_copy_a.
     "Restricting the copying of table line content using the TRANSPORTING addition
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT deep_standard_tab INTO DATA(wa) WHERE comp1 < 400.
         wa-comp6 += 1.
         MODIFY deep_standard_tab FROM wa TRANSPORTING comp6.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_09_restrict_copy_z.
+  METHOD itab_10_restrict_copy_z.
     "Not using the TRANSPORTING addition
     "Instead, all fields except one are overwritten with the same content
     "available in the work area.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT deep_standard_tab INTO DATA(wa) WHERE comp1 < 400.
         wa-comp6 += 1.
         MODIFY deep_standard_tab FROM wa.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_10_sec_key_a.
+  METHOD itab_11_sec_key_a.
     "Reading single lines from a standard table using a secondary table key
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY sec_key COMPONENTS comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_10_sec_key_z.
+  METHOD itab_11_sec_key_z.
     "Reading single lines from a standard table using the primary table key
     "The primary table key of the demo internal table here corresponds to the secondary table
     "key in the itab_10_sec_key_a method.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_11_sec_key_freq_mod_a.
+  METHOD itab_12_sec_key_freq_mod_a.
     "A standard table is looped across. The table specifies a secondary table key.
     "Reads are performed in the loop.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab_w_sec_key ASSIGNING FIELD-SYMBOL(<fs>) TO 200.
         DATA(comp) = <fs>-comp6.
         READ TABLE standard_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY sec_key COMPONENTS comp1 = sy-tabix.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_11_sec_key_freq_mod_z.
+  METHOD itab_12_sec_key_freq_mod_z.
     "A standard table is looped across. The table specifies a secondary table key.
     "The loop contains table modifications.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT standard_tab_w_sec_key ASSIGNING FIELD-SYMBOL(<fs>) TO 200.
         <fs>-comp1 = sy-tabix.
         READ TABLE standard_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY sec_key COMPONENTS comp1 = sy-tabix.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_12_sort_itab_a.
+  METHOD itab_13_sort_itab_a.
     "A standard table declared with the standard key is sorted.
     "The sort key is explicitly specified in the SORT statement.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SORT standard_tab_w_default_key BY comp1 ASCENDING.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_12_sort_itab_z.
+  METHOD itab_13_sort_itab_z.
     "A standard table declared with the standard key is sorted.
     "The sort key is not explicitly specified in the SORT statement.
     "Instead, the standard key is used by default.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       SORT standard_tab_w_default_key.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
-  ENDMETHOD.
 
-  METHOD itab_13_clear_free_a.
-    "Clearing and populating an internal table
-    "The table is cleared using a CLEAR statement.
-
-    "Preparing demo data
-    DATA str_tab_a TYPE string_table.
-
-    DO 1000 TIMES.
-      APPEND sy-tabix TO str_tab_a.
-    ENDDO.
-    DATA(str_tab_b) = str_tab_a.
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
-**********************************************************************
-      CLEAR str_tab_a.
-      APPEND LINES OF str_tab_b TO str_tab_a.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
-  ENDMETHOD.
-
-  METHOD itab_13_clear_free_z.
-    "Clearing and populating an internal table
-    "The table is cleared using a FREE statement.
-
-    "Preparing demo data
-    DATA str_tab_a TYPE string_table.
-
-    DO 10000 TIMES.
-      APPEND sy-tabix TO str_tab_a.
-    ENDDO.
-    DATA(str_tab_b) = str_tab_a.
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
-**********************************************************************
-      FREE str_tab_a.
-      APPEND LINES OF str_tab_b TO str_tab_a.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
   METHOD itab_14_dyn_itab_spec_a.
     "READ TABLE statement using static key specifications
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY sec_key COMPONENTS comp1 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_14_dyn_itab_spec_z.
     "READ TABLE statement using dynamic key specifications
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE standard_tab_w_sec_key TRANSPORTING NO FIELDS WITH TABLE KEY ('SEC_KEY') COMPONENTS ('COMP1') = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_01_while_do_a.
-    "WHILE statement for comparing WHILE and DO
+  METHOD itab_08_loop_a.
+    "Iterating an internal table with LOOP AT (sequential cursor access)
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DATA total TYPE i.
+    DO ops TIMES.
 **********************************************************************
-      DATA num TYPE i.
-      WHILE num <= 1000.
-        num += 1.
-      ENDWHILE.
+      LOOP AT base_tab INTO DATA(wa).
+        total = wa-comp1.
+      ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_01_while_do_z.
-    "DO statement for comparing WHILE and DO
+  METHOD itab_08_do_read_z.
+    "Iterating an internal table with DO and READ TABLE ... INDEX.
+    "Manual index-based access instead of a single LOOP.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DATA total TYPE i.
+    DO ops TIMES.
 **********************************************************************
-      DATA num TYPE i.
-
-      DO.
-        num += 1.
-        IF sy-index = 1000.
-          EXIT.
-        ENDIF.
+      DO lines( base_tab ) TIMES.
+        READ TABLE base_tab INTO DATA(wa) INDEX sy-index.
+        total = wa-comp1.
       ENDDO.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_02_strings_a.
+  METHOD misc_01_strings_a.
     "Concatenating a variable-length string of type string
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA: str_a TYPE string,
-            str_b TYPE string VALUE '#'.
-
       str_a &&= str_b.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_02_strings_z.
+  METHOD misc_01_strings_z.
     "Concatenating a fixed-length string of type c
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA: char_a TYPE c LENGTH 1000,
-            char_b TYPE c LENGTH 1 VALUE '#'.
-
       char_a &&= char_b.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_03_string_templates_a.
+  METHOD misc_02_string_templates_a.
     "String specified as string literal using backquotes
 
-    DO 5000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA str TYPE string.
       str = `ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP`.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_03_string_templates_z.
+  METHOD misc_02_string_templates_z.
     "String template only using characters, without embedded expression
 
-    DO 5000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA str TYPE string.
       str = |ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP ABAP|.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_05_type_conversion_a.
+  METHOD misc_04_type_conversion_a.
     "Calculation of numbers that share the same type
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA: num1   TYPE decfloat34 VALUE '1.2345',
-            num2   TYPE decfloat34 VALUE '12345',
-            num3   TYPE decfloat34 VALUE '12345',
-            num4   TYPE decfloat34 VALUE '1.2345',
-            num5   TYPE decfloat34 VALUE '1.2345',
-            num6   TYPE decfloat34 VALUE '1.2345',
-            result TYPE decfloat34.
-
-      result = num1 + num2 + num3 + num4 + num5 + num6.
+      res = num_1 + num_2 + num_3 + num_4 + num_5 + num_6.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_05_type_conversion_z.
+  METHOD misc_04_type_conversion_z.
     "Calculation of numbers that have different types triggering implicit
     "type conversions
 
-    DO loop_count_1000 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      DATA: num1   TYPE f VALUE '1.2345',
-            num2   TYPE i VALUE 12345,
-            num3   TYPE int8 VALUE 12345,
-            num4   TYPE p LENGTH 16 DECIMALS 8 VALUE '1.2345',
-            num5   TYPE decfloat16 VALUE '1.2345',
-            num6   TYPE decfloat34 VALUE '1.2345',
-            result TYPE decfloat34.
-
-      result = num1 + num2 + num3 + num4 + num5 + num6.
+      res_b = num_1b + num_2b + num_3b + num_4b + num_5b + num_6b.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD meth_pass_by_ref.
@@ -2157,49 +1907,37 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     p = l.
   ENDMETHOD.
 
-  METHOD misc_06_formal_parameters_a.
+  METHOD misc_05_formal_parameters_a.
     "Actual parameters passed by reference
 
-    DATA(str_tab) = VALUE string_table( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       meth_pass_by_ref( a = sy-index
                         b = sy-index
-                        c = str_tab
-                        d = str_tab ).
+                        c = deep_standard_tab
+                        d = deep_standard_tab ).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_06_formal_parameters_z.
+  METHOD misc_05_formal_parameters_z.
     "Actual parameters passed by value
 
-    DATA(str_tab) = VALUE string_table( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
-
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       meth_pass_by_value( i = sy-index
                           j = sy-index
-                          k = str_tab
-                          l = str_tab ).
+                          k = deep_standard_tab
+                          l = deep_standard_tab ).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_07_parallel_processing_a.
+  METHOD misc_06_parallel_processing_a.
     "Demonstrating parallelization using the cl_abap_parallel class
     "The implementation includes inserting many entries to a database
     "table, executed in parallel. Then, the added entries are retrieved.
@@ -2225,24 +1963,26 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       ORDER BY crea_date_time ASCENDING
       INTO TABLE @DATA(it).
 
-    out->write( name ).
-    IF lines( it ) < 250.
+    out->write( `MISC_06_PARALLEL_PROCESSING_A` ).
+    IF it IS INITIAL.
+      			out->write( `No database entries were written.` ).
+      RETURN.
+    ELSEIF lines( it ) < 500. "500 -> loop_count_5 * loop_count_100
       out->write( `Not all database entries were written.` ).
-      out->write( |Table lines with value num1 = 1: { lines( it ) }| ).
-    ELSE.
-      DATA(timestamp1) = it[ 1 ]-crea_date_time.
-      DATA(timestamp2) = it[ lines( it ) ]-crea_date_time.
-
-      DATA(diff) = cl_abap_tstmp=>subtract(
-            tstmp1 = timestamp2
-            tstmp2 = timestamp1 ).
-
-      out->write( |{ diff STYLE = SIMPLE }| ).
-      out->write( |Table lines with value num1 = 1: { lines( it ) }| ).
     ENDIF.
+
+    DATA(timestamp1) = it[ 1 ]-crea_date_time.
+    DATA(timestamp2) = it[ lines( it ) ]-crea_date_time.
+
+    diff = cl_abap_tstmp=>subtract(
+          tstmp1 = timestamp2
+          tstmp2 = timestamp1 ).
+
+    out->write( |Time difference of first and last inserted timestamp: { diff STYLE = SIMPLE }| ).
+    out->write( |Table lines with value num1 = 1: { lines( it ) }| ).
   ENDMETHOD.
 
-  METHOD misc_07_parallel_processing_z.
+  METHOD misc_06_parallel_processing_z.
     "Sequential processing in contrast to the parallel processing
     "The implementation includes inserting many entries to a database
     "table, executed in parallel. Then, the added entries are retrieved.
@@ -2261,37 +2001,35 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       ORDER BY crea_date_time ASCENDING
       INTO TABLE @DATA(it).
 
-    out->write( name ).
-    IF lines( it ) < 250.
+    out->write( `MISC_06_PARALLEL_PROCESSING_Z` ).
+    IF it IS INITIAL.
+      out->write( `No database entries were written.` ).
+      RETURN.
+    ELSEIF lines( it ) < 500. "500 -> loop_count_5 * loop_count_100
       out->write( `Not all database entries were written.` ).
-      out->write( |Table lines with value num1 = 2: { lines( it ) }| ).
-    ELSE.
-      DATA(timestamp1) = it[ 1 ]-crea_date_time.
-      DATA(timestamp2) = it[ lines( it ) ]-crea_date_time.
-
-      DATA(diff) = cl_abap_tstmp=>subtract(
-            tstmp1 = timestamp2
-            tstmp2 = timestamp1 ).
-
-      out->write( |{ diff STYLE = SIMPLE }| ).
-      out->write( |Table lines with value num2 = 2: { lines( it ) }| ).
     ENDIF.
+
+    DATA(timestamp1) = it[ 1 ]-crea_date_time.
+    DATA(timestamp2) = it[ lines( it ) ]-crea_date_time.
+
+    diff = cl_abap_tstmp=>subtract(
+          tstmp1 = timestamp2
+          tstmp2 = timestamp1 ).
+
+    out->write( |Time difference of first and last inserted timestamp: { diff STYLE = SIMPLE }| ).
+    out->write( |Table lines with value num1 = 1: { lines( it ) }| ).
   ENDMETHOD.
 
   METHOD itab_15_read_where_a.
     "READ TABLE ... WITH KEY as an alternative to a READ TABLE ... WHERE statement
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH KEY comp5 = sy-index.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD itab_15_read_where_z.
@@ -2300,99 +2038,83 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "Without the pragma, a syntax warning would be displayed informing about performance
     "issues with the statement.
 
-    DO loop_count_500 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       READ TABLE sorted_tab TRANSPORTING NO FIELDS WHERE comp5 = sy-index ##read_where_ok.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_16_find_replace_table_a.
-    "FIND IN TABLE and REPLACE IN TABLE statements to perform block-wise operations
-    "in an internal table with character-like line type
+  METHOD itab_16_find_block_a.
+    "FIND ... IN TABLE performs a single block-wise search across the whole table
 
-    "Populating demo table
-    DATA str_tab TYPE string_table.
-    DO 100 TIMES.
-      APPEND |ABP{ sy-index }| TO str_tab.
-    ENDDO.
-    DATA(str_tab_copy) = str_tab.
-
-    DO loop_count_50 TIMES.
-      str_tab = str_tab_copy.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      FIND ALL OCCURRENCES OF `ABP`
-        IN TABLE str_tab
+      FIND ALL OCCURRENCES OF `ABAP`
+        IN TABLE str_tab_a
         RESULTS DATA(res_tab)
         RESPECTING CASE.
-
-      REPLACE ALL OCCURRENCES OF `ABP`
-        IN TABLE str_tab
-        WITH `ABAP`
-        RESPECTING CASE.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD itab_16_find_replace_table_z.
-    "Line by line search and replacement in an internal table
-    "with character-like line type
+  METHOD itab_16_find_loop_z.
+    "Searching row by row in a loop instead of a single block-wise FIND IN TABLE
 
-    "Populating demo table
-    DATA str_tab TYPE string_table.
-    DO loop_count_50 TIMES.
-      APPEND |ABP{ sy-index }| TO str_tab.
-    ENDDO.
-    DATA(str_tab_copy) = str_tab.
-
-    DO loop_count_500 TIMES.
-      str_tab = str_tab_copy.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      LOOP AT str_tab ASSIGNING FIELD-SYMBOL(<fs>).
-        FIND ALL OCCURRENCES OF `ABP`
+      LOOP AT str_tab_a ASSIGNING FIELD-SYMBOL(<fs>).
+        FIND ALL OCCURRENCES OF `ABAP`
           IN <fs>
           RESULTS DATA(res_tab)
           RESPECTING CASE.
       ENDLOOP.
+**********************************************************************
+    ENDDO.
 
-      LOOP AT str_tab ASSIGNING <fs>.
-        REPLACE ALL OCCURRENCES OF `ABP`
-          IN TABLE str_tab
+
+  ENDMETHOD.
+
+  METHOD itab_18_replace_block_a.
+    "REPLACE ... IN TABLE performs a single block-wise replacement across the whole table
+
+    DO ops TIMES.
+**********************************************************************
+      REPLACE ALL OCCURRENCES OF `ABAP`
+        IN TABLE str_tab_a
+        WITH `ABAP`
+        RESPECTING CASE.
+**********************************************************************
+    ENDDO.
+
+
+  ENDMETHOD.
+
+  METHOD itab_18_replace_loop_z.
+    "Replacing row by row in a loop instead of a single block-wise REPLACE IN TABLE
+
+    DO ops TIMES.
+**********************************************************************
+      LOOP AT str_tab_a ASSIGNING FIELD-SYMBOL(<fs>).
+        REPLACE ALL OCCURRENCES OF `ABAP`
+          IN <fs>
           WITH `ABAP`
           RESPECTING CASE.
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD eml_01_eml_in_loop_a.
     "EML update request using a FOR loop for a block-wise operation
 
-    DATA read_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\\root.
-    DO loop_count_5 TIMES.
-      APPEND VALUE #( key_field = sy-index field3 = sy-index field4 = sy-index ) TO read_result.
-    ENDDO.
-
-    DO loop_count_5 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       MODIFY ENTITIES OF zdemo_abap_rap_ro_m
         ENTITY root
@@ -2400,26 +2122,15 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                                                                field3 = key-field3 + 1
                                                                                field4 = key-field4 + 1 ) ).
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
   METHOD eml_01_eml_in_loop_z.
     "Multiple individual EML update requests in a loop
 
-    DATA result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\\root.
-    DO loop_count_5 TIMES.
-      APPEND VALUE #( key_field = sy-index field3 = sy-index field4 = sy-index ) TO result.
-    ENDDO.
-    DATA upd TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m\\root.
-    upd = VALUE #( FOR wa IN result ( %tky = wa-%tky field3 = wa-field3 + 1 field4 = wa-field4 + 1 ) ).
-
-    DO loop_count_5 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       LOOP AT upd ASSIGNING FIELD-SYMBOL(<fs>).
         MODIFY ENTITIES OF zdemo_abap_rap_ro_m
@@ -2427,53 +2138,77 @@ CLASS zcl_demo_abap IMPLEMENTATION.
          UPDATE FIELDS ( field3 field4 ) WITH VALUE #( ( <fs> ) ).
       ENDLOOP.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_04_search_pattern_a.
-  "Simple pattern-based search using IF and CP
-  DATA(str) = `abc_def_ghi`.
+  METHOD misc_03_search_pattern_a.
+    "Simple pattern-based search using IF and CP
 
-  DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
       IF str CP `*f#_*`.
-       ...
+        ...
       ENDIF.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
   ENDMETHOD.
 
-  METHOD misc_04_search_pattern_z.
-  "Using FIND and a regular expression
+  METHOD misc_03_search_pattern_z.
+    "Using FIND and a regular expression
 
-  DATA(str) = `abc_def_ghi`.
-
-  DO loop_count_50 TIMES.
-      ts1 = utclong_current( ).
+    DO ops TIMES.
 **********************************************************************
-      FIND PCRE `.*f_.*` in str.
+      FIND PCRE `.*f_.*` IN str.
 
       IF sy-subrc = 0.
-       ...
+        ...
       ENDIF.
 **********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
 
-    runtime = get_avg_runtime( ).
-    out->write( name ).
-    out->write( |{ runtime STYLE = SIMPLE }| ).
+
+  ENDMETHOD.
+
+  METHOD itab_17_table_expr_mult_acc_a.
+    DO ops TIMES.
+**********************************************************************
+      ASSIGN standard_tab[ 1 ] TO FIELD-SYMBOL(<fs1>).
+      ASSIGN standard_tab[ 2 ] TO FIELD-SYMBOL(<fs2>).
+      <fs1>-comp1 = sy-index.
+      <fs1>-comp2 = sy-index.
+      <fs1>-comp3 = sy-index.
+      <fs2>-comp4 = sy-index.
+      <fs2>-comp5 = sy-index.
+      <fs2>-comp6 = sy-index.
+      <fs1>-comp1 = <fs2>-comp1.
+      <fs1>-comp2 = <fs2>-comp2.
+      <fs1>-comp3 = <fs2>-comp3.
+      INSERT <fs1> INTO TABLE standard_tab.
+      INSERT <fs2> INTO TABLE standard_tab.
+**********************************************************************
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD itab_17_table_expr_mult_acc_z.
+    DO ops TIMES.
+**********************************************************************
+      standard_tab[ 1 ]-comp1 = sy-index.
+      standard_tab[ 1 ]-comp2 = sy-index.
+      standard_tab[ 1 ]-comp3 = sy-index.
+      standard_tab[ 2 ]-comp4 = sy-index.
+      standard_tab[ 2 ]-comp5 = sy-index.
+      standard_tab[ 2 ]-comp6 = sy-index.
+      standard_tab[ 1 ]-comp1 = standard_tab[ 2 ]-comp1.
+      standard_tab[ 1 ]-comp2 = standard_tab[ 2 ]-comp2.
+      standard_tab[ 1 ]-comp3 = standard_tab[ 2 ]-comp3.
+      INSERT standard_tab[ 1 ] INTO TABLE standard_tab.
+      INSERT standard_tab[ 2 ] INTO TABLE standard_tab.
+**********************************************************************
+    ENDDO.
   ENDMETHOD.
 
 ENDCLASS.
@@ -2503,7 +2238,7 @@ ENDCLASS.
 CLASS lcl_parallel IMPLEMENTATION.
   METHOD if_abap_parallel~do.
     DATA ts_long TYPE timestampl.
-    DO 50 TIMES.
+    DO zcl_demo_abap=>loop_count_100 TIMES.
       GET TIME STAMP FIELD ts_long.
       "Suboptimal database table insertion in a loop serving the example demonstration purpose
       INSERT zdemo_abap_tabca FROM @( VALUE #( id = xco_cp=>uuid( )->value num1 = 1 crea_date_time = ts_long ) ).
@@ -2512,7 +2247,7 @@ CLASS lcl_parallel IMPLEMENTATION.
 
   METHOD meth.
     DATA ts_long TYPE timestampl.
-    DO 50 TIMES.
+    DO zcl_demo_abap=>loop_count_100 TIMES.
       GET TIME STAMP FIELD ts_long.
       "Suboptimal database table insertion in a loop serving the example demonstration purpose
       INSERT zdemo_abap_tabca FROM @( VALUE #( id = xco_cp=>uuid( )->value num1 = 2 crea_date_time = ts_long ) ).
