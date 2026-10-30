@@ -407,7 +407,7 @@ SELECT id FROM @itab AS tab
   WHERE animal NOT IN ( 'chimpanzee', 'dog', 'snake' )
   INTO TABLE @it. 
 
-"Blanks after the first parentheses and before the second are not mandatory.
+"Blanks after the first parenthesis and before the second are not mandatory.
 "This also applies to blanks within the parentheses. However, choose either
 "to use the blanks or not.
 SELECT id FROM @itab AS tab
@@ -520,8 +520,8 @@ SELECT id FROM @itab AS tab
   INTO TABLE @it. 
 
 "Value range: Lower than 5 + greater than or equal to 25
-rangestab = VALUE #( ( sign   = 'I' option = 'LT' low = 5 )
-                     ( sign   = 'I' option = 'GE' low = 25  ) ).
+rangestab = VALUE #( ( sign = 'I' option = 'LT' low = 5 )
+                     ( sign = 'I' option = 'GE' low = 25  ) ).
 
 SELECT id FROM @itab AS tab
   WHERE count IN @rangestab
