@@ -5,14 +5,22 @@
 - [Logical Expressions and Functions](#logical-expressions-and-functions)
   - [Introduction](#introduction)
   - [Comparison Expressions with Comparison Operators](#comparison-expressions-with-comparison-operators)
-    - [General Comparison Operators](#general-comparison-operators)
-    - [Comparison Operators for Character-Like Data Types](#comparison-operators-for-character-like-data-types)
+    - [General Comparison Operators (=, EQ, \<\>, NE, \<, LT, \>, GT, \<=, LE, \>=, GE, BETWEEN ... AND, IN)](#general-comparison-operators--eq--ne--lt--gt--le--ge-between--and-in)
+    - [Comparison Operators for Character-Like Data Types (CA, NA, CO, CN, CS, NS, CP, NP)](#comparison-operators-for-character-like-data-types-ca-na-co-cn-cs-ns-cp-np)
   - [Predicates](#predicates)
     - [Predicate Expressions](#predicate-expressions)
-    - [Predicate Functions](#predicate-functions)
-    - [Predicative Method Calls, Data Objects as Relational Expressions](#predicative-method-calls-data-objects-as-relational-expressions)
-  - [Boolean Operators and Parentheses](#boolean-operators-and-parentheses)
-  - [Boolean Functions](#boolean-functions)
+      - [IS \[NOT\] INITIAL](#is-not-initial)
+      - [IS \[NOT\] BOUND](#is-not-bound)
+      - [IS \[NOT\] INSTANCE OF](#is-not-instance-of)
+      - [IS \[NOT\] ASSIGNED](#is-not-assigned)
+      - [IS \[NOT\] SUPPLIED](#is-not-supplied)
+      - [IS \[NOT\] COMPATIBLE WITH](#is-not-compatible-with)
+    - [Predicate Functions (contains, contains\_any\_of, contains\_any\_not\_of, matches, line\_exists)](#predicate-functions-contains-contains_any_of-contains_any_not_of-matches-line_exists)
+    - [Predicative Method Calls](#predicative-method-calls)
+    - [Data Objects as Relational Expressions](#data-objects-as-relational-expressions)
+  - [Boolean Operators (AND, OR, EQUIV), Negations (NOT) and Using Parentheses](#boolean-operators-and-or-equiv-negations-not-and-using-parentheses)
+  - [Boolean Value Expressions](#boolean-value-expressions)
+  - [Boolean Functions (boolc, xsdbool)](#boolean-functions-boolc-xsdbool)
   - [Excursion: Operands of Logical Expressions](#excursion-operands-of-logical-expressions)
 
 
@@ -50,7 +58,7 @@ Logical functions:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### General Comparison Operators
+### General Comparison Operators (=, EQ, <>, NE, <, LT, >, GT, <=, LE, >=, GE, BETWEEN ... AND, IN)
 
 The following comparison operators can be used for all data types: 
 
@@ -383,7 +391,7 @@ ASSERT REDUCE string( INIT string = ``
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Comparison Operators for Character-Like Data Types
+### Comparison Operators for Character-Like Data Types (CA, NA, CO, CN, CS, NS, CP, NP)
 
 <table>
 <tr>
@@ -525,32 +533,12 @@ Predicates are relational expressions that determine a truth value based on an o
 - Predicate expressions are relational expressions with the predicate operator `IS`. 
 - The addition `NOT` (`IS NOT`) negates.
 
-<table>
-<tr>
-<th>Predicate Expression</th>
-<th>Details</th>
-<th>Example</th>
-</tr>
 
-<tr>
-<td> 
-
-`IS [NOT] INITIAL` 
-
- </td>
-
- <td> 
+#### IS [NOT] INITIAL 
 
 - Checks whether the operand is initial or not. 
 - The result is true if the operand contains its type-dependent initial value.
-  
-<br>
-
-Note that you can also specify an individual data object that represents a relational expression, returning a truth value. The expression evaluates to true if the operand's content is not initial.
-
- </td>
-
- <td> 
+- Note that you can also specify an individual data object that represents a relational expression, returning a truth value. The expression evaluates to true if the operand's content is not initial.
 
 ``` abap
 DATA(p) = 0.
@@ -572,28 +560,14 @@ p = 1.
 ASSERT p IS NOT INITIAL.
 ``` 
 
- </td>
-</tr>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-<tr>
-<td> 
-
-`IS [NOT] BOUND` 
-
- </td>
-
- <td> 
-
+#### IS [NOT] BOUND
 
 - Checks if a reference variable contains a valid reference. 
 - A data reference is valid if it can be dereferenced. 
 - An object reference is valid if it points to an object.
 
-
- </td>
-
- <td> 
 
 ``` abap
 "Data reference variable
@@ -639,26 +613,13 @@ ENDIF.
 ASSERT oref IS BOUND.
 ``` 
 
- </td>
-</tr>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-<tr>
-<td> 
-
-`IS [NOT] INSTANCE OF` 
-
- </td>
-
- <td> 
-
+#### IS [NOT] INSTANCE OF
 
 - Checks whether casts are possible.
 - It returns true if a downcast is possible for a non-initial object reference variable. 
 - This is especially useful for verifying types in generically typed field symbols or formal parameters and helps prevent runtime errors from failed casts, rather than applying exception handling.
-
- </td>
-
- <td> 
 
 The following example uses local classes and interfaces to demonstrate predicate expressions.
 
@@ -771,23 +732,11 @@ CLASS lcl4 IMPLEMENTATION.
 ENDCLASS.
 ```
 
- </td>
-</tr>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-<tr>
-<td> 
-
-`IS [NOT] ASSIGNED` 
-
- </td>
-
- <td> 
+#### IS [NOT] ASSIGNED
 
 Checks whether a memory area is assigned to a field symbol or not.
-
- </td>
-
- <td> 
 
 ``` abap
 FIELD-SYMBOLS <fs> TYPE string.
@@ -825,25 +774,13 @@ ASSERT <another_fs> = 0.
 ASSERT num = 0.
 ``` 
 
- </td>
-</tr>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-<tr>
-<td> 
-
-`IS [NOT] SUPPLIED` 
-
- </td>
-
- <td> 
+#### IS [NOT] SUPPLIED
 
 - Checks whether an optional formal parameter of a procedure is filled or requested. 
 - The expression returns true if an actual parameter was assigned to the formal parameter during the call. 
 - These expressions can only be used in function modules and methods.
-
- </td>
-
- <td> 
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -932,15 +869,371 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ``` 
 
- </td>
-</tr>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-</table>
+#### IS [NOT] COMPATIBLE WITH
+
+- `IS [NOT] COMPATIBLE WITH` is a predicate expression that checks whether a data object's type at runtime is compatible with a specified type or not.
+- Note the concept of type compatibility: All technical type properties of two data objects must match.
+- The predicate returns true if the runtime type is compatible.
+- This expression is particularly useful for type compatibility checks in dynamic and generic programming, such as when working with generically typed parameters or field symbols.
+
+Syntax patterns: 
+```abap
+... <dobj> IS [NOT] COMPATIBLE WITH type ... 
+... <dobj> IS [NOT] COMPATIBLE WITH TYPE OF dobj2 ... 
+... <dobj> IS [NOT] COMPATIBLE WITH LINE OF tab_type ... 
+... <dobj> IS [NOT] COMPATIBLE WITH LINE TYPE OF itab ... 
+... <dobj> IS [NOT] COMPATIBLE WITH REF TO type ... 
+... <dobj> IS [NOT] COMPATIBLE WITH REF TYPE OF dobj2 ... 
+... <dobj> IS [NOT] COMPATIBLE WITH ANY STRUCTURE ... 
+... <dobj> IS [NOT] COMPATIBLE WITH [ANY|INDEX|SORTED|HASHED|STANDARD] TABLE ... 
+```
+
+> [!NOTE]  
+> - If it can be statically determined that ... 
+>   - type compatibility is always guaranteed, a syntax warning occurs. 
+>   - a type compatibility check can never be true, the compiler issues a syntax error. 
+> - Regarding `<name>`, the named data type must exist and be accessible. Class and interface names are not supported here. They are only applicable with the syntax `REF TO name`.
+> - The predicate expression cannot be used in `WHERE` clauses in internal table processing statements.
+> - Case distinctions using `CASE DATA TYPE OF` are another way of checking type compatibility. It is also an alternative to RTTI checks with the method `APPLIES_TO_DATA` (see the Dynamica Programming cheat sheet).
+
+
+**Example 1**
+
+The following example demonstrates:  
+- Various `IF` statements using `IS [NOT] COMPATIBLE WITH` with the syntax variant to check for type compatibility based on a type.  
+- Two example statements that illustrate compiler behavior when type compatibility is always guaranteed (syntax warning) and when a type compatibility check can never be true (syntax error).
+
+
+```abap
+DATA dobj1 TYPE c LENGTH 1.
+DATA dobj2 TYPE c LENGTH 2.
+TYPES c1 TYPE c LENGTH 1.
+TYPES c2 TYPE c LENGTH 2.
+FIELD-SYMBOLS <fs> TYPE any.
+DATA str TYPE string.
+
+ASSIGN dobj1 TO <fs>.
+
+IF <fs> IS COMPATIBLE WITH c1.
+  str &&= `A`.
+ELSE.
+  str &&= `Z`.
+ENDIF.
+
+IF <fs> IS NOT COMPATIBLE WITH c1.
+  str &&= `Y`.
+ELSE.
+  str &&= `B`.
+ENDIF.
+
+IF <fs> IS COMPATIBLE WITH c2.
+  str &&= `X`.
+ELSE.
+  str &&= `C`.
+ENDIF.
+
+IF <fs> IS NOT COMPATIBLE WITH c2.
+  str &&= `D`.
+ELSE.
+  str &&= `W`.
+ENDIF.
+
+ASSIGN dobj2 TO <fs>.
+
+IF <fs> IS COMPATIBLE WITH c1.
+  str &&= `V`.
+ELSE.
+  str &&= `E`.
+ENDIF.
+
+IF <fs> IS COMPATIBLE WITH c2.
+  str &&= `F`.
+ELSE.
+  str &&= `U`.
+ENDIF.
+
+"The previos examples used a field symbol to check compatibility.
+"The following example will show a direct check of the data object.
+"However, it will show a syntax warning since it can be statically determined
+"that type compatibility is always guaranteed.
+IF dobj1 IS COMPATIBLE WITH c1.
+  str &&= `G`.
+ELSE.
+  str &&= `T`.
+ENDIF.
+
+ASSERT str = `ABCDEFG`.
+
+"The following example does not work and will show a syntax error. It can be
+"statically determined that a type compatibility check can never be true.
+*IF dobj2 IS COMPATIBLE WITH c1.
+*  str &&= `S`.
+*ELSE.
+*  str &&= `H`.
+*ENDIF.
+```
+
+**Example 2**
+
+The following example demonstrates the syntax variants for `IS [NOT] COMPATIBLE WITH` using demo data types and objects and `ASSERT` statements.
+ 
+
+```abap
+FIELD-SYMBOLS <fs> TYPE any.
+
+"Elementary types/data objects
+TYPES t_c1 TYPE c LENGTH 1.
+TYPES t_c2 TYPE c LENGTH 2.
+DATA c1 TYPE c LENGTH 1.
+DATA bool TYPE abap_boolean.
+DATA c2 TYPE c LENGTH 2.
+DATA str TYPE string.
+DATA num TYPE i.
+
+"Structured types/data objects
+TYPES: BEGIN OF ty_struc1,
+				 comp1 TYPE c LENGTH 1,
+				 comp2 TYPE i,
+			 END OF ty_struc1.
+
+TYPES: BEGIN OF ty_struc2,
+         comp1 TYPE c LENGTH 2,
+         comp2 TYPE i,
+       END OF ty_struc2.
+			
+DATA struc1 TYPE ty_struc1.			
+DATA struc2 TYPE ty_struc2.
+
+"Table types/internal tables
+TYPES tt_struc1 TYPE TABLE OF ty_struc1 WITH EMPTY KEY.
+TYPES tt_struc2 TYPE TABLE OF ty_struc2 WITH EMPTY KEY.
+TYPES tt_string TYPE TABLE OF string WITH EMPTY KEY.
+
+DATA itab1 TYPE tt_struc1.
+DATA itab2 TYPE tt_struc2.
+DATA str_tab TYPE tt_string.
+
+DATA itab_std TYPE STANDARD TABLE OF ty_struc1 WITH NON-UNIQUE KEY comp1.
+DATA itab_so TYPE SORTED TABLE OF ty_struc1 WITH UNIQUE KEY comp1.
+DATA itab_ha TYPE HASHED TABLE OF ty_struc1 WITH UNIQUE KEY comp1.
+
+"Reference types/data reference variables
+TYPES ty_ref_c1 LIKE REF TO c1.
+DATA dref_c1 TYPE ty_ref_c1.
+TYPES ty_ref_c2 TYPE REF TO t_c2.
+DATA dref_c2 TYPE ty_ref_c2.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH <name>
+*&---------------------------------------------------------------------*
+
+ASSIGN c1 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH abap_boolean.
+ASSERT <fs> IS COMPATIBLE WITH abap_bool.
+ASSERT <fs> IS COMPATIBLE WITH ty_struc1-comp1.
+
+ASSERT <fs> IS NOT COMPATIBLE WITH t_c2.
+ASSERT <fs> IS NOT COMPATIBLE WITH string_table.
+ASSERT <fs> IS NOT COMPATIBLE WITH timestampl.
+
+ASSIGN num TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH i.
+ASSERT <fs> IS NOT COMPATIBLE WITH t_c2.
+ASSERT <fs> IS COMPATIBLE WITH ty_struc1-comp2.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH TYPE OF <dobj2>
+*&---------------------------------------------------------------------*
+
+ASSIGN c1 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH TYPE OF bool.
+ASSERT <fs> IS NOT COMPATIBLE WITH TYPE OF c2.
+ASSERT <fs> IS COMPATIBLE WITH TYPE OF struc1-comp1.
+
+ASSIGN 1 TO <fs>.
+
+ASSERT num IS COMPATIBLE WITH TYPE OF <fs>.
+ASSERT <fs> IS COMPATIBLE WITH TYPE OF num.
+ASSERT <fs> IS NOT COMPATIBLE WITH TYPE OF c1.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH LINE OF <table>
+*&---------------------------------------------------------------------*
+
+ASSIGN struc1 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH LINE OF tt_struc1.
+ASSERT <fs> IS NOT COMPATIBLE WITH LINE OF tt_struc2.
+
+ASSIGN str TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH LINE OF tt_string.
+ASSERT <fs> IS NOT COMPATIBLE WITH LINE OF tt_struc1.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH LINE TYPE OF <dtable>
+*&---------------------------------------------------------------------*
+
+ASSIGN struc2 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH LINE TYPE OF itab2.
+ASSERT <fs> IS NOT COMPATIBLE WITH LINE TYPE OF itab1.
+
+ASSIGN str TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH LINE TYPE OF str_tab.
+ASSERT <fs> IS NOT COMPATIBLE WITH LINE TYPE OF itab1.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH REF TO <name>
+*&---------------------------------------------------------------------*
+
+ASSIGN dref_c1 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH REF TO t_c1.
+ASSERT <fs> IS NOT COMPATIBLE WITH REF TO t_c2.
+
+ASSIGN dref_c2 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH REF TO t_c2.
+ASSERT <fs> IS NOT COMPATIBLE WITH REF TO t_c1.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH REF TYPE OF <dobj2>
+*&---------------------------------------------------------------------*
+
+ASSIGN dref_c1 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH REF TYPE OF c1.
+ASSERT <fs> IS NOT COMPATIBLE WITH REF TYPE OF c2.
+
+ASSIGN dref_c2 TO <fs>.
+
+ASSERT <fs> IS COMPATIBLE WITH REF TYPE OF c2.
+ASSERT <fs> IS NOT COMPATIBLE WITH REF TYPE OF c1.
+
+*&---------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH ANY STRUCTURE
+*&---------------------------------------------------------------------*
+
+ASSIGN struc1 TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY STRUCTURE.
+
+ASSIGN struc2 TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY STRUCTURE.
+
+APPEND INITIAL LINE TO itab1 ASSIGNING <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY STRUCTURE.
+
+APPEND INITIAL LINE TO str_tab ASSIGNING <fs>.
+"The table is a string table with elementary line type, i.e. the line type
+"is not a structure, so the assertion fails.
+ASSERT <fs> IS NOT COMPATIBLE WITH ANY STRUCTURE.
+
+ASSIGN dref_c1 TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH ANY STRUCTURE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH ANY STRUCTURE.
+
+*&--------------------------------------------------------------------------*
+*& <dobj> IS [NOT] COMPATIBLE WITH (ANY|INDEX|SORTED|HASHED|STANDARD) TABLE
+*&--------------------------------------------------------------------------*
+
+"--- ANY TABLE ---
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY TABLE.
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY TABLE.
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH ANY TABLE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH ANY TABLE.
+
+"--- INDEX TABLE ---
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH INDEX TABLE.
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH INDEX TABLE.
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH INDEX TABLE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH INDEX TABLE.
+
+"--- SORTED TABLE ---
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH SORTED TABLE.
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH SORTED TABLE.
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH SORTED TABLE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH SORTED TABLE.
+
+"--- HASHED TABLE ---
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH HASHED TABLE.
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH HASHED TABLE.
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH HASHED TABLE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH HASHED TABLE.
+
+"--- STANDARD TABLE ---
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH STANDARD TABLE.
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH STANDARD TABLE.
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH STANDARD TABLE.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH STANDARD TABLE.
+
+"--- TABLE (it is the same as STANDARD TABLE) ---
+
+ASSIGN itab_std TO <fs>.
+ASSERT <fs> IS COMPATIBLE WITH table.
+
+ASSIGN itab_so TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH table.
+
+ASSIGN itab_ha TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH table.
+
+ASSIGN num TO <fs>.
+ASSERT <fs> IS NOT COMPATIBLE WITH table.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-### Predicate Functions
+### Predicate Functions (contains, contains_any_of, contains_any_not_of, matches, line_exists)
 
 - Predicate functions are built-in logical functions that return a truth value.  
 - ABAP supports predicate functions for character-like and table-like arguments.
@@ -1140,31 +1433,13 @@ DATA(line_exists5) = xsdbool( line_exists( str_tab[ table_line = `xxx` ] ) ).
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-### Predicative Method Calls, Data Objects as Relational Expressions
+### Predicative Method Calls 
 
-<table>
-<tr>
-<th>Context</th>
-<th>Details</th>
-<th>Example</th>
-</tr>
-
-<tr>
-<td> 
-
-Predicative method call <br> `... meth( ... ) ...` 
-
- </td>
-
- <td> 
-
+- A predicative method call is a method call such as `... meth( ... ) ...` 
 - A predicative method call represents a relational expression. 
 - Its only operand is a functional method call, which is a method with a return value passed via the returning parameter.
 - The expression evaluates to true if the method's return value is not initial. A check is performed for the type-dependent initial value.
 
- </td>
-
- <td> 
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -1214,26 +1489,14 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ``` 
 
- </td>
-</tr>
 
-<tr>
-<td> 
-
-Data object as relational expression <br>`... dobj ...` 
-
- </td>
-
- <td> 
+### Data Objects as Relational Expressions
 
 - Individual data objects can represent relational expressions.  
 - Like predicative method calls, the expression evaluates to true when the operand's content is not initial and false when it is initial. 
 - The operand's concrete type is arbitrary since it checks for type-specific initial values.  
 - Specifying only the data object is a short form of the predicate expression `... IS NOT INITIAL ...`.
 
- </td>
-
- <td> 
 
 ``` abap
 DATA is_initial TYPE abap_boolean.
@@ -1262,16 +1525,10 @@ ASSERT NOT is_initial.
 ASSERT number.
 ``` 
 
- </td>
-</tr>
-
-</table>
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-
-## Boolean Operators and Parentheses
+## Boolean Operators (AND, OR, EQUIV), Negations (NOT) and Using Parentheses
 
 - Boolean operators allow to combine (`AND`, `OR`, `EQUIV`) and negate (`NOT`) logical expressions.
 - You can use parentheses to refine conditions further.
@@ -1525,7 +1782,297 @@ ASSERT result = abap_true.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Boolean Functions
+## Boolean Value Expressions
+
+- Boolean value expressions are logical expressions that produce a truth value. 
+- The evaluation of the expression results in a truth value (i.e. either true or false) that can be used in various contexts that accept expressions. 
+- This applies to target data objects with specific elementary data types that have a canonical truth value representation (_Boolean-like data types_), where the false value indicates the type-specific initial value.
+- Among the supported Boolean-like data types, which have a two-valued representation that aligns with the Boolean semantics of true and false, are the following:
+
+    |**Type**|**True**|**False** |
+    |:---|:---|:---|
+    |`c` \(length 1\)|`'X'`|`' '` \(space\) |
+    |`x` \(length 1\)|`01`|`00` |
+    |`n` \(length 1\)|`'1'`|`'0'` |
+    |`string`|``X``|\`\` \(initial string\) |
+    |`i`, `int8`, `int1`, `int2` |`1`|`0` |
+    |`decfloat16`, `decfloat34`, `f`, <br> `p` \(values in data objects of type `p` only with predecimals\)|`1`|`0`|
+
+> [!NOTE]  
+> - To differentiate between the operator `=` in comparisons and assignments  during multiple assignments and when using unnamed formal parameters, you  can use:  
+>  - `=` with the logical expression enclosed in parentheses  
+>  - `EQ` instead of `=`  
+>- If it can statically be determined that a Boolean value expression is assigned to a non-Boolean-like type, a syntax error occurs. For example, if you attempt to assign a Boolean value expression to a data object of type `c` with length 2 (in dynamic programming), a runtime error will occur.  
+
+
+**Example 1**
+
+- Demonstrates assignments of Boolean value expressions on the right-hand side of an assignment. 
+- On the left-hand side of the assignment, data objects with Boolean-like data types are specified. 
+- The data objects with Boolean-like data types are assigned the type-specific true and false value representations.
+
+```abap
+"Demo types and data objects
+TYPES t_c1 TYPE c LENGTH 1.
+DATA c1 TYPE t_c1.
+TYPES t_x1 TYPE x LENGTH 1.
+DATA x1 TYPE t_x1.
+TYPES t_n1 TYPE n LENGTH 1.
+DATA n1 TYPE t_n1.
+DATA str TYPE string.
+DATA int TYPE i.
+DATA dec34 TYPE decfloat34.
+DATA float TYPE f.
+TYPES t_pl8d2 TYPE p LENGTH 8 DECIMALS 2.
+DATA packed TYPE t_pl8d2.
+
+"Demo values which the Boolean value expression are based on
+DATA(num1) = 10.
+DATA(num2) = 20.
+
+**********************************************************************
+
+c1 = num1 <> num2.
+ASSERT c1 = 'X'.
+
+c1 = num1 EQ num2.
+ASSERT c1 = ' '.
+
+x1 = num1 <> num2.
+ASSERT x1 = CONV t_x1( '01' ).
+
+x1 = num1 EQ num2.
+ASSERT x1 = CONV t_x1( '00' ).
+
+n1 = num1 <> num2.
+ASSERT n1 = CONV t_n1( '1' ).
+
+n1 = num1 EQ num2.
+ASSERT n1 = CONV t_n1( '0' ).
+
+str = num1 <> num2.
+ASSERT str = `X`.
+
+str = num1 EQ num2.
+ASSERT str = ``.
+
+int = num1 <> num2.
+ASSERT int = 1.
+
+int = num1 EQ num2.
+ASSERT int = 0.
+
+dec34 = num1 <> num2.
+ASSERT dec34 = CONV decfloat34( '1' ).
+
+dec34 = num1 EQ num2.
+ASSERT dec34 = CONV decfloat34( '0' ).
+
+float = num1 <> num2.
+ASSERT float = CONV f( '1' ).
+
+float = num1 EQ num2.
+ASSERT float = CONV f( '0' ).
+
+packed = num1 <> num2.
+ASSERT packed = CONV t_pl8d2( '1' ).
+
+packed = num1 EQ num2.
+ASSERT packed = CONV t_pl8d2( '0' ).
+
+**********************************************************************
+
+"Non-Boolean-like data type
+TYPES t_c2 TYPE c LENGTH 2.
+DATA c2 TYPE t_c2.
+
+"The following assignment is not allowed because the target data object type
+"is not a Boolean-like data type.
+"c2 = num1 <> num2.
+```
+
+**Example 2**
+
+- Demonstrates passing Boolean value expressions as actual parameters, especially with unnamed formal parameters. For this purpose, the class includes methods with one importing parameter (with and without a Boolean-like data type).
+- Demonstrates multiple assignments and dealing with Boolean value expressions.
+- Shows the use of `EQ` for Boolean value expressions instead of `=` for comparisons, along with using the comparison operator `=` and enclosing the expression in parentheses.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS meth IMPORTING num        TYPE i
+                 RETURNING VALUE(res) TYPE i.
+
+    METHODS meth2 IMPORTING number     TYPE i
+                  RETURNING VALUE(res) TYPE i.
+
+    TYPES t_c2 TYPE c LENGTH 2.
+    METHODS meth3 IMPORTING c2         TYPE t_c2
+                  RETURNING VALUE(res) TYPE t_c2.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Passing Boolean value expressions in method calls
+*&---------------------------------------------------------------------*
+
+    "Note:
+    "- The demo methods have a single formal parameter 'num' and 'number'.
+    "- The formal parameter 'num' of one method is intentionally named like a local variable
+    "- The methods have only one importing parameter so that the actual parameter can be passed without
+    "  explicitly specifying the formal parameter name.
+
+    "Explicitly specifying the formal parameter name
+    DATA(res_a) = meth( num = 5 ).
+    DATA(res_b) = meth2( number = 6 ).
+    ASSERT res_a = 5.
+    ASSERT res_b = 6.
+
+    "Not specifying the formal parameter name explicitly
+    DATA(res_c) = meth( 7 ).
+    DATA(res_d) = meth( 8 ).
+    ASSERT res_c = 7.
+    ASSERT res_d = 8.
+
+    "Passing a Boolean value expression
+    DATA(num) = 10.
+    DATA(num_b) = 10.
+
+    "The following example is not a Boolean value expression. The left-hand 'num' stands for the explicitly
+    "specified formal parameter name.
+    DATA(res_e) = meth( num = num_b ).
+    ASSERT res_e = 10.
+
+    DATA(res_f) = meth2( number = num ).
+    ASSERT res_f = 10.
+
+    "Passing a Boolean value expression by not specifying the formal parameter explicitly and
+    "enclosing the expression in a pair of parentheses
+    "The left-hand 'num' refers to the local variable.
+    DATA(res_g) = meth( ( num = num_b ) ).
+    ASSERT res_g = 1.
+    DATA(res_h) = meth2( ( num = num_b ) ).
+    ASSERT res_h = 1.
+
+    "Passing a Boolean value expression by not specifying the formal parameter explicitly and
+    "specifying the comparison operator EQ instead of =.
+    "As above, the left-hand 'num' refers to the local variable.
+    DATA(res_i) = meth( num EQ num_b ).
+    ASSERT res_i = 1.
+
+    DATA(res_j) = meth2( num EQ num_b ).
+    ASSERT res_j = 1.
+
+    "The following example shows the assignment of a Boolean value expression to the explicitly specified
+    "formal parameter. 'num' is assigned the result of the expression. So, the specification does not represent
+    "a multiple assignment.
+    DATA(res_k) = meth( num = num = num_b ).
+    ASSERT res_k = 1.
+
+    "Mutliple assignment
+    num = num = num_b.
+    ASSERT num = 10.
+
+    "The following example is not possible as the formal parameter 'num' does not exist.
+    "DATA(res_l) = meth2( num = num = num_b ).
+    DATA(res_m) = meth2( number = num = num_b ).
+    ASSERT res_m = 1.
+
+    "Passing a Boolean value expression by specifying the formal parameter explicitly
+    "Using the comparison operator EQ instead of =, used as assignment operator.
+    DATA(res_n) = meth( num = num EQ num_b ).
+    ASSERT res_n = 1.
+
+    DATA(res_o) = meth2( number = num EQ num_b ).
+    ASSERT res_o = 1.
+
+    "Using the comparison a parenhesized Boolean value expressions
+    DATA(res_p) = meth( num = ( num = num_b ) ).
+    ASSERT res_p = 1.
+
+    DATA(res_q) = meth2( number = ( num = num_b ) ).
+    ASSERT res_q = 1.
+
+    "Note: In meth2, the formal parameter is of type c length 2, i.e. it is not a Boolean-like data type.
+    "Therefore, a Boolean value expression cannot be passed.
+    "DATA(res_z) = meth3( num EQ num_b ).
+
+*&---------------------------------------------------------------------*
+*& Multiple assignments
+*&---------------------------------------------------------------------*
+
+    DATA num_x TYPE i.
+    DATA num_y TYPE i.
+    DATA num_z TYPE i.
+
+    DO 6 TIMES.
+      num_x = 5.
+      num_y = 6.
+      num_z = 7.
+
+      CASE sy-index.
+        WHEN 1.
+          "Multiple assignment; no Boolean value expression after the first = operator
+          num_x = num_y = num_z.
+          ASSERT num_x = 7.
+        when 2.
+          "Negation with NOT
+          "In this case, it is a Boolean value expression after the first = operator.
+          num_x = NOT num_y = num_z.
+          ASSERT num_x = 1.
+        WHEN 3.
+          "Boolean value expression after the first = operator, indicated by EQ
+          num_x = num_y EQ num_z.
+          ASSERT num_x = 0.
+        WHEN 4.
+          "Negation of the previous example
+          num_x = NOT num_y EQ num_z.
+          ASSERT num_x = 1.
+        WHEN 5.
+          "Enclosing a Boolean value expression that uses the = operator in parentheses
+          num_x = ( num_y = num_z ).
+          ASSERT num_x = 0.
+        WHEN 6.
+          "Negation of the previous example
+          num_x = NOT ( num_y = num_z ).
+          ASSERT num_x = 1.
+      ENDCASE.
+    ENDDO.
+
+    out->write( 'All asserts ok.' ).
+
+  ENDMETHOD.
+
+  METHOD meth.
+    RETURN num.
+  ENDMETHOD.
+
+  METHOD meth2.
+    RETURN number.
+  ENDMETHOD.
+
+  METHOD meth3.
+    RETURN c2.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Boolean Functions (boolc, xsdbool)
 
 Like predicate functions, Boolean functions are built-in logical functions that evaluate a logical expression and return a truth value.
 

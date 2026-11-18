@@ -5155,7 +5155,7 @@ READ TABLE it INDEX 1 ASSIGNING FIELD-SYMBOL(<line>).
 
 IF sy-subrc = 0.
   "Instead of assigning individual components, using constructor expressions 
-  "line-comp1 = 'ABAP'.
+  "<line>-comp1 = 'ABAP'.
   "...  
 
   <line> = VALUE #( BASE <line> comp1 = ... comp2 = ... ).

@@ -7,15 +7,17 @@
   - [Expressions and Functions for Conditions](#expressions-and-functions-for-conditions)
   - [Control Structures](#control-structures)
     - [`IF` Statements](#if-statements)
+      - [Predicate Expressions with `IF` Statements](#predicate-expressions-with-if-statements)
       - [Excursion: `COND` Operator](#excursion-cond-operator)
     - [`CASE`: Case Distinctions](#case-case-distinctions)
       - [Control Structures Using CASE TYPE OF](#control-structures-using-case-type-of)
+      - [Control Structures Using CASE DATA TYPE OF](#control-structures-using-case-data-type-of)
       - [Excursion: `SWITCH` Operator](#excursion-switch-operator)
     - [Loops](#loops)
       - [`DO`: Unconditional Loops](#do-unconditional-loops)
-      - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
       - [`WHILE`: Conditional Loops](#while-conditional-loops)
       - [Loops Across Tables](#loops-across-tables)
+      - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
   - [Calling Procedures](#calling-procedures)
     - [Methods of Classes](#methods-of-classes)
     - [Function Modules](#function-modules)
@@ -284,9 +286,7 @@ ELSEIF current_utc_time BETWEEN '180000' AND '215959'.
 ELSE.
   greetings = |Good night, it's { current_utc_time TIME = ISO }.|.
 ENDIF.
-
 ```
-
 
 Control structures can be nested.
 ```abap
@@ -317,6 +317,22 @@ ENDIF.
 > - If you are convinced that a specified logical expression must always be true, you might include a statement like `ASSERT 1 = 0.` to go
 >   sure - as implied in the example's `ELSE` statement above. However, an `ELSE` statement that is never executed might be a hint that
 >   logical expressions might partly be redundant.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Predicate Expressions with `IF` Statements
+
+- As previously stated, `IF` statements work with logical expressions and functions.
+- Among these expressions are predicate expressions, i. e. relational expressions that determine a truth value. They work with the predicate operator `IS`. The addition `NOT` (`IS NOT`) negates.
+  - `IF dobj IS [NOT] INITIAL. ...`
+  - `IF dref IS [NOT] BOUND. ...`
+  - `IF oref IS [NOT] INSTANCE OF ...`
+  - `IF <fs> IS [NOT] ASSIGNED. ...`
+  - `IF param IS [NOT] SUPPLIED. ...`
+  - `IF dobj IS [NOT] COMPATIBLE WITH ...`
+
+> [!NOTE]
+> `IF` statements can be specified with more expressions and functions. For more details, see the [Logical Expressions and Functions](37_Logical_Expressions_and_Functions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -404,6 +420,488 @@ ENDCASE.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+#### Control Structures Using CASE DATA TYPE OF 
+
+
+- With `CASE DATA TYPE OF`, you can perform case distinctions for data objects to check their type at runtime, typically in dynamic and generic programming contexts, such as with generically typed parameters or field symbols.
+- Similar to regular `CASE` statements, you can specify one or more `WHEN` branches. These `WHEN` branches are constructed here as `WHEN COMPATIBLE WITH` branches. They specify types against which the runtime type is checked. The system executes the first statement block for which it determines type compatibility.
+- You can specify a `WHEN OTHERS` branch, which executes when no `WHEN COMPATIBLE WITH` branch matches.
+- The same syntax variants following `IS [NOT] COMPATIBLE WITH` apply to `WHEN COMPATIBLE WITH`.
+- Optionally, you can assign a field symbol to each `WHEN COMPATIBLE WITH` branch using `ASSIGNING <fs>` or `ASSIGNING FIELD-SYMBOL(<fs>)` for inline declaration. If the respective `WHEN COMPATIBLE WITH` branch is evaluated as true and executed, the data object gets assigned to the field symbol.
+  - Note that the field symbol's type in the case of `ASSIGNING <fs>` must be compatible with the data object's type. Also consider type genericity. For example, if `<cs>` is of type `csequence` and `<c>` is of type `c`, a branch cannot be constructed like this: `WHEN COMPATIBLE WITH TYPE OF <cs> ASSIGNING <c>.` An assignment might fail at runtime because the type of `<cs>` is more generic than the type of `<c>`.
+
+> [!NOTE]  
+> - `IF` statements with `IS [NOT] COMPATIBLE WITH` are another way of checking type compatibility. It is also an alternative to the `applies_to_data` method of the [Runtime Type Information (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) class `cl_abap_datadescr` (see the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md)).
+> - See also the notes in the [`IS [NOT] COMPATIBLE WITH` section](37_Logical_Expressions_and_Functions.md#is-not-compatible-with) regarding compiler behavior. The following example generates a syntax warning for the first `WHEN COMPATIBLE WITH` branch. The second branch, when uncommented, would produce a syntax error.
+>   ```abap
+>   CASE DATA TYPE OF 1.
+>     WHEN COMPATIBLE WITH i. "Syntax warning (type always compatible)
+>     "WHEN COMPATIBLE WITH string. "Syntax error (type never compatible)
+>   ENDCASE.
+>    ```
+
+Syntax patterns: 
+
+```abap
+CASE DATA TYPE OF dobj.
+    WHEN COMPATIBLE WITH type [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH TYPE OF dobj2 [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH LINE OF tab_type [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH LINE TYPE OF itab [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH REF TO type [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH REF TYPE OF dobj2 [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH ANY STRUCTURE [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    WHEN COMPATIBLE WITH [ANY|INDEX|SORTED|HASHED|STANDARD] TABLE [ASSIGNING <fs> | ASSIGNING FIELD-SYMBOL(<fs>)].
+    [WHEN OTHERS.]
+ENDCASE.
+```
+
+**Example 1**
+
+The following example:
+- Loops through five iterations, assigning variables to field symbols and checking their type compatibility with `CASE DATA TYPE OF` and `WHEN COMPATIBLE WITH type` branches. 
+- Includes two `CASE DATA TYPE OF` case distinctions. The second includes the assignment to field symbols after the `WHEN COMPATIBLE WITH` branches.
+- Builds strings to assert the program flow logic when specific branches are executed based on the compatibility checks.
+
+```abap
+TYPES t_c1 TYPE c LENGTH 1.
+TYPES t_c2 TYPE c LENGTH 2.
+TYPES t_c3 TYPE c LENGTH 3.
+TYPES t_c4 TYPE c LENGTH 4.
+
+DATA c1 TYPE c LENGTH 1 value 'A'.
+DATA c2 TYPE c LENGTH 2 value 'BC'.
+DATA c3 TYPE c LENGTH 3 value 'DEF'.
+DATA c4 TYPE c LENGTH 4 value 'GHIJ'.
+DATA c5 TYPE c LENGTH 5 value 'KLMNO'.
+DATA str1 TYPE string.
+DATA str2 TYPE string.
+
+FIELD-SYMBOLS <fs> TYPE any.
+FIELD-SYMBOLS <c1> TYPE t_c1.
+FIELD-SYMBOLS <c> TYPE c.
+
+DO 5 TIMES.
+
+  CASE sy-index.
+  	WHEN 1.
+      ASSIGN c1 TO <fs>.
+  	WHEN 2.
+      ASSIGN c2 TO <fs>.
+  	WHEN 3.
+      ASSIGN c3 TO <fs>.
+  	WHEN 4.
+      ASSIGN c4 TO <fs>.
+    WHEN OTHERS.
+      ASSIGN c5 TO <fs>.
+  ENDCASE.		
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH t_c1.
+      str1 &&= `1`.
+    WHEN COMPATIBLE WITH t_c2.
+      str1 &&= `2`.
+    WHEN COMPATIBLE WITH t_c3.
+      str1 &&= `3`.
+    WHEN COMPATIBLE WITH t_c4.
+      str1 &&= `4`.
+    WHEN OTHERS.
+      str1 &&= `5`.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH t_c1 ASSIGNING <c1>.
+      str2 &&= `z`.
+    WHEN COMPATIBLE WITH t_c2 ASSIGNING <c>.
+      str2 &&= `y`.
+    WHEN COMPATIBLE WITH t_c3 ASSIGNING <c>.
+      str2 &&= `x`.
+    WHEN COMPATIBLE WITH t_c4 ASSIGNING FIELD-SYMBOL(<inl>).
+      str2 &&= `w`.
+    WHEN OTHERS.
+      str2 &&= `v`.
+  ENDCASE.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSERT <c1> IS ASSIGNED.
+      ASSERT <c1> = 'A'.
+      ASSERT <c> IS NOT ASSIGNED.
+      ASSERT <inl> IS NOT ASSIGNED.
+    WHEN 2.
+      ASSERT <c1> IS ASSIGNED.
+      ASSERT <c1> = 'A'.
+      ASSERT <c> IS ASSIGNED.
+      ASSERT <c> = 'BC'.
+      ASSERT <inl> IS NOT ASSIGNED.
+    WHEN 3.
+      ASSERT <c1> IS ASSIGNED.
+      ASSERT <c1> = 'A'.
+      ASSERT <c> IS ASSIGNED.
+      ASSERT <c> = 'DEF'.
+      ASSERT <inl> IS NOT ASSIGNED.
+    WHEN 4.
+      ASSERT <c1> IS ASSIGNED.
+      ASSERT <c1> = 'A'.
+      ASSERT <c> IS ASSIGNED.
+      ASSERT <c> = 'DEF'.
+      ASSERT <inl> IS ASSIGNED.
+      ASSERT <inl> = 'GHIJ'.
+    WHEN OTHERS.
+      ASSERT <c1> IS ASSIGNED.
+      ASSERT <c1> = 'A'.
+      ASSERT <c> IS ASSIGNED.
+      ASSERT <c> = 'DEF'.
+      ASSERT <inl> IS ASSIGNED.
+      ASSERT <inl> = 'GHIJ'.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str1 = `12345`.
+ASSERT str2 = `zyxwv`.
+```
+
+
+**Example 2**
+
+The following example demonstrates the syntax variants for the `WHEN COMPATIBLE WITH` branches using demo data types and objects.
+Strings are built to assert the program flow logic when specific branches are executed based on the compatibility checks.
+
+
+```abap
+FIELD-SYMBOLS <fs> TYPE any.
+
+"Elementary types/data objects
+TYPES t_c1 TYPE c LENGTH 1.
+TYPES t_c2 TYPE c LENGTH 2.
+DATA c1 TYPE c LENGTH 1.
+DATA c2 TYPE c LENGTH 2.
+DATA str TYPE string.
+DATA num TYPE i.
+DATA str_any_table TYPE string.
+DATA str_index_table TYPE string.
+DATA str_sorted_table TYPE string.
+DATA str_hashed_table TYPE string.
+DATA str_standard_table TYPE string.
+DATA str_table TYPE string.
+
+"Structured types/data objects
+TYPES: BEGIN OF ty_struc1,
+         comp1 TYPE c LENGTH 1,
+         comp2 TYPE i,
+       END OF ty_struc1.
+
+TYPES: BEGIN OF ty_struc2,
+         comp1 TYPE c LENGTH 2,
+         comp2 TYPE i,
+       END OF ty_struc2.
+
+DATA struc1 TYPE ty_struc1.
+DATA struc2 TYPE ty_struc2.
+
+"Table types/internal tables
+TYPES tt_struc1 TYPE TABLE OF ty_struc1 WITH EMPTY KEY.
+TYPES tt_struc2 TYPE TABLE OF ty_struc2 WITH EMPTY KEY.
+TYPES tt_string TYPE TABLE OF string WITH EMPTY KEY.
+
+DATA itab1 TYPE tt_struc1.
+DATA itab2 TYPE tt_struc2.
+DATA str_tab TYPE tt_string.
+
+DATA itab_std TYPE STANDARD TABLE OF ty_struc1 WITH NON-UNIQUE KEY comp1.
+DATA itab_so TYPE SORTED TABLE OF ty_struc1 WITH UNIQUE KEY comp1.
+DATA itab_ha TYPE HASHED TABLE OF ty_struc1 WITH UNIQUE KEY comp1.
+
+"Reference types/data reference variables
+TYPES ty_ref_c1 LIKE REF TO c1.
+DATA dref_c1 TYPE ty_ref_c1.
+TYPES ty_ref_c2 TYPE REF TO t_c2.
+DATA dref_c2 TYPE ty_ref_c2.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH type_name
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN c1 TO <fs>.
+    WHEN 2.
+      ASSIGN c2 TO <fs>.
+    WHEN 3.
+      ASSIGN num TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH t_c1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH t_c2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH TYPE OF dobj2
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN c1 TO <fs>.
+    WHEN 2.
+      ASSIGN c2 TO <fs>.
+    WHEN 3.
+      ASSIGN num TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH TYPE OF c1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH TYPE OF c2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH LINE OF tab_type
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN struc1 TO <fs>.
+    WHEN 2.
+      ASSIGN struc2 TO <fs>.
+    WHEN 3.
+      ASSIGN str_tab TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH LINE OF tt_struc1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH LINE OF tt_struc2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&------------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH LINE TYPE OF itab
+*&------------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN struc1 TO <fs>.
+    WHEN 2.
+      ASSIGN struc2 TO <fs>.
+    WHEN 3.
+      ASSIGN str_tab TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH LINE TYPE OF itab1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH LINE TYPE OF itab2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH REF TO type
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN dref_c1 TO <fs>.
+    WHEN 2.
+      ASSIGN dref_c2 TO <fs>.
+    WHEN 3.
+      ASSIGN str_tab TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH REF TO t_c1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH REF TO t_c2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH REF TYPE OF dobj2
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN dref_c1 TO <fs>.
+    WHEN 2.
+      ASSIGN dref_c2 TO <fs>.
+    WHEN 3.
+      ASSIGN str_tab TO <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH REF TYPE OF c1.
+      str &&= `A`.
+    WHEN COMPATIBLE WITH REF TYPE OF c2.
+      str &&= `B`.
+    WHEN OTHERS.
+      str &&= `C`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `ABC`.
+CLEAR str.
+
+*&---------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH ANY STRUCTURE
+*&---------------------------------------------------------------------*
+
+DO 3 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN struc1 TO <fs>.
+    WHEN 2.
+      ASSIGN struc2 TO <fs>.
+    WHEN 3.
+      APPEND INITIAL LINE TO str_tab ASSIGNING <fs>.
+  ENDCASE.
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH ANY STRUCTURE.
+      str &&= `A`.
+    WHEN OTHERS.
+      str &&= `B`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str = `AAB`.
+
+*&--------------------------------------------------------------------------------------------*
+*& CASE DATA TYPE OF dobj. ... WHEN COMPATIBLE WITH [ANY|INDEX|SORTED|HASHED|STANDARD] TABLE
+*&--------------------------------------------------------------------------------------------*
+
+DO 4 TIMES.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSIGN itab_std TO <fs>.
+    WHEN 2.
+      ASSIGN itab_so TO <fs>.
+    WHEN 3.
+      ASSIGN itab_ha TO <fs>.
+    WHEN 4.
+      ASSIGN num TO <fs>.
+  ENDCASE.
+
+  "--- ANY TABLE ---
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH ANY TABLE.
+      str_any_table &&= `A`.
+    WHEN OTHERS.
+      str_any_table &&= `B`.
+  ENDCASE.
+
+  "--- INDEX TABLE ---
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH INDEX TABLE.
+      str_index_table &&= `C`.
+    WHEN OTHERS.
+      str_index_table &&= `D`.
+  ENDCASE.
+
+  "--- SORTED TABLE ---
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH SORTED TABLE.
+      str_sorted_table &&= `E`.
+    WHEN OTHERS.
+      str_sorted_table &&= `F`.
+  ENDCASE.
+
+  "--- HASHED TABLE ---
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH HASHED TABLE.
+      str_hashed_table &&= `G`.
+    WHEN OTHERS.
+      str_hashed_table &&= `H`.
+  ENDCASE.
+
+  "--- STANDARD TABLE ---
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH STANDARD TABLE.
+      str_standard_table &&= `I`.
+    WHEN OTHERS.
+      str_standard_table &&= `J`.
+  ENDCASE.
+
+  "--- TABLE (it is the same as STANDARD TABLE) --- 
+
+  CASE DATA TYPE OF <fs>.
+    WHEN COMPATIBLE WITH table.
+      str_table &&= `I`.
+    WHEN OTHERS.
+      str_table &&= `J`.
+  ENDCASE.
+
+ENDDO.
+
+ASSERT str_any_table = `AAAB`.
+ASSERT str_index_table = `CCDD`.
+ASSERT str_sorted_table = `FEFF`.
+ASSERT str_hashed_table = `HHGH`.
+ASSERT str_standard_table = `IJJJ`.
+ASSERT str_standard_table = str_table.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 #### Excursion: `SWITCH` Operator
 
 The conditional operator [`SWITCH`](https://help.sap.com/docs/abap-cloud/abap-keyword/switch-conditional-operator) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See also the ABAP Keyword Documentation and the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
@@ -450,6 +948,66 @@ DATA(num_switch) = SWITCH #( random_num_switch
   "str_b: 123456789
   ```
 - The value of the system field `sy-index` within the statement block contains the number of previous loop passes including the current pass.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+
+#### `WHILE`: Conditional Loops
+
+- Conditional loops introduced by `WHILE` and ended by `ENDWHILE` are repeated as long as a logical expression is true.
+- These loops can also be exited using the statements mentioned above.
+- Like in `DO` loops, the system field `sy-index` contains the number of previous loop passes including the current pass.
+- Also check the conditional loops options using `FOR ... WHILE` with a constructor expression in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
+
+```abap
+DATA int_itab TYPE TABLE OF i WITH EMPTY KEY.
+
+WHILE lines( int_itab ) < 5.
+  int_itab = VALUE #( BASE int_itab ( sy-index ) ).
+ENDWHILE.
+
+"Content of int_itab:
+"1
+"2
+"3
+"4
+"5
+
+"The following string replacement example uses a WHILE
+"statement for demo purposes - instead of using a REPLACE ALL 
+"OCCURRENCES statement or the replace function to replace all 
+"occurrences. The WHILE loop exits when there are no more '#' 
+"characters to be replaced in the string. The value of the data 
+"object, which is checked in the logical expression, is then set 
+"to make the logical expression false.
+DATA(str_to_replace) = `Lorem#ipsum#dolor#sit#amet`.
+DATA(subrc) = 0.
+DATA(counter) = 0.
+WHILE subrc = 0.
+  REPLACE `#` IN str_to_replace WITH ` `.
+  IF sy-subrc <> 0.
+    subrc = 1.
+  ELSE.
+    counter += 1.
+  ENDIF.
+ENDWHILE.
+
+"str_to_replace: Lorem ipsum dolor sit amet
+"counter: 4
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+
+#### Loops Across Tables
+Further keywords for defining loops are as follows. They are not dealt with here since they are covered in other ABAP cheat sheets.
+
+- [`LOOP ... ENDLOOP`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-basic-form) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
+  - In contrast to the loops above, the system field `sy-index` is not set. Instead, the system field `sy-tabix` is set and which contains the table index of the current table line in the loop pass.
+- `FOR` loops: You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. For more information, refer to the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
+- [`SELECT ... ENDSELECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/select) statements loop across the result set of a data source access. See also the cheat sheet on ABAP SQL.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -526,61 +1084,6 @@ ENDDO.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `WHILE`: Conditional Loops
-
-- Conditional loops introduced by `WHILE` and ended by `ENDWHILE` are repeated as long as a logical expression is true.
-- These loops can also be exited using the statements mentioned above.
-- Like in `DO` loops, the system field `sy-index` contains the number of previous loop passes including the current pass.
-- Also check the conditional loops options using `FOR ... WHILE` with a constructor expression in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
-
-```abap
-DATA int_itab TYPE TABLE OF i WITH EMPTY KEY.
-
-WHILE lines( int_itab ) < 5.
-  int_itab = VALUE #( BASE int_itab ( sy-index ) ).
-ENDWHILE.
-
-"Content of int_itab:
-"1
-"2
-"3
-"4
-"5
-
-"The following string replacement example uses a WHILE
-"statement for demo purposes - instead of using a REPLACE ALL 
-"OCCURRENCES statement or the replace function to replace all 
-"occurrences. The WHILE loop exits when there are no more '#' 
-"characters to be replaced in the string. The value of the data 
-"object, which is checked in the logical expression, is then set 
-"to make the logical expression false.
-DATA(str_to_replace) = `Lorem#ipsum#dolor#sit#amet`.
-DATA(subrc) = 0.
-DATA(counter) = 0.
-WHILE subrc = 0.
-  REPLACE `#` IN str_to_replace WITH ` `.
-  IF sy-subrc <> 0.
-    subrc = 1.
-  ELSE.
-    counter += 1.
-  ENDIF.
-ENDWHILE.
-
-"str_to_replace: Lorem ipsum dolor sit amet
-"counter: 4
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-#### Loops Across Tables
-Further keywords for defining loops are as follows. They are not dealt with here since they are covered in other ABAP cheat sheets.
-
-- [`LOOP ... ENDLOOP`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-basic-form) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
-  - In contrast to the loops above, the system field `sy-index` is not set. Instead, the system field `sy-tabix` is set and which contains the table index of the current table line in the loop pass.
-- `FOR` loops: You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. For more information, refer to the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
-- [`SELECT ... ENDSELECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/select) statements loop across the result set of a data source access. See also the cheat sheet on ABAP SQL.
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Calling Procedures
 

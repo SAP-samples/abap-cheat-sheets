@@ -31,6 +31,33 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 
 ## ABAP for Cloud Development Documentation Release News
 
+<details>
+  <summary>🟢 Release 921 (2611)</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Tag</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_CDS</td>
+            <td>External Entities: Initial Default Values and Default Values for Enumerated Types</td>
+            <td>The keyword DEFAULT is supported for elements in CDS external entities, with some enhancements: the value INITIAL can also be used as a default. For enumerated types, you can set enumerated constants as default values.</td>
+        </tr>
+<tr>
+            <td rowspan="2">EXPRESSIONS</td>
+            <td>Boolean Value Expressions</td>
+            <td>Logical expressions that produce a truth value can serve as Boolean value expressions. When evaluated, the resulting truth value can be used in various expression contexts. This is relevant for target data objects with certain elementary data types that have a natural representation for true values, while false values reflect the type's initial value.</td>
+        </tr>
+<tr>
+            <td>IS COMPATIBLE WITH and CASE DATA TYPE OF</td>
+            <td>The IS COMPATIBLE WITH relational expression and the CASE DATA TYPE OF statement assess if a data object's runtime type is compatible with a specified type.</td>
+        </tr>
+  </table>
+</details>  
+<br>
 
 <details>
   <summary>🟢 Release 920 (2608)</summary>
