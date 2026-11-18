@@ -1138,39 +1138,64 @@ for more information.
 
 ### Selecting Data From a Source by Evaluating the Content of an Internal Table
 
-To select a set of records based on values from an internal table, you can use `SELECT` statements with joins, such as inner joins. You may encounter `SELECT` statements with the [`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries) addition in (older) code for these operations. Note that this addition is considered deprecated. `SELECT` statements that use `FOR ALL ENTRIES` have restrictions and pitfalls, including the absence of SQL features such as expressions, `GROUP BY`, and `ORDER BY` (only ordering by primary key columns is permitted). Additionally, the result set has implicit `DISTINCT` semantics (duplicate rows are automatically removed, which can obscure data issues). Most notably, it has specific behavior when the internal table is empty: the entire `WHERE` condition is ignored, and the statement returns every row from the database table (with duplicates removed). This behavior is counterintuitive and often leads to unintended full-table reads. So, every use of `FOR ALL ENTRIES` typically requires an explicit check for emptiness on the internal table before the `SELECT` statement, increasing implementation complexity and maintenance burden.
-Therefore, it is advisable to use modern ABAP SQL alternatives that incorporate internal tables as sources in `SELECT` statements.
-
-So, instead of using a statement with `FOR ALL ENTRIES` as follows, ...
+- To select a set of records based on values from an internal table, you can use `SELECT` statements with joins, such as inner joins. 
+- You may encounter `SELECT` statements with the [`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries) addition in (older) code for these operations. 
+  - Note that this addition is considered deprecated. `SELECT` statements that use `FOR ALL ENTRIES` have restrictions and pitfalls, including the absence of SQL features such as expressions, `GROUP BY`, and `ORDER BY` (only ordering by primary key columns is permitted). 
+  - Additionally, the result set has implicit `DISTINCT` semantics (duplicate rows are automatically removed, which can obscure data issues). 
+  - Most notably, it has specific behavior when the internal table is empty: the entire `WHERE` condition is ignored, and the statement returns every row from the database table (with duplicates removed). 
+  - This behavior is counterintuitive and often leads to unintended full-table reads. 
+  - So, every use of `FOR ALL ENTRIES` typically requires an explicit check for emptiness on the internal table before the `SELECT` statement, increasing implementation complexity and maintenance burden.
+  - Therefore, it is advisable to use modern ABAP SQL alternatives that incorporate internal tables as sources in `SELECT` statements.
 
 ```abap
-SELECT * 
+SELECT *
        FROM zdemo_abap_fli
        WHERE seatsmax < 300
-       INTO TABLE @DATA(cond_tab).
+       INTO TABLE @DATA(itab).
 
- IF ( 0 < lines( cond_tab ) ).
-    SELECT carrid, connid, cityfrom, cityto
-           FROM zdemo_abap_flsch
-           FOR ALL ENTRIES IN @cond_tab
-           WHERE carrid = @cond_tab-carrid
-           AND connid = @cond_tab-connid
-           INTO TABLE @DATA(itab_forall).
+"Instead of using a statement with FOR ALL ENTRIES as follows, ...
+
+IF ( 0 < lines( itab ) ).
+  SELECT carrid, connid, cityfrom, cityto
+         FROM zdemo_abap_flsch
+         FOR ALL ENTRIES IN @itab
+         WHERE carrid = @itab-carrid
+         AND connid = @itab-connid
+         INTO TABLE @DATA(itab_forallentries).
 ENDIF.
-```
 
-... using an inner join with an internal table:
+"... using an inner join with an internal table:
 
-```abap
-SELECT DISTINCT schedule~carrid,
-                schedule~connid,
-                schedule~cityfrom,
-                schedule~cityto
-       FROM zdemo_abap_flsch AS schedule
-       INNER JOIN @cond_tab AS condition
-       ON  schedule~carrid = condition~carrid
-       AND schedule~connid = condition~connid
+SELECT DISTINCT flsch~carrid,
+                flsch~connid,
+                flsch~cityfrom,
+                flsch~cityto
+       FROM zdemo_abap_flsch AS flsch
+       INNER JOIN @itab AS fli
+       ON  flsch~carrid = fli~carrid
+       AND flsch~connid = fli~connid
        INTO TABLE @DATA(itab_join).
+
+ASSERT itab_forallentries = itab_join.
+
+"Assumptions:
+"- The internal table itab is empty.
+"- Provided that the demo database table is filled with data, the following statement (without a 
+"  prior check for internal table entries) will retrieve all entries from the second table.
+CLEAR itab.
+
+SELECT carrid, connid, cityfrom, cityto
+       FROM zdemo_abap_flsch
+       FOR ALL ENTRIES IN @itab
+       WHERE carrid = @itab-carrid
+       AND connid = @itab-connid
+       INTO TABLE @DATA(itab_forallentries_empty_itab).
+
+SELECT COUNT( * )
+       FROM zdemo_abap_flsch
+       INTO @DATA(count).
+
+ASSERT count = lines( itab_forallentries_empty_itab ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

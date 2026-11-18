@@ -239,7 +239,7 @@ Examples of string-related contexts:
 
 - String templates vs. string literals
   - A string template with only literal text is evaluated as an expression at runtime.
-  - If a string template does not contain an expression to evaluate, a text string literal with backquotes is advisable.
+  - If a string template does not contain an expression to evaluate, a text string literal with backquotes is advisable (the performance impact may be minimal).  
   
 - Pattern-based searching
   - Particularly in basic pattern-based searches, it can be more efficient to use comparison operators and `IF` statements rather than regular expressions using, for example, `FIND ... PCRE` statements.
@@ -372,15 +372,6 @@ Global class
 "! <p>The example class includes several methods that explore both inefficient and potentially more
 "! efficient code examples affecting performance.</p>
 "! <p>In ADT, choose F9 in ADT to run the class.</p>
-"!
-"! <h2>Note</h2>
-"! <ul><li>As a prerequisite, you have imported the ABAP cheat sheet repository since the
-"! example uses some of its artifacts.</li>
-"! <li>The example is for exploration, experimentation, and demonstration. It is not intended for accurate
-"! runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature,
-"! results may vary and not be entirely accurate, even across multiple runs.</li>
-"! <li>Note the disclaimer in the ABAP cheat sheet repository.</li></ul>
-"! <p class="shorttext"><strong>Performance Notes</strong><br/>ABAP cheat sheet example class</p>
 "!
 "! <p>The example class includes several methods that explore both inefficient and potentially more
 "! efficient code examples affecting performance.</p>

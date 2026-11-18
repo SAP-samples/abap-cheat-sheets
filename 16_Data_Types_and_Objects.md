@@ -24,6 +24,7 @@
   - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
   - [Notes in a Nutshell](#notes-in-a-nutshell)
     - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
+      - [Checking Type Compatibility](#checking-type-compatibility)
     - [Terms Related to Data Types and Data Objects](#terms-related-to-data-types-and-data-objects)
     - [Additions for Creating Data Types and Data Objects](#additions-for-creating-data-types-and-data-objects)
     - [Declaration Context of Data Types](#declaration-context-of-data-types)
@@ -2319,7 +2320,7 @@ See the conversion rules for the different data types here: [Assignment and Conv
 > - Typically, assignments are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/docs/abap-cloud/abap-keyword/conv-conversion-operator) to convert types explicitly.
 > - For [lossless assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignment-abenlossless_assignment_glosry), the lossless operator [`EXACT`](https://help.sap.com/docs/abap-cloud/abap-keyword/exact-lossless-operator) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
 > - In general, no checks are performed on assignments between compatible data objects. If a data object already contains an invalid value, for example, an invalid date or time in a date or time field, it is passed a valid value when the assignment is made to a compatible data object.
-> - The `applies_to_data` method of the [RTTI](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example and the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+> - Regarding type compatibility, see section [Checking Type Compatibility](#checking-type-compatibility).
     
 
 ```abap
@@ -2382,6 +2383,71 @@ DATA itab_str    TYPE string_table.
 "Type conversion not possible
 "itab_str = some_number.
 "some_number = itab_str.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Checking Type Compatibility
+
+- The types of two data objects are compatible if all of their technical type properties match.
+- Example: 
+  - The types of these two data objects `DATA dobj1 TYPE c LENGTH 1.` and `DATA dobj2 TYPE abap_boolean.` are compatible (the underlying data type of the DDIC data element `abap_boolean` is identical to the data type of `dobj1`). 
+  - The type of data object `DATA dobj3 TYPE c LENGTH 2.` is not compatible to the type of `dobj1` and `dobj2`. Note that assignment works though since a conversion rule exists.
+- Type compatibility checks are typically performed in the context of dynamic programming, among the options of checking type compatibility are these:
+  - Predicate expressions with `IS [NOT] COMPATIBLE WITH` (see the [Logical Expressions and Functions cheat sheet](37_Logical_Expressions_and_Functions.md#is-not-compatible-with))
+  - Case distinctions with `CASE DATA TYPE OF` (see the [Program Flow Logic cheat sheet](13_Program_Flow_Logic.md#control-structures-using-case-data-type-of))
+  - The `applies_to_data` method of the [Runtime Type Information (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) class `cl_abap_datadescr`. For more information, see the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+
+```abap
+DATA dobj1 TYPE c LENGTH 1.
+DATA dobj2 TYPE c LENGTH 2.
+FIELD-SYMBOLS <fs> TYPE any.
+
+ASSIGN dobj1 TO <fs>.
+
+IF <fs> IS COMPATIBLE WITH TYPE OF dobj1.
+  ... "This branch is executed.
+ELSE.
+  ...
+ENDIF.
+
+ASSIGN dobj2 TO <fs>.
+
+IF <fs> IS COMPATIBLE WITH TYPE OF dobj2.
+  ...
+ELSE.
+  ... "This branch is executed.
+ENDIF.
+
+ASSIGN dobj1 TO <fs>.
+
+CASE DATA TYPE OF <fs>.
+  WHEN COMPATIBLE WITH TYPE OF dobj1.
+    ... "This branch is executed.
+  WHEN COMPATIBLE WITH TYPE OF dobj2.
+    ...
+  WHEN OTHERS.
+    ...
+ENDCASE.
+
+ASSIGN dobj2 TO <fs>.
+
+CASE DATA TYPE OF <fs>.
+  WHEN COMPATIBLE WITH TYPE OF dobj1.
+    ...
+  WHEN COMPATIBLE WITH TYPE OF dobj2.
+    ...  "This branch is executed.
+  WHEN OTHERS.
+    ...
+ENDCASE.
+
+"Runtime Type Information (RTTI)
+ASSIGN dobj1 TO <fs>.
+DATA(tdo_elem) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( <fs> ) ).
+DATA(applies_to_data_elem) = tdo_elem->applies_to_data( dobj1 ).
+ASSERT applies_to_data_elem = abap_true.
+applies_to_data_elem = tdo_elem->applies_to_data( dobj2 ).
+ASSERT applies_to_data_elem = abap_false.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
