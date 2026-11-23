@@ -1784,9 +1784,10 @@ ASSERT result = abap_true.
 
 ## Boolean Value Expressions
 
-- Boolean value expressions are logical expressions that produce a truth value. 
-- The evaluation of the expression results in a truth value (i.e. either true or false) that can be used in various contexts that accept expressions. 
-- This applies to target data objects with specific elementary data types that have a canonical truth value representation (_Boolean-like data types_), where the false value indicates the type-specific initial value.
+- Boolean value expressions are logical expressions that produce a truth value, which can be assigned to a target data object.  
+- The evaluation of the expression results in a truth value (either true or false) that can be used in various contexts accepting expressions.  
+- For example, `dobj IS INITIAL` results in either true or false. It can be specified using a common `IF` statement, such as `IF dobj IS INITIAL.`, or it can be placed in expression positions and assigned to specific target data objects, such as `target = dobj IS INITIAL.`, allowing the data object `target` to receive the truth value.  
+- Target data objects are those with specific elementary data types that have a canonical truth value representation (_Boolean-like data types_), where the false value indicates the type-specific initial value.
 - Among the supported Boolean-like data types, which have a two-valued representation that aligns with the Boolean semantics of true and false, are the following:
 
     |**Type**|**True**|**False** |
@@ -1798,17 +1799,25 @@ ASSERT result = abap_true.
     |`i`, `int8`, `int1`, `int2` |`1`|`0` |
     |`decfloat16`, `decfloat34`, `f`, <br> `p` \(values in data objects of type `p` only with predecimals\)|`1`|`0`|
 
-> [!NOTE]  
-> - To differentiate between the operator `=` in comparisons and assignments  during multiple assignments and when using unnamed formal parameters, you  can use:  
->  - `=` with the logical expression enclosed in parentheses  
->  - `EQ` instead of `=`  
->- If it can statically be determined that a Boolean value expression is assigned to a non-Boolean-like type, a syntax error occurs. For example, if you attempt to assign a Boolean value expression to a data object of type `c` with length 2 (in dynamic programming), a runtime error will occur.  
+> [!NOTE] 
+> - The following examples demonstrate assignments of Boolean value expressions to a target data object in the context of assignments using the operator `=` (here, Boolean value expressions appear on the right-hand side (e.g., `target = dobj IS INITIAL.`) and in the context of actual parameter assignments during method calls (e.g., `meth( dobj IS INITIAL )`).
+> - Special cases: 
+>   - Operator `=`
+>      - The operator `=` serves dual purposes for both comparisons and assignments. To distinguish between its use in comparisons and assignments during multiple assignments  and when using unnamed formal parameters, consider using:
+>          - `=` with the logical expression enclosed in parentheses 
+>          - `EQ` instead of `=` 
+>   - Predicative method calls (i.e., methods with a single return parameter) / single data objects as relational expressions (e.g., `IF dobj.`)
+>      - Typically, a predicative method call evaluates to its return value, which is also true for a single data object that has its actual content evaluated. 
+>      - However, in Boolean contexts - such as those initiated by `IF` statements or logical expressions like `NOT` - they do not evaluate to their usual meanings but instead implicitly use `IS NOT INITIAL` semantics. 
+>      - Thus, predicative method calls and single data objects can serve as Boolean value expressions only in designated Boolean contexts. Refer to the  examples in _Example 3_ that illustrate this behavior.
+> - If it is statically determined that a Boolean value expression is assigned to a non-Boolean-like type, a syntax error will occur. For example, attempting to assign a Boolean value expression to a data object of type `c` with length 2 (in dynamic programming) will result in a runtime error.  
+
 
 
 **Example 1**
 
-- Demonstrates assignments of Boolean value expressions on the right-hand side of an assignment. 
-- On the left-hand side of the assignment, data objects with Boolean-like data types are specified. 
+- The example explores the assignment of Boolean value expressions (they use general comparison operators) specified on the right-hand side to target data objects with the assignment operator `=`. 
+- On the left-hand side of the assignment, target data objects with various Boolean-like data types are specified, inlcuding an example that specifies a target data object with a non-Boolean-like data type.
 - The data objects with Boolean-like data types are assigned the type-specific true and false value representations.
 
 ```abap
@@ -1893,9 +1902,9 @@ DATA c2 TYPE t_c2.
 
 **Example 2**
 
-- Demonstrates passing Boolean value expressions as actual parameters, especially with unnamed formal parameters. For this purpose, the class includes methods with one importing parameter (with and without a Boolean-like data type).
-- Demonstrates multiple assignments and dealing with Boolean value expressions.
-- Shows the use of `EQ` for Boolean value expressions instead of `=` for comparisons, along with using the comparison operator `=` and enclosing the expression in parentheses.
+- The example demonstrates passing Boolean value expressions as actual parameters, especially with unnamed formal parameters. For this purpose, the class includes methods with one importing parameter (with and without a Boolean-like data type).
+- It also shows the special case of `=` as comparison and assignment operator when dealing with Boolean value expressions and multiple assignments.
+
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -2067,6 +2076,233 @@ CLASS zcl_demo_abap IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+```
+
+**Example 3**    
+
+- The example explores a variety of Boolean value expressions (among them: general comparison operators, comparison operators for character-like data types, predicate expressions, functions and method calls, as well as single data objects as relational expressions) specified on the right-hand side of assignments with the assignment operator `=`. 
+- On the left-hand side of the assignment, the target data object is typed with the Boolean-like data type `i`. The data object is assigned the type-specific true (1) and false (0) value representation.
+
+```abap
+DATA num TYPE i.
+
+DATA(num_a) = 0.
+DATA(num_b) = 10.
+
+DATA(dref) = NEW string( `ABAP` ).
+DATA(uuid) = NEW cl_system_uuid( ).
+
+FIELD-SYMBOLS <fs> TYPE any.
+DATA(some_str) = `hello`.
+ASSIGN some_str TO <fs>.
+
+*&---------------------------------------------------------------------*
+*& General Comparison Operators
+*&---------------------------------------------------------------------*
+
+"Note the enclosing of the Boolean value expression in parentheses. Without the parentheses,
+"it would be a multiple assignment (due to the semantics of the operator = for both comparisons
+"and assignments).
+num = ( num_a = num_b ). "0
+
+"Multiple assignment
+num = num_a = num_b. "num = 10
+CLEAR num_a.
+
+"Alternative syntax for the comparison operator = is EQ to differentiate
+"the semantics.
+num = num_a EQ num_b. " 0
+
+num =  num_a <> num_b. "0
+num =  num_a NE num_b. "0
+
+num =  num_a < num_b. "1
+num =  num_a LT num_b. "1
+
+num =  num_a > num_b. "0
+num =  num_a GT num_b. "0
+
+num =  num_a <= num_b. "1
+num =  num_a LE num_b. "1
+
+num =  num_a >= num_b. "0
+num =  num_a GE num_b. "0
+
+num =  5 BETWEEN num_a AND num_b. "1
+num =  15 BETWEEN num_a AND num_b. "0
+
+DATA rangestab TYPE RANGE OF i.
+rangestab = VALUE #( ( sign = 'I' option = 'BT' low = 1 high = 10 ) ).
+num = 5 IN rangestab. "1
+num = 15 IN rangestab. "0
+
+*&---------------------------------------------------------------------*
+*& Comparison Operators for Character-Like Data Types
+*&---------------------------------------------------------------------*
+
+DATA(s) = `cheers`.
+
+num = s CA `aeiou`. "1
+num = s CA `xy`. "0
+
+s = `Hallo`.
+num = s NA `bcdeh`. "1
+num = s NA `bcdeH`. "0
+
+s = `abcd`.
+num = s CO `abcd`. "1
+num = s CO `abCd`. "0
+
+s = `abap`.
+num = s CN `ab`. "1
+num = s CN `abp`. "0
+
+s = `Lorem ipsum dolor sit amet.`.
+num = s CS `or`. "1
+num = s CS `zz`. "0
+
+s = `some test string`.
+num = s NS `tests`. "1
+num = s NS `TEST`. "0
+
+s = `abc_def_ghi`.
+num = s CP `*f#_*`. "1
+num = s CP `*i+`. "0
+
+s = `abcDEFghi`.
+num = s NP `*c#d*`. "1
+num = s NP `*c#D*`. "0
+
+*&---------------------------------------------------------------------*
+*& Predicate Expressions
+*&---------------------------------------------------------------------*
+
+num = num_a IS INITIAL. "1
+num = num_b IS NOT INITIAL. "1
+
+num = dref IS BOUND. "1
+num = dref IS NOT BOUND. "0
+
+num = dref IS BOUND. "1
+num = dref IS NOT BOUND. "0
+
+num = uuid IS INSTANCE OF cl_system_uuid. "1
+num = uuid IS NOT INSTANCE OF cl_system_uuid. "0
+
+num = <fs> IS ASSIGNED. "1
+num = <fs> IS NOT ASSIGNED. "0
+
+"Assumption: some_param is a parameter of the method, and it is optional.
+"num = some_param IS SUPPLIED.
+"num = some_param IS NOT SUPPLIED.
+
+"Note: IS COMPATIBLE has many more specification options.
+num = <fs> IS COMPATIBLE WITH i. "0
+num = <fs> IS NOT COMPATIBLE WITH i. "1
+
+*&---------------------------------------------------------------------*
+*& Predicate Functions
+*&---------------------------------------------------------------------*
+
+num = contains( val = `ABCDE` start = `ab` case = abap_true ). "0
+num = contains( val = `ABCDE` start = `ab` case = abap_false ). "1
+num = contains_any_of( val = `abcdefg` sub = `xyza` ). "1
+num = contains_any_of( val = `abcdefg` sub = `xyz` ). "0
+num = contains_any_not_of( val = `1hallo` start = `abcdefghijklmnopqrstuvwxyz` ). "1
+num = contains_any_not_of( val = `1hallo` end = `abcdefghijklmnopqrstuvwxyz` ). "0
+num = matches( val = `jon.doe@email.com` pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ). "1
+
+DATA(str_tab) = VALUE string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
+num = line_exists( str_tab[ 1 ] ). "1
+num = line_exists( str_tab[ 4 ] ). "0
+
+*&---------------------------------------------------------------------*
+*& Predicative Method Calls
+*&---------------------------------------------------------------------*
+
+"- Predicative method calls and single data objects can serve as Boolean value expressions
+"  only in designated Boolean contexts.
+"- Only in these contexts, the return value of the method call or the value of the data object
+"  is implicitly interpreted as a Boolean value expression, and IS NOT INITIAL semantics is applied.
+"- The example below uses the class cl_abap_random_int to create a random integer.
+
+"Regular assignment of the return value of the method to the variable num.
+"The predicative method call on the right does not represent a Boolean value expression.
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+																	min  = 1
+																	max  = 10 )->get_next( ).
+
+"In the following examples, the predicative method call on the right represents a Boolean value expression,
+"and IS NOT INITIAL semantics is applied, since NOT initiates a logical expression.
+"The self-contained, but nonsensical examples showcase the assignment of the type-specific true or false value.
+"The min and max values are only specified like this to showcase the assignmment of the value 1 (true) to the
+"variable num as the resulting value of the method call, which is always 0. NOT negates. Therefore, the Boolean
+"value assigned is 1 (true).
+num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                      min  = 0
+                                      max  = 0 )->get_next( ). "1
+
+"Comparisons
+"Without predicative method call and explicit IS NOT INITIAL specification.
+num = 0 IS NOT INITIAL. "0 (false; 0 is initial)
+num = NOT 0 IS NOT INITIAL. "1 (true; corresponds to the example with the result of the predicative method call above
+                            "and to the following example that explicitly specifies IS NOT INITIAL)
+
+"Explicit specification of IS NOT INITIAL with the method call.
+num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                      min  = 0
+                                      max  = 0 )->get_next( ) IS NOT INITIAL. "1
+
+
+"The min and max values in the following examples are chosen deliberately so that the random integer
+"created cannot be 0, and, therefore, the Boolean value expression cannot be evaluated as true.
+"That is, the actual IS NOT INITIAL evaluation will always result in true. Due to the negation with
+"NOT, the Boolean value assigned is 0 (false).
+num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                      min  = 1
+                                      max  = 10 )->get_next( ). "0
+
+"Boolean context using the AND Boolean operator
+"The nonsensical min and max value specification in the example can result in 0 or 1 assigned to the
+"variable num due to random value creation. The Boolean value expression is evaluated as true if both
+"method calls return a non-zero value.
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -1 max = 1 )->get_next( )
+      AND cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -2 max = 2 )->get_next( ).
+
+"Boolean context using the AND Boolean operator
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -1 max = 1 )->get_next( )
+      OR cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -2 max = 2 )->get_next( ).
+
+
+*&---------------------------------------------------------------------*
+*& Single Data Objects as Relational Expressions
+*&---------------------------------------------------------------------*
+
+"See the notes in the previous section about predicative method calls.
+
+"The following examples show regular assignments of the content of the right-hand variable
+"to the variable num on the left-hand side.
+"The single data object on the right does not represent a Boolean value expression.
+num = num_b. "num = 10
+"In the following example, the right-hand data object is a table, and the left-hand data
+"object is a data object of type i.
+"An assignment is not possible.
+"num = str_tab.
+
+"In the following examples, the single data object on the right represents a Boolean value expression,
+"and IS NOT INITIAL semantics is applied, since NOT initiates a logical expression.
+num = NOT str_tab. "0
+
+CLEAR str_tab.
+num = NOT str_tab. "1
+
+"Boolean context using the AND Boolean operator
+APPEND INITIAL LINE TO str_tab.
+
+num = str_tab AND num_b. "1
+
+CLEAR: str_tab, num_b.
+num = str_tab AND num_b. "0
 ```
 
 
