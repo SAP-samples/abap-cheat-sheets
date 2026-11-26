@@ -880,14 +880,14 @@ ENDCLASS.
 
 Syntax patterns: 
 ```abap
-... <dobj> IS [NOT] COMPATIBLE WITH type ... 
-... <dobj> IS [NOT] COMPATIBLE WITH TYPE OF dobj2 ... 
-... <dobj> IS [NOT] COMPATIBLE WITH LINE OF tab_type ... 
-... <dobj> IS [NOT] COMPATIBLE WITH LINE TYPE OF itab ... 
-... <dobj> IS [NOT] COMPATIBLE WITH REF TO type ... 
-... <dobj> IS [NOT] COMPATIBLE WITH REF TYPE OF dobj2 ... 
-... <dobj> IS [NOT] COMPATIBLE WITH ANY STRUCTURE ... 
-... <dobj> IS [NOT] COMPATIBLE WITH [ANY|INDEX|SORTED|HASHED|STANDARD] TABLE ... 
+... dobj IS [NOT] COMPATIBLE WITH type ... 
+... dobj IS [NOT] COMPATIBLE WITH TYPE OF dobj2 ... 
+... dobj IS [NOT] COMPATIBLE WITH LINE OF tab_type ... 
+... dobj IS [NOT] COMPATIBLE WITH LINE TYPE OF itab ... 
+... dobj IS [NOT] COMPATIBLE WITH REF TO type ... 
+... dobj IS [NOT] COMPATIBLE WITH REF TYPE OF dobj2 ... 
+... dobj IS [NOT] COMPATIBLE WITH ANY STRUCTURE ... 
+... dobj IS [NOT] COMPATIBLE WITH [ANY|INDEX|SORTED|HASHED|STANDARD] TABLE ... 
 ```
 
 > [!NOTE]  
@@ -1026,7 +1026,7 @@ TYPES ty_ref_c2 TYPE REF TO t_c2.
 DATA dref_c2 TYPE ty_ref_c2.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH <name>
+*& dobj IS [NOT] COMPATIBLE WITH type
 *&---------------------------------------------------------------------*
 
 ASSIGN c1 TO <fs>.
@@ -1046,7 +1046,7 @@ ASSERT <fs> IS NOT COMPATIBLE WITH t_c2.
 ASSERT <fs> IS COMPATIBLE WITH ty_struc1-comp2.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH TYPE OF <dobj2>
+*& dobj IS [NOT] COMPATIBLE WITH TYPE OF dobj2
 *&---------------------------------------------------------------------*
 
 ASSIGN c1 TO <fs>.
@@ -1062,7 +1062,7 @@ ASSERT <fs> IS COMPATIBLE WITH TYPE OF num.
 ASSERT <fs> IS NOT COMPATIBLE WITH TYPE OF c1.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH LINE OF <table>
+*& dobj IS [NOT] COMPATIBLE WITH LINE OF tab_type
 *&---------------------------------------------------------------------*
 
 ASSIGN struc1 TO <fs>.
@@ -1076,7 +1076,7 @@ ASSERT <fs> IS COMPATIBLE WITH LINE OF tt_string.
 ASSERT <fs> IS NOT COMPATIBLE WITH LINE OF tt_struc1.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH LINE TYPE OF <dtable>
+*& dobj IS [NOT] COMPATIBLE WITH LINE TYPE OF itab
 *&---------------------------------------------------------------------*
 
 ASSIGN struc2 TO <fs>.
@@ -1090,7 +1090,7 @@ ASSERT <fs> IS COMPATIBLE WITH LINE TYPE OF str_tab.
 ASSERT <fs> IS NOT COMPATIBLE WITH LINE TYPE OF itab1.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH REF TO <name>
+*& dobj IS [NOT] COMPATIBLE WITH REF TO type
 *&---------------------------------------------------------------------*
 
 ASSIGN dref_c1 TO <fs>.
@@ -1104,7 +1104,7 @@ ASSERT <fs> IS COMPATIBLE WITH REF TO t_c2.
 ASSERT <fs> IS NOT COMPATIBLE WITH REF TO t_c1.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH REF TYPE OF <dobj2>
+*& dobj IS [NOT] COMPATIBLE WITH REF TYPE OF dobj2
 *&---------------------------------------------------------------------*
 
 ASSIGN dref_c1 TO <fs>.
@@ -1118,7 +1118,7 @@ ASSERT <fs> IS COMPATIBLE WITH REF TYPE OF c2.
 ASSERT <fs> IS NOT COMPATIBLE WITH REF TYPE OF c1.
 
 *&---------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH ANY STRUCTURE
+*& dobj IS [NOT] COMPATIBLE WITH ANY STRUCTURE
 *&---------------------------------------------------------------------*
 
 ASSIGN struc1 TO <fs>.
@@ -1142,7 +1142,7 @@ ASSIGN num TO <fs>.
 ASSERT <fs> IS NOT COMPATIBLE WITH ANY STRUCTURE.
 
 *&--------------------------------------------------------------------------*
-*& <dobj> IS [NOT] COMPATIBLE WITH (ANY|INDEX|SORTED|HASHED|STANDARD) TABLE
+*& dobj IS [NOT] COMPATIBLE WITH (ANY|INDEX|SORTED|HASHED|STANDARD) TABLE
 *&--------------------------------------------------------------------------*
 
 "--- ANY TABLE ---
@@ -2106,30 +2106,30 @@ ASSIGN some_str TO <fs>.
 num = ( num_a = num_b ). "0
 
 "Multiple assignment
-num = num_a = num_b. "num = 10
+num = num_a = num_b. "num = 10; num_a = 10
 CLEAR num_a.
 
 "Alternative syntax for the comparison operator = is EQ to differentiate
 "the semantics.
 num = num_a EQ num_b. " 0
 
-num =  num_a <> num_b. "0
-num =  num_a NE num_b. "0
+num = num_a <> num_b. "0
+num = num_a NE num_b. "0
 
-num =  num_a < num_b. "1
-num =  num_a LT num_b. "1
+num = num_a < num_b. "1
+num = num_a LT num_b. "1
 
-num =  num_a > num_b. "0
-num =  num_a GT num_b. "0
+num = num_a > num_b. "0
+num = num_a GT num_b. "0
 
-num =  num_a <= num_b. "1
-num =  num_a LE num_b. "1
+num = num_a <= num_b. "1
+num = num_a LE num_b. "1
 
-num =  num_a >= num_b. "0
-num =  num_a GE num_b. "0
+num = num_a >= num_b. "0
+num = num_a GE num_b. "0
 
-num =  5 BETWEEN num_a AND num_b. "1
-num =  15 BETWEEN num_a AND num_b. "0
+num = 5 BETWEEN num_a AND num_b. "1
+num = 15 BETWEEN num_a AND num_b. "0
 
 DATA rangestab TYPE RANGE OF i.
 rangestab = VALUE #( ( sign = 'I' option = 'BT' low = 1 high = 10 ) ).
@@ -2141,7 +2141,6 @@ num = 15 IN rangestab. "0
 *&---------------------------------------------------------------------*
 
 DATA(s) = `cheers`.
-
 num = s CA `aeiou`. "1
 num = s CA `xy`. "0
 
@@ -2178,25 +2177,24 @@ num = s NP `*c#D*`. "0
 *&---------------------------------------------------------------------*
 
 num = num_a IS INITIAL. "1
+num = num_a IS NOT INITIAL. "0
 num = num_b IS NOT INITIAL. "1
-
-num = dref IS BOUND. "1
-num = dref IS NOT BOUND. "0
 
 num = dref IS BOUND. "1
 num = dref IS NOT BOUND. "0
 
 num = uuid IS INSTANCE OF cl_system_uuid. "1
 num = uuid IS NOT INSTANCE OF cl_system_uuid. "0
+num = uuid IS NOT INSTANCE OF if_oo_adt_classrun. "1
 
 num = <fs> IS ASSIGNED. "1
 num = <fs> IS NOT ASSIGNED. "0
 
-"Assumption: some_param is a parameter of the method, and it is optional.
+"Assumption: some_param is a parameter of a method, and it is optional.
 "num = some_param IS SUPPLIED.
 "num = some_param IS NOT SUPPLIED.
 
-"Note: IS COMPATIBLE has many more specification options.
+"Note: IS COMPATIBLE WITH has several specification options regarding the type.
 num = <fs> IS COMPATIBLE WITH i. "0
 num = <fs> IS NOT COMPATIBLE WITH i. "1
 
@@ -2229,30 +2227,31 @@ num = line_exists( str_tab[ 4 ] ). "0
 "Regular assignment of the return value of the method to the variable num.
 "The predicative method call on the right does not represent a Boolean value expression.
 num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
-																	min  = 1
-																	max  = 10 )->get_next( ).
+                                  min  = 1
+                                  max  = 10 )->get_next( ).
 
-"In the following examples, the predicative method call on the right represents a Boolean value expression,
-"and IS NOT INITIAL semantics is applied, since NOT initiates a logical expression.
-"The self-contained, but nonsensical examples showcase the assignment of the type-specific true or false value.
-"The min and max values are only specified like this to showcase the assignmment of the value 1 (true) to the
-"variable num as the resulting value of the method call, which is always 0. NOT negates. Therefore, the Boolean
-"value assigned is 1 (true).
+"In the following examples, the predicative method call on the right represents a Boolean value expression
+"since the Boolean operator NOT determines a Boolean expression. Therefore, IS NOT INITIAL semantics is applied.
+"The self-contained examples using the cl_abap_random_int class are fairly nonsensical since the min and max values
+"are deliberately chosen to showcase either the returning of a initial value (integer value 0) or non-initial value
+"so that the assignment of the type-specific true or false value for num occurs.
+"In the following example, the min and max values are only specified like this to showcase the assignmment of the value 1 (true)
+"to the variable num. This applies since the resulting value of the method call due to the min/max value specification is always
+"0. NOT negates, and, therefore, the Boolean value assigned is 1 (true).
 num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                       min  = 0
                                       max  = 0 )->get_next( ). "1
+
+"Explicit specification of IS NOT INITIAL with the method call. In the previous example, the IS NOT INITIAL semantics is applied implicitly.
+num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                      min  = 0
+                                      max  = 0 )->get_next( ) IS NOT INITIAL. "1
 
 "Comparisons
 "Without predicative method call and explicit IS NOT INITIAL specification.
 num = 0 IS NOT INITIAL. "0 (false; 0 is initial)
 num = NOT 0 IS NOT INITIAL. "1 (true; corresponds to the example with the result of the predicative method call above
                             "and to the following example that explicitly specifies IS NOT INITIAL)
-
-"Explicit specification of IS NOT INITIAL with the method call.
-num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
-                                      min  = 0
-                                      max  = 0 )->get_next( ) IS NOT INITIAL. "1
-
 
 "The min and max values in the following examples are chosen deliberately so that the random integer
 "created cannot be 0, and, therefore, the Boolean value expression cannot be evaluated as true.
@@ -2262,17 +2261,30 @@ num = NOT cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                       min  = 1
                                       max  = 10 )->get_next( ). "0
 
-"Boolean context using the AND Boolean operator
-"The nonsensical min and max value specification in the example can result in 0 or 1 assigned to the
+"Without Boolean operator NOT; IS [NOT] INITIAL determines the Boolean context
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                  min  = 0
+                                  max  = 0 )->get_next( ) IS INITIAL. "1
+
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                  min  = 0
+                                  max  = 0 )->get_next( ) IS NOT INITIAL. "0
+
+num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                  min  = -10
+                                  max  = 10 )->get_next( ) IS NOT INITIAL. "Depending on the random value created,
+                                                                           "the value assigned can be 0 or 1.
+
+"Boolean context determined by the AND Boolean operator
+"The nonsensical min and max value specifications in the example can result in 0 or 1 assigned to the
 "variable num due to random value creation. The Boolean value expression is evaluated as true if both
 "method calls return a non-zero value.
 num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -1 max = 1 )->get_next( )
       AND cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -2 max = 2 )->get_next( ).
 
-"Boolean context using the AND Boolean operator
+"Boolean context determined by the OR Boolean operator
 num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -1 max = 1 )->get_next( )
       OR cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -2 max = 2 )->get_next( ).
-
 
 *&---------------------------------------------------------------------*
 *& Single Data Objects as Relational Expressions
@@ -2282,7 +2294,8 @@ num = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = -1 max = 
 
 "The following examples show regular assignments of the content of the right-hand variable
 "to the variable num on the left-hand side.
-"The single data object on the right does not represent a Boolean value expression.
+"The single data object on the right does not represent a Boolean value expression since it is
+"not a Boolean context.
 num = num_b. "num = 10
 "In the following example, the right-hand data object is a table, and the left-hand data
 "object is a data object of type i.
@@ -2290,7 +2303,7 @@ num = num_b. "num = 10
 "num = str_tab.
 
 "In the following examples, the single data object on the right represents a Boolean value expression,
-"and IS NOT INITIAL semantics is applied, since NOT initiates a logical expression.
+"and IS NOT INITIAL semantics is applied since NOT determines a Boolean context.
 num = NOT str_tab. "0
 
 CLEAR str_tab.
@@ -2304,7 +2317,6 @@ num = str_tab AND num_b. "1
 CLEAR: str_tab, num_b.
 num = str_tab AND num_b. "0
 ```
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

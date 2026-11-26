@@ -2374,158 +2374,252 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
 To try out the following example, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 The example includes multiple reads on standard internal tables using a `READ TABLE` statement ...
-- without `BINARY SEARCH` by applying a sorting of the table a) every time and b) only once (the assumption is that after sorting once, only read accesses follow). 
-- with `BINARY SEARCH` (by applying a sorting of the table a) every time and b) only once (the assumption is that after sorting once, only read accesses follow).
+- without `BINARY SEARCH` by applying a sorting of the table a) every time (as anti-pattern) and b) only once (the assumption is that after sorting once, only read accesses follow). 
+- with `BINARY SEARCH` (by applying a sorting of the table a) every time (as anti-pattern) and b) only once (the assumption is that after sorting once, only read accesses follow).
 - with a secondary table key whose components correspond to free key used in the previous statements.
 
-The total runtime of multiple reads is determined to have a more representative runtime evaluation. The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key). Particularly, the result using `BINARY SEARCH` and `SORT` applied only once as well as the reads using the secondary table key should be relatively fast.
+The total runtime of multiple reads is determined to have a more representative runtime evaluation. The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key - the recommended approach). Particularly, the result using `BINARY SEARCH` and `SORT` applied only once as well as the reads using the secondary table key should be relatively fast. Regarding the example setup and the disclaimer, see the [Exploring Read Access Performance with Internal Tables](#exploring-read-access-performance-with-internal-tables) section.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-  PROTECTED SECTION.
+
   PRIVATE SECTION.
 
     METHODS:
-      read_wo_binary_search1 RETURNING VALUE(result) TYPE decfloat34,
-      read_wo_binary_search2 RETURNING VALUE(result) TYPE decfloat34,
-      read_with_binary_search1 RETURNING VALUE(result) TYPE decfloat34,
-      read_with_binary_search2 RETURNING VALUE(result) TYPE decfloat34,
-      read_w_secondary_table_key RETURNING VALUE(result) TYPE decfloat34.
+      no_binary_search_sort_always RETURNING VALUE(result) TYPE decfloat34,
+      no_binary_search_sort_once RETURNING VALUE(result) TYPE decfloat34,
+      with_binary_search_sort_always RETURNING VALUE(result) TYPE decfloat34,
+      with_binary_search_sort_once RETURNING VALUE(result) TYPE decfloat34,
+      with_secondary_table_key RETURNING VALUE(result) TYPE decfloat34.
 
-    DATA: ts1         TYPE utclong,
-          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF s,
+        comp1  TYPE c LENGTH 10,
+        comp2  TYPE c LENGTH 10,
+        comp3  TYPE c LENGTH 10,
+        comp4  TYPE c LENGTH 10,
+        comp5  TYPE c LENGTH 10,
+        comp6  TYPE c LENGTH 10,
+        comp7  TYPE c LENGTH 10,
+        comp8  TYPE c LENGTH 10,
+        comp9  TYPE c LENGTH 10,
+        comp10 TYPE c LENGTH 10,
+      END OF s.
 
-    "Line type and internal table declarations
-    TYPES: BEGIN OF demo_struc,
-             idx TYPE i,
-             str TYPE string,
-             num TYPE i,
-           END OF demo_struc.
+    TYPES key_char TYPE c LENGTH 10.
 
-    "Tables with empty primary table key
-    DATA itab_std TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF s_batch_range,
+        batch_from TYPE i,
+        batch_to   TYPE i,
+      END OF s_batch_range.
+
+    TYPES:
+      BEGIN OF s_table_info,
+        method_name           TYPE string,
+        median_runtime_per_op TYPE decfloat34,
+        relative_to_min       TYPE decfloat34,
+        ops                   TYPE i,
+        description           TYPE string,
+      END OF s_table_info,
+      tt_table_info TYPE STANDARD TABLE OF s_table_info WITH EMPTY KEY.
+
+    METHODS:
+      baseline_loop_only,
+      prepare IMPORTING table_info TYPE s_table_info,
+      build_keys,
+      store_runtime IMPORTING high TYPE utclong
+                              low  TYPE utclong,
+      get_median_runtime RETURNING VALUE(median_runtime) TYPE decfloat34,
+      write_section      IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                   text TYPE string.
+
+    DATA itab_content     TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Table with empty primary table key
+    DATA itab_std TYPE STANDARD TABLE OF s WITH EMPTY KEY.
     "Table with empty primary table key, secondary table key specified
-    DATA itab_sec TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY
-                                                    WITH NON-UNIQUE SORTED KEY sk COMPONENTS idx.
-    CONSTANTS count TYPE i VALUE 1000.
+    DATA itab_sec TYPE STANDARD TABLE OF s WITH EMPTY KEY
+                                           WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp1.
 
+    DATA runtime_tab      TYPE TABLE OF decfloat34     WITH EMPTY KEY.
+    DATA keys             TYPE TABLE OF key_char        WITH EMPTY KEY.
+    DATA batch_ranges     TYPE TABLE OF s_batch_range   WITH EMPTY KEY.
+    DATA t_table_info     TYPE tt_table_info.
+
+    CONSTANTS: table_lines TYPE i VALUE 5000,
+               reads       TYPE i VALUE 1000,
+               repetitions TYPE i VALUE 5.
+
+    METHODS relative_to_min_calc CHANGING tab TYPE tt_table_info.
 ENDCLASS.
 
 
-
 CLASS zcl_demo_abap IMPLEMENTATION.
+
   METHOD if_oo_adt_classrun~main.
-
-    "Populating internal tables
-    DO count TIMES.
-      INSERT VALUE #( idx = sy-index
-                      str = |INDEX{ sy-index }|
-                      num = sy-index ) INTO TABLE itab_std.
+    DATA key TYPE key_char.
+    DO table_lines TIMES.
+      key = sy-index.
+      INSERT VALUE s( comp1 = key comp2 = key comp3 = key comp4 = key comp5 = key
+                      comp6 = key comp7 = key comp8 = key comp9 = key comp10 = key )
+             INTO TABLE itab_content.
     ENDDO.
-    itab_sec = itab_std.
 
-    DATA(res1) = read_wo_binary_search1( ).
-    out->write( `Total runtime for read operations using READ TABLE with a free key, without the BINARY SEARCH addition, SORT always applied:` ).
-    out->write( |{ res1 STYLE = SIMPLE DECIMALS = 10 }| ).
+    build_keys( ).
 
-    DATA(res2) = read_wo_binary_search2( ).
-    out->write( `Total runtime for read operations using READ TABLE with a free key, without the BINARY SEARCH addition, SORT applied once:` ).
-    out->write( |{ res2 STYLE = SIMPLE DECIMALS = 10 }| ).
+    DO repetitions TIMES.
+      DATA(ts_base) = utclong_current( ).
+      baseline_loop_only( ).
+      store_runtime( high = utclong_current( ) low = ts_base ).
+    ENDDO.
+    DATA(loop_overhead_us) = round( val = get_median_runtime( ) / reads * 1000000 dec = 4 ).
 
-    DATA(res3) = read_with_binary_search1( ).
-    out->write( `Total runtime for read operations using READ TABLE with a free key, with BINARY SEARCH addition, SORT always applied:` ).
-    out->write( |{ res3 STYLE = SIMPLE DECIMALS = 10 }| ).
+    t_table_info = VALUE #(
+      ( method_name = `no_binary_search_sort_always`
+        ops = reads description = `READ TABLE with a free key, without the BINARY SEARCH addition, SORT always applied` )
+      ( method_name = `no_binary_search_sort_once`
+        ops = reads description = `READ TABLE with a free key, without the BINARY SEARCH addition, SORT applied once` )
+      ( method_name = `with_binary_search_sort_always`
+        ops = reads description = `READ TABLE with a free key, with BINARY SEARCH addition, SORT always applied` )
+      ( method_name = `with_binary_search_sort_once`
+        ops = reads description = `READ TABLE with a free key, with BINARY SEARCH addition, SORT applied once` )
+      ( method_name = `with_secondary_table_key`
+        ops = reads description = `READ TABLE and a secondary table key that corresponds to the free key in the other table` )
+      ).
 
-    DATA(res4) = read_with_binary_search2( ).
-    out->write( `Total runtime for read operations using READ TABLE with a free key, with BINARY SEARCH addition, SORT applied once:` ).
-    out->write( |{ res4 STYLE = SIMPLE DECIMALS = 10 }| ).
+    LOOP AT t_table_info REFERENCE INTO DATA(info).
+      info->method_name = to_upper( info->method_name ).
+      DO repetitions TIMES.
+        prepare( info->* ).
+        DATA(ts1) = utclong_current( ).
+        CALL METHOD (info->method_name).
+        store_runtime( high = utclong_current( ) low = ts1 ).
+      ENDDO.
+      info->median_runtime_per_op = round( val = get_median_runtime( ) / info->ops * 1000000 dec = 4 ).
+    ENDLOOP.
 
-    DATA(res5) = read_w_secondary_table_key( ).
-    out->write( `Total runtime for read operations using READ TABLE and a secondary table key that corresponds to the free key in the other table:` ).
-    out->write( |{ res5 STYLE = SIMPLE DECIMALS = 10 }| ).
+    write_section( out = out text = `Results sorted by runtime (median of 5 batches, microseconds per operation)` ).
+    out->write( |Note: Loop overhead per read without table access (for orientation): { loop_overhead_us } microseconds| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    relative_to_min_calc( CHANGING tab = t_table_info ).
+    out->write( t_table_info ).
   ENDMETHOD.
 
-  METHOD read_wo_binary_search1.
-
-    ts1 = utclong_current( ).
-    DO count TIMES.
-**********************************************************************
-      SORT itab_std BY str num.
-      READ TABLE itab_std WITH KEY idx = sy-index TRANSPORTING NO FIELDS.
-**********************************************************************
+  METHOD build_keys.
+    DATA(gap) = table_lines DIV reads.
+    DATA pool TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DO reads TIMES.
+      APPEND ( sy-index - 1 ) * gap + 1 TO pool.
     ENDDO.
-    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
-                                     low     = ts1
-                           IMPORTING seconds = result ).
+
+    DATA(rng) = cl_abap_random_int=>create( seed = 42 min = 1 max = reads ).
+    DATA(swaps) = reads * 2.
+    DO swaps TIMES.
+      DATA(i) = rng->get_next( ).
+      DATA(j) = rng->get_next( ).
+      DATA(tmp) = pool[ i ].
+      pool[ i ] = pool[ j ].
+      pool[ j ] = tmp.
+    ENDDO.
+
+    DATA key TYPE key_char.
+    DO reads TIMES.
+      key = pool[ sy-index ].
+      APPEND key TO keys.
+      APPEND VALUE s_batch_range( batch_from = ( sy-index - 1 ) * 5 + 1
+                                  batch_to   = sy-index * 5 ) TO batch_ranges.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD prepare.
+    FREE: itab_std, itab_sec.
+    itab_std = itab_content.
+    itab_sec = itab_content.
+  ENDMETHOD.
+
+  METHOD store_runtime.
+    cl_abap_utclong=>diff( EXPORTING high = high low = low IMPORTING seconds = DATA(seconds) ).
+    APPEND seconds TO runtime_tab.
+  ENDMETHOD.
+
+  METHOD get_median_runtime.
+    SORT runtime_tab BY table_line ASCENDING.
+    median_runtime = runtime_tab[ ( lines( runtime_tab ) + 1 ) DIV 2 ].
+    CLEAR runtime_tab.
+  ENDMETHOD.
+
+  METHOD write_section.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD baseline_loop_only.
+    LOOP AT keys INTO DATA(idx_char).
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD relative_to_min_calc.
+
+    IF tab IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    SORT tab BY median_runtime_per_op ASCENDING.
+
+    DATA(min_runtime) = tab[ 1 ]-median_runtime_per_op.
+    LOOP AT tab REFERENCE INTO DATA(item).
+      item->relative_to_min = round( val = item->median_runtime_per_op / min_runtime dec = 2 ).
+    ENDLOOP.
 
   ENDMETHOD.
 
-  METHOD read_wo_binary_search2.
+  METHOD no_binary_search_sort_always.
+    LOOP AT keys INTO DATA(idx_char).
+      SORT itab_std BY comp1.
+      READ TABLE itab_std WITH KEY comp1 = idx_char TRANSPORTING NO FIELDS.
+    ENDLOOP.
+  ENDMETHOD.
 
-    ts1 = utclong_current( ).
-    DO count TIMES.
-**********************************************************************
-      IF sy-index = 1.
-        SORT itab_std BY str num.
+  METHOD no_binary_search_sort_once.
+    LOOP AT keys INTO DATA(idx_char).
+      IF sy-tabix = 1.
+        SORT itab_std BY comp1.
       ENDIF.
-      READ TABLE itab_std WITH KEY idx = sy-index TRANSPORTING NO FIELDS.
-**********************************************************************
-    ENDDO.
-    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
-                                     low     = ts1
-                           IMPORTING seconds = result ).
-
+      READ TABLE itab_std WITH KEY comp1 = idx_char TRANSPORTING NO FIELDS.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD read_with_binary_search1.
-
-    ts1 = utclong_current( ).
-    DO count TIMES.
-**********************************************************************
-      SORT itab_std BY str num.
-      READ TABLE itab_std WITH KEY idx = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
-**********************************************************************
-    ENDDO.
-    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
-                                     low     = ts1
-                           IMPORTING seconds = result ).
-
+  METHOD with_binary_search_sort_always.
+    LOOP AT keys INTO DATA(idx_char).
+      SORT itab_std BY comp1.
+      READ TABLE itab_std WITH KEY comp1 = idx_char BINARY SEARCH TRANSPORTING NO FIELDS.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD read_with_binary_search2.
-
-    ts1 = utclong_current( ).
-    DO count TIMES.
-**********************************************************************
-      IF sy-index = 1.
-        SORT itab_std BY str num.
+  METHOD with_binary_search_sort_once.
+    LOOP AT keys INTO DATA(idx_char).
+      IF sy-tabix = 1.
+        SORT itab_std BY comp1.
       ENDIF.
-      READ TABLE itab_std WITH KEY idx = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
-**********************************************************************
-    ENDDO.
-    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
-                                     low     = ts1
-                           IMPORTING seconds = result ).
+      READ TABLE itab_std WITH KEY comp1 = idx_char BINARY SEARCH TRANSPORTING NO FIELDS.
+    ENDLOOP.
   ENDMETHOD.
 
-  METHOD read_w_secondary_table_key.
-
-    ts1 = utclong_current( ).
-    DO count TIMES.
-**********************************************************************
-      READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS idx = sy-index TRANSPORTING NO FIELDS.
-**********************************************************************
-    ENDDO.
-    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
-                                     low     = ts1
-                           IMPORTING seconds = result ).
-
+  METHOD with_secondary_table_key.
+    LOOP AT keys INTO DATA(idx_char).
+      READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS comp1 = idx_char TRANSPORTING NO FIELDS.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
 ```
@@ -9293,7 +9387,7 @@ ENDCLASS.
 > [!IMPORTANT]
 > This example:
 > - Is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance measurement (see the notes in the *ABAP Performance Notes* cheat sheet). Various factors (such as system, environment, system load, etc.) can influence the runtime of an ABAP program, so that results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet. Small differences between (fast) accesses must not be used to rank those accesses precisely.
-> - Aims to illustrate general table access performance aspects, and highlight the described behavior and potential pitfalls related to table access using a fairly unrealistic, intentionally exaggerated, non-representative example.
+> - Aims to illustrate general table access performance aspects, and highlight the described behavior and potential pitfalls related to table access using a fairly unrealistic, intentionally exaggerated, non-representative example. Note that the runtime evaluation addresses the use case of a large internal table that is filled once and frequently read using various access methods. This example deliberately ignores other scenarios, such as handling smaller internal tables or frequent table changes. You may want to adjust the values (for example, table size, number of accesses) and may find negligible performance differences, for example, when dealing with fairly small (standard) tables and key access. 
 > - Is intended to emphasize the importance of choosing the appropriate table category, key specification, and access pattern for a given use case.
 > - Does not represent best practices regarding performance testing and is not a substitute or role model for profiling real applications with realistic data and workloads.
 
